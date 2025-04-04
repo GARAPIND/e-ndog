@@ -14,10 +14,11 @@ class Customer extends Model
      *
      * @var array<int, string>
      */
+    protected $table = 'pelanggan';
     protected $fillable = [
         'user_id',
-        'phone',
-        'address',
+        'telp',
+        'alamat',
         'latitude',
         'longitude',
     ];

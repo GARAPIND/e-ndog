@@ -52,16 +52,9 @@
                             </nav>
                         </div>
                     </div>
-                    {{-- <div class="col-5 align-self-center">
-                        <div class="customize-input float-right">
-                            <select
-                                class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
-                                <option selected>Aug 19</option>
-                                <option value="1">July 19</option>
-                                <option value="2">Jun 19</option>
-                            </select>
-                        </div>
-                    </div> --}}
+                    <div class="col-5 align-self-center">
+                        <div id="global-alert-container"></div>
+                    </div>
                 </div>
             </div>
             <!-- ============================================================== -->
@@ -69,6 +62,7 @@
             <!-- ============================================================== -->
             <!-- ============================================================== -->
             <!-- Container fluid  -->
+
             <!-- ============================================================== -->
             @yield('content')
             <!-- ============================================================== -->
@@ -136,6 +130,39 @@
     <script src="{{ asset('assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('dist/js/pages/datatable/datatable-basic.init.js') }}"></script>
 
+    <script src="{{ asset('assets/extra-libs/prism/prism.js') }}"></script>
+    <script>
+        function showAlert(type, message) {
+            $('#global-alert-container').empty();
+            var alertClass = 'alert-success';
+            var strongText = 'Success - ';
+
+            if (type === 'error') {
+                alertClass = 'alert-danger';
+                strongText = 'Error - ';
+            } else if (type === 'warning') {
+                alertClass = 'alert-warning bg-warning text-white border-0';
+                strongText = 'Warning - ';
+            } else if (type === 'info') {
+                alertClass = 'alert-info bg-info text-white border-0';
+                strongText = 'Info - ';
+            }
+
+            var alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show mt-3" role="alert">
+                    <strong>${strongText}</strong> ${message}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `;
+            $('#global-alert-container').append(alertHtml);
+
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+    </script>
     @yield('script')
 </body>
 

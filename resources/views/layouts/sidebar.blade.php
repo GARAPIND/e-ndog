@@ -19,13 +19,18 @@
                         <span class="hide-menu">Pelanggan</span>
                     </a>
                 </li>
-
-                <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-chat.html"
-                        aria-expanded="false"><i data-feather="message-square" class="feather-icon"></i><span
-                            class="hide-menu">Chat</span></a></li>
-                <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-calendar.html"
-                        aria-expanded="false"><i data-feather="calendar" class="feather-icon"></i><span
-                            class="hide-menu">Calendar</span></a></li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('admin.data.kategori.index') }}" aria-expanded="false">
+                        <i data-feather="tag" class="feather-icon"></i>
+                        <span class="hide-menu">Kategori Produk</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('admin.data.produk.index') }}" aria-expanded="false">
+                        <i data-feather="package" class="feather-icon"></i>
+                        <span class="hide-menu">Produk</span>
+                    </a>
+                </li>
 
                 <li class="list-divider"></li>
                 <li class="nav-small-cap"><span class="hide-menu">Components</span></li>

@@ -22,6 +22,7 @@
                             <table id="customers-table" class="table table-striped table-bordered no-wrap">
                                 <thead>
                                     <tr>
+                                        <th>Foto</th>
                                         <th>Nama</th>
                                         <th>Username</th>
                                         <th>Email</th>
@@ -49,8 +50,20 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="addCustomerForm">
+                <form id="addCustomerForm" enctype="multipart/form-data">
                     <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="photo">Foto</label>
+                                    <input type="file" class="form-control" id="photo" name="photo"
+                                        accept="image/*">
+                                    <small class="form-text text-muted">Upload foto dengan format JPG, JPEG, atau PNG (max
+                                        2MB)</small>
+                                    <div class="invalid-feedback" id="photo-error"></div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -77,16 +90,16 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="phone">No. Telepon</label>
-                                    <input type="text" class="form-control" id="phone" name="phone" required>
-                                    <div class="invalid-feedback" id="phone-error"></div>
+                                    <label for="telp">No. Telepon</label>
+                                    <input type="text" class="form-control" id="telp" name="telp" required>
+                                    <div class="invalid-feedback" id="telp-error"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="address">Alamat</label>
-                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                            <div class="invalid-feedback" id="address-error"></div>
+                            <label for="alamat">Alamat</label>
+                            <textarea class="form-control" id="alamat" name="alamat" rows="3" required></textarea>
+                            <div class="invalid-feedback" id="alamat-error"></div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
@@ -132,9 +145,22 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="editCustomerForm">
+                <form id="editCustomerForm" enctype="multipart/form-data">
                     <input type="hidden" id="edit_id" name="id">
                     <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="edit_photo">Foto</label>
+                                    <div id="current_photo_container" class="mb-2"></div>
+                                    <input type="file" class="form-control" id="edit_photo" name="photo"
+                                        accept="image/*">
+                                    <small class="form-text text-muted">Upload foto baru dengan format JPG, JPEG, atau PNG
+                                        (max 2MB)</small>
+                                    <div class="invalid-feedback" id="edit-photo-error"></div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -162,16 +188,16 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="edit_phone">No. Telepon</label>
-                                    <input type="text" class="form-control" id="edit_phone" name="phone" required>
-                                    <div class="invalid-feedback" id="edit-phone-error"></div>
+                                    <label for="edit_telp">No. Telepon</label>
+                                    <input type="text" class="form-control" id="edit_telp" name="telp" required>
+                                    <div class="invalid-feedback" id="edit-telp-error"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="edit_address">Alamat</label>
-                            <textarea class="form-control" id="edit_address" name="address" rows="3" required></textarea>
-                            <div class="invalid-feedback" id="edit-address-error"></div>
+                            <label for="edit_alamat">Alamat</label>
+                            <textarea class="form-control" id="edit_alamat" name="alamat" rows="3" required></textarea>
+                            <div class="invalid-feedback" id="edit-alamat-error"></div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
@@ -218,6 +244,11 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <img id="view_photo" class="img-fluid rounded" style="max-height: 200px;" alt="Foto Pelanggan">
+                        <div id="no_photo_text" class="alert alert-secondary mt-2" style="display: none;">Tidak ada foto
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-md-6">
                             <p><strong>Nama:</strong> <span id="view_name"></span></p>
@@ -225,8 +256,8 @@
                             <p><strong>Email:</strong> <span id="view_email"></span></p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Nomor Telepon:</strong> <span id="view_phone"></span></p>
-                            <p><strong>Alamat:</strong> <span id="view_address"></span></p>
+                            <p><strong>Nomor Telepon:</strong> <span id="view_telp"></span></p>
+                            <p><strong>Alamat:</strong> <span id="view_alamat"></span></p>
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -274,6 +305,12 @@
                 serverSide: true,
                 ajax: "{{ route('customers.data') }}",
                 columns: [{
+                        data: 'photo',
+                        name: 'photo',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: 'name',
                         name: 'name'
                     },
@@ -286,12 +323,12 @@
                         name: 'email'
                     },
                     {
-                        data: 'phone',
-                        name: 'phone'
+                        data: 'telp',
+                        name: 'telp'
                     },
                     {
-                        data: 'address',
-                        name: 'address'
+                        data: 'alamat',
+                        name: 'alamat'
                     },
                     {
                         data: 'created_at',
@@ -305,32 +342,35 @@
                     },
                 ],
                 order: [
-                    [0, 'asc']
+                    [1, 'asc']
                 ]
             });
 
-            // Clear validation errors when modal is hidden
             $('#addCustomerModal, #editCustomerModal').on('hidden.bs.modal', function() {
                 $('.is-invalid').removeClass('is-invalid');
                 $('.invalid-feedback').text('');
                 $(this).find('form')[0].reset();
+                $('#current_photo_container').empty();
             });
 
-            // Add Customer Form Submit
             $('#addCustomerForm').on('submit', function(e) {
                 e.preventDefault();
+
+                var formData = new FormData(this);
 
                 $.ajax({
                     url: "{{ route('customers.store') }}",
                     type: "POST",
-                    data: $(this).serialize(),
+                    data: formData,
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
+                    contentType: false,
+                    processData: false,
                     success: function(response) {
                         $('#addCustomerModal').modal('hide');
                         table.ajax.reload();
-                        toastr.success(response.success);
+                        showAlert('success', response.success);
                     },
                     error: function(xhr) {
                         if (xhr.status === 422) {
@@ -339,14 +379,15 @@
                                 $('#' + key).addClass('is-invalid');
                                 $('#' + key + '-error').text(value[0]);
                             });
+                            showAlert('error',
+                                'Terdapat kesalahan pada form. Silakan periksa kembali.');
                         } else {
-                            toastr.error('Terjadi kesalahan. Silakan coba lagi.');
+                            showAlert('error', 'Terjadi kesalahan. Silakan coba lagi.');
                         }
                     }
                 });
             });
 
-            // Handle View Button Click
             $(document).on('click', '.view-btn', function() {
                 var id = $(this).data('id');
 
@@ -357,20 +398,27 @@
                         $('#view_name').text(response.name);
                         $('#view_username').text(response.username);
                         $('#view_email').text(response.email);
-                        $('#view_phone').text(response.phone);
-                        $('#view_address').text(response.address);
+                        $('#view_telp').text(response.telp);
+                        $('#view_alamat').text(response.alamat);
                         $('#view_latitude').text(response.latitude || 'Tidak diatur');
                         $('#view_longitude').text(response.longitude || 'Tidak diatur');
+                        if (response.photo) {
+                            $('#view_photo').attr('src', "{{ asset('storage/foto-user') }}/" +
+                                response.photo).show();
+                            $('#no_photo_text').hide();
+                        } else {
+                            $('#view_photo').hide();
+                            $('#no_photo_text').show();
+                        }
 
                         $('#viewCustomerModal').modal('show');
                     },
                     error: function() {
-                        toastr.error('Gagal memuat data pelanggan');
+                        showAlert('error', 'Gagal memuat data pelanggan');
                     }
                 });
             });
 
-            // Handle Edit Button Click
             $(document).on('click', '.edit-btn', function() {
                 var id = $(this).data('id');
 
@@ -382,35 +430,52 @@
                         $('#edit_name').val(response.name);
                         $('#edit_username').val(response.username);
                         $('#edit_email').val(response.email);
-                        $('#edit_phone').val(response.phone);
-                        $('#edit_address').val(response.address);
+                        $('#edit_telp').val(response.telp);
+                        $('#edit_alamat').val(response.alamat);
                         $('#edit_latitude').val(response.latitude);
                         $('#edit_longitude').val(response.longitude);
+
+                        $('#current_photo_container').empty();
+                        if (response.photo) {
+                            var photoUrl = "{{ asset('storage/foto-user') }}/" + response.photo;
+                            $('#current_photo_container').html(
+                                '<img src="' + photoUrl +
+                                '" class="img-thumbnail mb-2" style="max-height: 150px"><br>' +
+                                '<small class="text-muted">Foto saat ini</small>'
+                            );
+                        } else {
+                            $('#current_photo_container').html(
+                                '<p class="text-muted">Tidak ada foto</p>');
+                        }
 
                         $('#editCustomerModal').modal('show');
                     },
                     error: function() {
-                        toastr.error('Gagal memuat data pelanggan');
+                        showAlert('error', 'Gagal memuat data pelanggan');
                     }
                 });
             });
 
-            // Edit Customer Form Submit
             $('#editCustomerForm').on('submit', function(e) {
                 e.preventDefault();
                 var id = $('#edit_id').val();
 
+                var formData = new FormData(this);
+                formData.append('_method', 'PUT');
+
                 $.ajax({
                     url: "/admin/customers/" + id,
-                    type: "PUT",
-                    data: $(this).serialize(),
+                    type: "POST",
+                    data: formData,
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
+                    contentType: false,
+                    processData: false,
                     success: function(response) {
                         $('#editCustomerModal').modal('hide');
                         table.ajax.reload();
-                        toastr.success(response.success);
+                        showAlert('success', response.success);
                     },
                     error: function(xhr) {
                         if (xhr.status === 422) {
@@ -419,21 +484,21 @@
                                 $('#edit_' + key).addClass('is-invalid');
                                 $('#edit-' + key + '-error').text(value[0]);
                             });
+                            showAlert('error',
+                                'Terdapat kesalahan pada form. Silakan periksa kembali.');
                         } else {
-                            toastr.error('Terjadi kesalahan. Silakan coba lagi.');
+                            showAlert('error', 'Terjadi kesalahan. Silakan coba lagi.');
                         }
                     }
                 });
             });
 
-            // Handle Delete Button Click
             $(document).on('click', '.delete-btn', function() {
                 var id = $(this).data('id');
                 $('#delete_id').val(id);
                 $('#deleteCustomerModal').modal('show');
             });
 
-            // Confirm Delete Button Click
             $('#confirmDeleteBtn').on('click', function() {
                 var id = $('#delete_id').val();
 
@@ -446,10 +511,10 @@
                     success: function(response) {
                         $('#deleteCustomerModal').modal('hide');
                         table.ajax.reload();
-                        toastr.success(response.success);
+                        showAlert('success', response.success);
                     },
                     error: function(xhr) {
-                        toastr.error('Gagal menghapus pelanggan');
+                        showAlert('error', 'Gagal menghapus pelanggan');
                     }
                 });
             });

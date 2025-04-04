@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
 {
@@ -22,20 +23,27 @@ class CustomerController extends Controller
     public function getData(Request $request)
     {
         $customers = User::where('role', 'customer')
-            ->join('customers', 'users.id', '=', 'customers.user_id')
+            ->join('pelanggan', 'users.id', '=', 'pelanggan.user_id')
             ->select([
                 'users.id',
                 'users.name',
                 'users.username',
                 'users.email',
-                'customers.phone',
-                'customers.address',
-                'customers.latitude',
-                'customers.longitude',
+                'pelanggan.telp',
+                'pelanggan.alamat',
+                'pelanggan.latitude',
+                'pelanggan.longitude',
+                'pelanggan.photo',
                 'users.created_at'
             ]);
 
         return DataTables::of($customers)
+            ->addColumn('photo', function ($row) {
+                if ($row->photo) {
+                    return '<img src="' . asset('storage/foto-user/' . $row->photo) . '" alt="User Photo" class="img-thumbnail" style="max-height: 50px;">';
+                }
+                return '<span class="badge badge-secondary">No Photo</span>';
+            })
             ->addColumn('action', function ($row) {
                 return '
                     <button type="button" class="btn btn-info btn-sm view-btn" data-id="' . $row->id . '">
@@ -49,7 +57,7 @@ class CustomerController extends Controller
                     </button>
                 ';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'photo'])
             ->make(true);
     }
 
@@ -57,16 +65,17 @@ class CustomerController extends Controller
     {
         $customer = User::where('role', 'customer')
             ->where('users.id', $id)
-            ->join('customers', 'users.id', '=', 'customers.user_id')
+            ->join('pelanggan', 'users.id', '=', 'pelanggan.user_id')
             ->select([
                 'users.id',
                 'users.name',
                 'users.username',
                 'users.email',
-                'customers.phone',
-                'customers.address',
-                'customers.latitude',
-                'customers.longitude'
+                'pelanggan.telp',
+                'pelanggan.alamat',
+                'pelanggan.latitude',
+                'pelanggan.longitude',
+                'pelanggan.photo'
             ])
             ->first();
 
@@ -84,8 +93,9 @@ class CustomerController extends Controller
             'username' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
+            'telp' => 'required|string|max:20',
+            'alamat' => 'required|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -102,12 +112,20 @@ class CustomerController extends Controller
                 'role' => 'customer',
             ]);
 
+            $photoName = null;
+            if ($request->hasFile('photo')) {
+                $photo = $request->file('photo');
+                $photoName = $user->id . '_' . time() . '.' . $photo->getClientOriginalExtension();
+                $photo->storeAs('foto-user', $photoName, 'public');
+            }
+
             Customer::create([
                 'user_id' => $user->id,
-                'phone' => $request->phone,
-                'address' => $request->address,
+                'telp' => $request->telp,
+                'alamat' => $request->alamat,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
+                'photo' => $photoName,
             ]);
 
             DB::commit();
@@ -118,6 +136,7 @@ class CustomerController extends Controller
             return response()->json(['error' => 'Failed to create customer: ' . $e->getMessage()], 500);
         }
     }
+
     public function update(Request $request, $id)
     {
         $user = User::find($id);
@@ -142,8 +161,9 @@ class CustomerController extends Controller
                 Rule::unique('users')->ignore($id),
             ],
             'password' => 'nullable|string|min:6',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
+            'telp' => 'required|string|max:20',
+            'alamat' => 'required|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -163,10 +183,21 @@ class CustomerController extends Controller
             $user->save();
 
             $customer = Customer::where('user_id', $id)->first();
-            $customer->phone = $request->phone;
-            $customer->address = $request->address;
+            $customer->telp = $request->telp;
+            $customer->alamat = $request->alamat;
             $customer->latitude = $request->latitude;
             $customer->longitude = $request->longitude;
+            if ($request->hasFile('photo')) {
+                if ($customer->photo) {
+                    Storage::disk('public')->delete('foto-user/' . $customer->photo);
+                }
+
+                $photo = $request->file('photo');
+                $photoName = $id . '_' . time() . '.' . $photo->getClientOriginalExtension();
+                $photo->storeAs('foto-user', $photoName, 'public');
+                $customer->photo = $photoName;
+            }
+
             $customer->save();
 
             DB::commit();
@@ -187,6 +218,10 @@ class CustomerController extends Controller
         }
 
         try {
+            $customer = Customer::where('user_id', $id)->first();
+            if ($customer && $customer->photo) {
+                Storage::disk('public')->delete('foto-user/' . $customer->photo);
+            }
             $user->delete();
 
             return response()->json(['success' => 'Customer deleted successfully']);
