@@ -42,17 +42,17 @@
             <div class="page-breadcrumb">
                 <div class="row">
                     <div class="col-7 align-self-center">
-                        <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">Good Morning Jason!</h3>
+                        <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">@yield('page-title')</h3>
                         <div class="d-flex align-items-center">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb m-0 p-0">
-                                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a>
+                                    <li class="breadcrumb-item"><a href="index.html">@yield('page-subtitle')</a>
                                     </li>
                                 </ol>
                             </nav>
                         </div>
                     </div>
-                    <div class="col-5 align-self-center">
+                    {{-- <div class="col-5 align-self-center">
                         <div class="customize-input float-right">
                             <select
                                 class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
@@ -61,7 +61,7 @@
                                 <option value="2">Jun 19</option>
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             <!-- ============================================================== -->
@@ -117,6 +117,25 @@
     <script src="{{ asset('assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js') }}"></script>
     <script src="{{ asset('assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js') }}"></script>
     <script src="{{ asset('dist/js/pages/dashboards/dashboard1.min.js') }}"></script>
+
+    {{-- apps --}}
+    <script src="{{ asset('dist/js/app-style-switcher.js') }}"></script>
+    <script src="{{ asset('dist/js/feather.min.js') }}"></script>
+
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="{{ asset('assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/extra-libs/sparkline/sparkline.js') }}"></script>
+
+    <!-- Menu sidebar -->
+    <script src="{{ asset('dist/js/sidebarmenu.js') }}"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ asset('dist/js/custom.min.js') }}"></script>
+
+    <!-- DataTables -->
+    <script src="{{ asset('assets/extra-libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('dist/js/pages/datatable/datatable-basic.init.js') }}"></script>
+
     @yield('script')
 </body>
 
