@@ -78,8 +78,7 @@
             <!-- footer -->
             <!-- ============================================================== -->
             <footer class="footer text-center text-muted">
-                All Rights Reserved by Adminmart. Designed and Developed by <a
-                    href="https://wrappixel.com">WrapPixel</a>.
+                All Rights Reserved by E-NDOG. Designed and Developed by <a href="https://wrappixel.com">AMEL</a>.
             </footer>
             <!-- ============================================================== -->
             <!-- End footer -->
