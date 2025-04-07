@@ -9,11 +9,9 @@ use App\Http\Controllers\Admin\Data\StokKeluarController;
 use App\Http\Controllers\Admin\Data\StokMasukController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
+use App\Http\Controllers\Pengunjung\ProdukController as PengunjungProdukController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -24,8 +22,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+});
+
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('admin/customers')->group(function () {
@@ -70,5 +71,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/stok-keluar/detail/{id}', [StokKeluarController::class, 'getStokKeluarDetail']);
         Route::post('/stok-keluar/kurangi', [StokKeluarController::class, 'kurangiStok'])
             ->name('admin.stok-keluar.kurangi');
+    });
+});
+
+// dashboard pengunjung
+Route::middleware(['pelanggan'])->group(function () {
+    Route::get('/', [PengunjungDashboardController::class, 'index'])->name('dashboard.pengunjung');
+
+    Route::group(['prefix' => 'produk', 'as' => 'produk.'], function () {
+        Route::get('/', [PengunjungProdukController::class, 'index'])->name('list');
     });
 });
