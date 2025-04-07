@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Data\ProdukController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
+use App\Http\Controllers\Pengunjung\ProdukController as PengunjungProdukController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
@@ -53,4 +54,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 // dashboard pengunjung
 Route::middleware(['pelanggan'])->group(function () {
     Route::get('/', [PengunjungDashboardController::class, 'index'])->name('dashboard.pengunjung');
+
+    Route::group(['prefix' => 'produk', 'as' => 'produk.'], function () {
+        Route::get('/', [PengunjungProdukController::class, 'index'])->name('list');
+    });
 });
