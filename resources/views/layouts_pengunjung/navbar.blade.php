@@ -11,14 +11,25 @@
             </div>
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My
-                            Account</button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a href="{{ route('login') }}" class="dropdown-item" type="button">Sign in</a>
-                            <a href="{{ route('register') }}" class="dropdown-item" type="button">Sign up</a>
+                    @if (auth()->user())
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-light dropdown-toggle"
+                                data-toggle="dropdown">{{ auth()->user()->name }}</button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a href="{{ route('logout') }}" class="dropdown-item" type="button">Log out</a>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-light dropdown-toggle"
+                                data-toggle="dropdown">My
+                                Account</button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a href="{{ route('login') }}" class="dropdown-item" type="button">Sign in</a>
+                                <a href="{{ route('register') }}" class="dropdown-item" type="button">Sign up</a>
+                            </div>
+                        </div>
+                    @endif
                     <div class="btn-group mx-2">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle"
                             data-toggle="dropdown">USD</button>

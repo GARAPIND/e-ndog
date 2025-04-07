@@ -26,7 +26,18 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('dashboard');
+            $user = Auth::user();
+
+            if ($user->role === 'admin') {
+                return redirect()->route('dashboard');
+            } elseif ($user->role === 'customer') {
+                return redirect()->route('dashboard.pengunjung');
+            } else {
+                Auth::logout();
+                return back()->withErrors([
+                    'username' => 'Unauthorized role.',
+                ])->onlyInput('username');
+            }
         }
 
         return back()->withErrors([
@@ -43,5 +54,3 @@ class LoginController extends Controller
         return redirect('/');
     }
 }
-
-
