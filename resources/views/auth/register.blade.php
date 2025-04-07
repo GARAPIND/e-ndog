@@ -86,6 +86,8 @@
                                 </div>
                                 <div class="col-lg-12 text-center">
                                     <button type="submit" class="btn btn-block btn-dark">Sign Up</button>
+                                    <a href="{{ route('dashboard.pengunjung') }}" type="button"
+                                        class="btn btn-block btn-warning">Back to Dashboard</a>
                                 </div>
                                 <div class="col-lg-12 text-center mt-5">
                                     Already have an account? <a href="{{ route('login') }}" class="text-danger">Sign

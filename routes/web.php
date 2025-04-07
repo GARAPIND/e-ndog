@@ -6,11 +6,8 @@ use App\Http\Controllers\Admin\Data\KategoriProdukController;
 use App\Http\Controllers\Admin\Data\ProdukController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -49,3 +46,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('/produk/{id}', [ProdukController::class, 'destroy']);
     });
 });
+
+// dashboard pengunjung
+Route::get('/', [PengunjungDashboardController::class, 'index'])->name('dashboard.pengunjung');
