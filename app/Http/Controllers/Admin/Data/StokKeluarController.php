@@ -20,7 +20,7 @@ class StokKeluarController extends Controller
     public function getStokKeluarData(Request $request)
     {
         $histories = StokHistory::with(['produk', 'user'])
-            ->where('tipe', 'kurang')
+            ->where('tipe', 'keluar')
             ->select('stok_history.*');
 
         return DataTables::of($histories)

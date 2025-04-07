@@ -47,11 +47,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         Route::get('/produk', [ProdukController::class, 'index'])->name('admin.data.produk.index');
         Route::get('/produk/data', [ProdukController::class, 'getData'])->name('admin.data.produk.data');
+        Route::get('/produk/list', [ProdukController::class, 'getDataList'])->name('admin.data.produk.list');
         Route::get('/produk/{id}', [ProdukController::class, 'getProduk']);
         Route::post('/produk', [ProdukController::class, 'store'])->name('admin.data.produk.store');
         Route::put('/produk/{id}', [ProdukController::class, 'update']);
         Route::delete('/produk/{id}', [ProdukController::class, 'destroy']);
-        Route::get('/produk/list', [ProdukController::class, 'getProductList'])->name('admin.data.produk.list');
 
         Route::get('/stok', [StokController::class, 'index'])->name('admin.data.stok.index');
         Route::get('/stok/data', [StokController::class, 'getStokData'])->name('admin.data.stok.data');

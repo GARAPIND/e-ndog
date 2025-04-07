@@ -193,7 +193,7 @@ class ProdukController extends Controller
     }
 
     // Modified ProdukController method
-    public function getProductList()
+    public function getDataList()
     {
         try {
             $products = Produk::where('aktif', 1)
@@ -203,7 +203,6 @@ class ProdukController extends Controller
 
             return response()->json($products, 200);
         } catch (\Exception $e) {
-            \Log::error('Error retrieving product list: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to load products'], 500);
         }
     }
