@@ -51,4 +51,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 // dashboard pengunjung
-Route::get('/', [PengunjungDashboardController::class, 'index'])->name('dashboard.pengunjung');
+Route::middleware(['pelanggan'])->group(function () {
+    Route::get('/', [PengunjungDashboardController::class, 'index'])->name('dashboard.pengunjung');
+});
