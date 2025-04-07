@@ -4,6 +4,9 @@ use App\Http\Controllers\Admin\Data\CustomerController;
 use App\Http\Controllers\Admin\Data\DashboardController;
 use App\Http\Controllers\Admin\Data\KategoriProdukController;
 use App\Http\Controllers\Admin\Data\ProdukController;
+use App\Http\Controllers\Admin\Data\StokController;
+use App\Http\Controllers\Admin\Data\StokKeluarController;
+use App\Http\Controllers\Admin\Data\StokMasukController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
@@ -47,5 +50,25 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/produk', [ProdukController::class, 'store'])->name('admin.data.produk.store');
         Route::put('/produk/{id}', [ProdukController::class, 'update']);
         Route::delete('/produk/{id}', [ProdukController::class, 'destroy']);
+        Route::get('/produk/list', [ProdukController::class, 'getProductList'])->name('admin.data.produk.list');
+
+        Route::get('/stok', [StokController::class, 'index'])->name('admin.data.stok.index');
+        Route::get('/stok/data', [StokController::class, 'getStokData'])->name('admin.data.stok.data');
+        Route::get('/stok/history/{id}', [StokController::class, 'getStokHistory']);
+        Route::post('/stok/update', [StokController::class, 'updateStok'])->name('admin.data.stok.update');
+        Route::get('/stok-masuk', [StokMasukController::class, 'index'])
+            ->name('admin.stok-masuk.index');
+        Route::get('/stok-masuk/data', [StokMasukController::class, 'getStokMasukData'])
+            ->name('admin.stok-masuk.data');
+        Route::get('/stok-masuk/detail/{id}', [StokMasukController::class, 'getStokMasukDetail']);
+        Route::post('/stok-masuk/tambah', [StokMasukController::class, 'tambahStok'])
+            ->name('admin.stok-masuk.tambah');
+        Route::get('/stok-keluar', [StokKeluarController::class, 'index'])
+            ->name('admin.stok-keluar.index');
+        Route::get('/stok-keluar/data', [StokKeluarController::class, 'getStokKeluarData'])
+            ->name('admin.stok-keluar.data');
+        Route::get('/stok-keluar/detail/{id}', [StokKeluarController::class, 'getStokKeluarDetail']);
+        Route::post('/stok-keluar/kurangi', [StokKeluarController::class, 'kurangiStok'])
+            ->name('admin.stok-keluar.kurangi');
     });
 });

@@ -191,4 +191,20 @@ class ProdukController extends Controller
             return response()->json(['error' => 'Gagal menghapus produk: ' . $e->getMessage()], 500);
         }
     }
+
+    // Modified ProdukController method
+    public function getProductList()
+    {
+        try {
+            $products = Produk::where('aktif', 1)
+                ->select(['id', 'kode', 'nama', 'stok'])
+                ->orderBy('nama')
+                ->get();
+
+            return response()->json($products, 200);
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving product list: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load products'], 500);
+        }
+    }
 }
