@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Tampilan\CarouselController;
 use App\Http\Controllers\Admin\Tampilan\PromosiController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Pengunjung\BelanjaController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
 use App\Http\Controllers\Pengunjung\ProdukController as PengunjungProdukController;
 use Illuminate\Support\Facades\Route;
@@ -102,5 +103,9 @@ Route::middleware(['pelanggan'])->group(function () {
         Route::get('/', [PengunjungProdukController::class, 'index'])->name('list');
         Route::get('/get_data', [PengunjungProdukController::class, 'get_data'])->name('get_data');
         Route::get('/detail/{id}', [PengunjungProdukController::class, 'detail_produk'])->name('detail');
+    });
+
+    Route::group(['prefix' => 'belanja', 'as' => 'belanja.'], function () {
+        Route::get('/', [BelanjaController::class, 'index'])->name('list');
     });
 });

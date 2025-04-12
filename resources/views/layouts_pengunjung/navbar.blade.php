@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
-
+                <small class="text-lg-left">Aplikasi E-Ndog untuk berbelanja berbagai macam telur</small>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
@@ -118,10 +118,20 @@
                             <a href="" class="nav-item nav-link">Tentang Kami</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="" class="btn px-0 ml-3 text-light">
+                            <a href="#" class="btn px-0 ml-3 text-light" onclick="cekLogin()">
                                 <i class="fas fa-shopping-cart text-primary"></i> Belanja
                             </a>
                         </div>
+                        <script src="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-aio-3.2.6.min.js"></script>
+                        <script>
+                            function cekLogin() {
+                                @if (Auth::check())
+                                    window.location.href = "{{ route('belanja.list') }}";
+                                @else
+                                    Notiflix.Notify.failure('Silakan login terlebih dahulu untuk belanja');
+                                @endif
+                            }
+                        </script>
                     </div>
                 </nav>
             </div>
