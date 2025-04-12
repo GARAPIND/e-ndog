@@ -35,24 +35,31 @@
 
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="product-offer mb-30" style="height: 200px;">
-                    <img class="img-fluid" src="{{ asset('pengunjung') }}/img/offer-1.jpg" alt="">
-                    <div class="offer-text">
-                        <h6 class="text-white text-uppercase">Save 20%</h6>
-                        <h3 class="text-white mb-3">Special Offer</h3>
-                        <a href="" class="btn btn-primary">Shop Now</a>
-                    </div>
+            @if (isset($promosi))
+                <div class="col-lg-4">
+                    @if (isset($promosi[0]))
+                        <div class="product-offer mb-30" style="height: 200px;">
+                            <img class="img-fluid" src="{{ asset('storage/promosi/' . $promosi[0]->foto) }}" alt="">
+                            <div class="offer-text">
+                                <h6 class="text-white text-uppercase">{{ $promosi[0]->judul }}</h6>
+                                <h3 class="text-white mb-3">{{ $promosi[0]->sub_judul }}</h3>
+                                <a href="{{ route('produk.list') }}" class="btn btn-primary">Shop Now</a>
+                            </div>
+                        </div>
+                    @endif
+                    @if (isset($promosi[1]))
+                        <div class="product-offer mb-30" style="height: 200px;">
+                            <img class="img-fluid" src="{{ asset('storage/promosi/' . $promosi[1]->foto) }}"
+                                alt="">
+                            <div class="offer-text">
+                                <h6 class="text-white text-uppercase">{{ $promosi[1]->judul }}</h6>
+                                <h3 class="text-white mb-3">{{ $promosi[1]->sub_judul }}</h3>
+                                <a href="{{ route('produk.list') }}" class="btn btn-primary">Shop Now</a>
+                            </div>
+                        </div>
+                    @endif
                 </div>
-                <div class="product-offer mb-30" style="height: 200px;">
-                    <img class="img-fluid" src="{{ asset('pengunjung') }}/img/offer-2.jpg" alt="">
-                    <div class="offer-text">
-                        <h6 class="text-white text-uppercase">Save 20%</h6>
-                        <h3 class="text-white mb-3">Special Offer</h3>
-                        <a href="" class="btn btn-primary">Shop Now</a>
-                    </div>
-                </div>
-            </div>
+            @endif
         </div>
     </div>
 
@@ -153,31 +160,38 @@
         </div>
     </div>
 
-    <div class="container-fluid pt-5 pb-3">
-        <div class="row px-xl-5">
-            <div class="col-md-6">
-                <div class="product-offer mb-30" style="height: 300px;">
-                    <img class="img-fluid" src="{{ asset('pengunjung') }}/img/offer-1.jpg" alt="">
-                    <div class="offer-text">
-                        <h6 class="text-white text-uppercase">Save 20%</h6>
-                        <h3 class="text-white mb-3">Special Offer</h3>
-                        <a href="" class="btn btn-primary">Shop Now</a>
+    @if (isset($promosi))
+        <div class="container-fluid pt-5 pb-3">
+            <div class="row px-xl-5">
+                @if (isset($promosi[2]))
+                    <div class="col-md-6">
+                        <div class="product-offer mb-30" style="height: 300px;">
+                            <img class="img-fluid" src="{{ asset('storage/promosi/' . $promosi[2]->foto) }}"
+                                alt="">
+                            <div class="offer-text">
+                                <h6 class="text-white text-uppercase">{{ $promosi[2]->judul }}</h6>
+                                <h3 class="text-white mb-3">{{ $promosi[2]->sub_judul }}</h3>
+                                <a href="{{ route('produk.list') }}" class="btn btn-primary">Shop Now</a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="product-offer mb-30" style="height: 300px;">
-                    <img class="img-fluid" src="{{ asset('pengunjung') }}/img/offer-2.jpg" alt="">
-                    <div class="offer-text">
-                        <h6 class="text-white text-uppercase">Save 20%</h6>
-                        <h3 class="text-white mb-3">Special Offer</h3>
-                        <a href="" class="btn btn-primary">Shop Now</a>
+                @endif
+                @if (isset($promosi[3]))
+                    <div class="col-md-6">
+                        <div class="product-offer mb-30" style="height: 300px;">
+                            <img class="img-fluid" src="{{ asset('storage/promosi/' . $promosi[3]->foto) }}"
+                                alt="">
+                            <div class="offer-text">
+                                <h6 class="text-white text-uppercase">{{ $promosi[3]->judul }}</h6>
+                                <h3 class="text-white mb-3">{{ $promosi[3]->sub_judul }}</h3>
+                                <a href="{{ route('produk.list') }}" class="btn btn-primary">Shop Now</a>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
-    </div>
-
+    @endif
 
     <div class="container-fluid py-5">
         <div class="row px-xl-5">
