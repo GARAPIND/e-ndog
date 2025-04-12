@@ -1,7 +1,7 @@
 @extends('layouts.main')
-@section('title', 'Kelola Carousel')
-@section('page-title', 'Kelola Carousel')
-@section('page-subtitle', 'Tampilan/Kelola Carousel')
+@section('title', 'Kelola Promosi')
+@section('page-title', 'Kelola Promosi')
+@section('page-subtitle', 'Tampilan/Kelola Banner Promosi')
 
 @section('content')
     <div class="container-fluid">
@@ -11,8 +11,8 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div>
-                                <h4 class="card-title">Tabel Carousel</h4>
-                                <h6 class="card-subtitle">Tabel untuk mengelola data carousel</h6>
+                                <h4 class="card-title">Tabel Banner Promosi</h4>
+                                <h6 class="card-subtitle">Tabel untuk mengelola data banner promosi</h6>
                             </div>
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal"
                                 onclick="submit('tambah')">
@@ -20,13 +20,13 @@
                             </button>
                         </div>
                         <div class="table-responsive">
-                            <table id="carousel-table" class="table table-striped table-bordered no-wrap">
+                            <table id="promosi-table" class="table table-striped table-bordered no-wrap">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Foto</th>
                                         <th>Judul</th>
-                                        <th>Deskripsi Singkat</th>
+                                        <th>Sub Judul</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -43,11 +43,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="modalLabel">Form Carousel</h4>
+                    <h4 class="modal-title" id="modalLabel">Form Promosi</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <div class="modal-body">
-                    <form id="formCarousel" enctype="multipart/form-data">
+                    <form id="formPromosi" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="judul">Judul</label>
                             <input type="hidden" name="id" id="id">
@@ -56,10 +56,10 @@
                             <small class="text-danger pl-1" id="error-judul"></small>
                         </div>
                         <div class="form-group">
-                            <label for="deskripsi">Deskripsi Singkat</label>
-                            <input type="text" class="form-control" placeholder="Masukkan deskripsi singkat"
-                                id="deskripsi" name="deskripsi">
-                            <small class="text-danger pl-1" id="error-deskripsi"></small>
+                            <label for="sub_judul">Sub Judul</label>
+                            <input type="text" class="form-control" placeholder="Masukkan sub judul" id="sub_judul"
+                                name="sub_judul">
+                            <small class="text-danger pl-1" id="error-sub_judul"></small>
                         </div>
                         <div class="form-group">
                             <label for="deskripsi">Foto <small class="text-muted">(Disarankan 16:9/landscape)</small>
@@ -99,8 +99,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Apakah Anda yakin ingin menghapus data carousel ini? Tindakan ini tidak dapat dibatalkan.</p>
-                    <p class="text-danger">Perhatian: Foto data carousel juga akan dihapus dari penyimpanan.</p>
+                    <p>Apakah Anda yakin ingin menghapus data banner promosi ini? Tindakan ini tidak dapat dibatalkan.</p>
+                    <p class="text-danger">Perhatian: Foto data banner promosi juga akan dihapus dari penyimpanan.</p>
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="delete_id">
@@ -112,6 +112,7 @@
         </div>
     </div>
 @endsection
+
 @section('script')
     <script>
         const baseUrl = "{{ url('') }}";
@@ -136,7 +137,7 @@
 
         function delete_form() {
             $("#judul").val("");
-            $("#deskripsi").val("");
+            $("#sub_judul").val("");
             $("#foto").val("");
             $("label[for='foto']").text("Pilih foto");
         }
@@ -144,12 +145,12 @@
         function get_data() {
             delete_error();
             delete_form();
-            let table = $("#carousel-table").DataTable({
+            let table = $("#promosi-table").DataTable({
                 processing: true,
                 serverSide: true,
                 destroy: true,
                 ajax: {
-                    url: "{{ route('carousel.get_data') }}",
+                    url: "{{ route('promosi.get_data') }}",
                     type: 'GET',
                 },
                 columns: [{
@@ -174,9 +175,9 @@
                         }
                     },
                     {
-                        data: 'deskripsi',
+                        data: 'sub_judul',
                         className: 'text-center',
-                        name: 'deskripsi',
+                        name: 'sub_judul',
                         render: (data) => {
                             return data || '-';
                         }
@@ -198,14 +199,14 @@
             if (id == "tambah") {
                 $("#btn_tambah").show();
                 $("#btn_edit").hide();
-                $("#modalLabel").text("Tambah data carousel");
+                $("#modalLabel").text("Tambah data promosi");
             } else {
                 $("#btn_tambah").hide();
                 $("#btn_edit").show();
-                $("#modalLabel").text("Edit data carousel");
+                $("#modalLabel").text("Edit data promosi");
                 $.ajax({
                     type: "POST",
-                    url: "{{ route('carousel.get_data_id') }}",
+                    url: "{{ route('promosi.get_data_id') }}",
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
@@ -216,7 +217,7 @@
                     success: function(hasil) {
                         $("#id").val(hasil.id);
                         $("#judul").val(hasil.judul);
-                        $("#deskripsi").val(hasil.deskripsi);
+                        $("#sub_judul").val(hasil.sub_judul);
                     },
                 });
             }
@@ -225,11 +226,11 @@
         }
 
         function tambah_data() {
-            var formData = new FormData(document.getElementById('formCarousel'));
+            var formData = new FormData(document.getElementById('formPromosi'));
 
             $.ajax({
                 type: "POST",
-                url: "{{ route('carousel.tambah_data') }}",
+                url: "{{ route('promosi.tambah_data') }}",
                 data: formData,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -268,11 +269,11 @@
         }
 
         function edit_data() {
-            var formData = new FormData(document.getElementById('formCarousel'));
+            var formData = new FormData(document.getElementById('formPromosi'));
 
             $.ajax({
                 type: "POST",
-                url: "{{ route('carousel.edit_data') }}",
+                url: "{{ route('promosi.edit_data') }}",
                 data: formData,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -325,7 +326,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 dataType: "json",
-                url: "{{ route('carousel.hapus_data') }}",
+                url: "{{ route('promosi.hapus_data') }}",
                 success: function(response) {
                     if (response.success) {
                         $('#deleteModal').modal("hide");

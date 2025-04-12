@@ -22,9 +22,9 @@
                 </li>
 
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="#" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('promosi.index') }}" aria-expanded="false">
                         <i data-feather="camera" class="feather-icon"></i>
-                        <span class="hide-menu">Foto Promosi</span>
+                        <span class="hide-menu">Banner Promosi</span>
                     </a>
                 </li>
 
