@@ -10,6 +10,24 @@
                         <span class="hide-menu">Dashboard</span>
                     </a>
                 </li>
+
+                <li class="list-divider"></li>
+                <li class="nav-small-cap"><span class="hide-menu">Kelola Tampilan</span></li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('carousel.index') }}" aria-expanded="false">
+                        <i data-feather="image" class="feather-icon"></i>
+                        <span class="hide-menu">Carousel</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="#" aria-expanded="false">
+                        <i data-feather="camera" class="feather-icon"></i>
+                        <span class="hide-menu">Foto Promosi</span>
+                    </a>
+                </li>
+
                 <li class="list-divider"></li>
                 <li class="nav-small-cap"><span class="hide-menu">Master</span></li>
 

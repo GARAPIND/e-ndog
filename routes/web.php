@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Data\ProdukController;
 use App\Http\Controllers\Admin\Data\StokController;
 use App\Http\Controllers\Admin\Data\StokKeluarController;
 use App\Http\Controllers\Admin\Data\StokMasukController;
+use App\Http\Controllers\Admin\Tampilan\CarouselController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
@@ -71,6 +72,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/stok-keluar/detail/{id}', [StokKeluarController::class, 'getStokKeluarDetail']);
         Route::post('/stok-keluar/kurangi', [StokKeluarController::class, 'kurangiStok'])
             ->name('admin.stok-keluar.kurangi');
+
+        Route::group(['prefix' => 'carousel', 'as' => 'carousel.'], function () {
+            Route::get('/', [CarouselController::class, 'index'])->name('index');
+            Route::get('/get_data', [CarouselController::class, 'get_data'])->name('get_data');
+            Route::post('/get_data_id', [CarouselController::class, 'get_data_id'])->name('get_data_id');
+            Route::post('/tambah_data', [CarouselController::class, 'tambah_data'])->name('tambah_data');
+            Route::post('/edit_data', [CarouselController::class, 'edit_data'])->name('edit_data');
+            Route::post('/hapus_data', [CarouselController::class, 'hapus_data'])->name('hapus_data');
+        });
     });
 });
 
