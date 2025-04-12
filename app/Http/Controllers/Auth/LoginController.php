@@ -23,6 +23,14 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
+        $user = User::where('username', $credentials['username'])->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'username' => 'Username tidak ditemukan.',
+            ])->onlyInput('username');
+        }
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
@@ -35,13 +43,13 @@ class LoginController extends Controller
             } else {
                 Auth::logout();
                 return back()->withErrors([
-                    'username' => 'Unauthorized role.',
+                    'username' => 'Anda tidak mempunyai akses',
                 ])->onlyInput('username');
             }
         }
 
         return back()->withErrors([
-            'username' => 'The provided credentials do not match our records.',
+            'password' => 'Password yang dimasukkan salah.',
         ])->onlyInput('username');
     }
 
