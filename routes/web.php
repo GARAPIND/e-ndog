@@ -80,5 +80,7 @@ Route::middleware(['pelanggan'])->group(function () {
 
     Route::group(['prefix' => 'produk', 'as' => 'produk.'], function () {
         Route::get('/', [PengunjungProdukController::class, 'index'])->name('list');
+        Route::get('/get_data', [PengunjungProdukController::class, 'get_data'])->name('get_data');
+        Route::get('/detail/{id}', [PengunjungProdukController::class, 'detail_produk'])->name('detail');
     });
 });

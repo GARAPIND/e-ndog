@@ -11,6 +11,7 @@ class Produk extends Model
 
     protected $table = 'produk';
     protected $fillable = [
+        'id',
         'nama',
         'kode',
         'deskripsi',
@@ -30,6 +31,12 @@ class Produk extends Model
     {
         return $this->belongsTo(KategoriProduk::class, 'kategori_id');
     }
+
+    public function getEncryptedIdAttribute()
+    {
+        return encrypt($this->id);
+    }
+
 
     public function getHargaAktifAttribute()
     {
