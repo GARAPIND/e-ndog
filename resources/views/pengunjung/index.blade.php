@@ -3,64 +3,67 @@
 
 @section('content')
     <div class="container-fluid mb-3">
-        <div class="row px-xl-5">
-            <div class="col-lg-8">
-                <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0" data-ride="carousel">
-                    <ol class="carousel-indicators">
-                        @foreach ($carousel as $index => $item)
-                            <li data-target="#header-carousel" data-slide-to="{{ $index }}"
-                                class="{{ $index == 0 ? 'active' : '' }}"></li>
-                        @endforeach
-                    </ol>
+        @if (isset($carousel))
+            <div class="row px-xl-5">
+                <div class="col-lg-8">
+                    <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            @foreach ($carousel as $index => $item)
+                                <li data-target="#header-carousel" data-slide-to="{{ $index }}"
+                                    class="{{ $index == 0 ? 'active' : '' }}"></li>
+                            @endforeach
+                        </ol>
 
-                    <div class="carousel-inner">
-                        @foreach ($carousel as $index => $item)
-                            <div class="carousel-item position-relative {{ $index == 0 ? 'active' : '' }}"
-                                style="height: 430px;">
-                                <img class="position-absolute w-100 h-100"
-                                    src="{{ asset('storage/carousel/' . $item->foto) }}" style="object-fit: cover;">
-                                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                    <div class="p-3" style="max-width: 700px;">
-                                        <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                                            {{ $item->judul }}</h1>
-                                        <p class="mx-md-5 px-5 animate__animated animate__bounceIn">{{ $item->deskripsi }}
-                                        </p>
-                                        <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                                            href="{{ route('produk.list') }}">Belanja Sekarang</a>
+                        <div class="carousel-inner">
+                            @foreach ($carousel as $index => $item)
+                                <div class="carousel-item position-relative {{ $index == 0 ? 'active' : '' }}"
+                                    style="height: 430px;">
+                                    <img class="position-absolute w-100 h-100"
+                                        src="{{ asset('storage/carousel/' . $item->foto) }}" style="object-fit: cover;">
+                                    <div
+                                        class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                                        <div class="p-3" style="max-width: 700px;">
+                                            <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">
+                                                {{ $item->judul }}</h1>
+                                            <p class="mx-md-5 px-5 animate__animated animate__bounceIn">
+                                                {{ $item->deskripsi }}
+                                            </p>
+                                            <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
+                                                href="{{ route('produk.list') }}">Belanja Sekarang</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
+                            @endforeach
+                        </div>
 
+                    </div>
                 </div>
+        @endif
+        @if (isset($promosi))
+            <div class="col-lg-4">
+                @if (isset($promosi[0]))
+                    <div class="product-offer mb-30" style="height: 200px;">
+                        <img class="img-fluid" src="{{ asset('storage/promosi/' . $promosi[0]->foto) }}" alt="">
+                        <div class="offer-text">
+                            <h6 class="text-white text-uppercase">{{ $promosi[0]->judul }}</h6>
+                            <h3 class="text-white mb-3">{{ $promosi[0]->sub_judul }}</h3>
+                            <a href="{{ route('produk.list') }}" class="btn btn-primary">Shop Now</a>
+                        </div>
+                    </div>
+                @endif
+                @if (isset($promosi[1]))
+                    <div class="product-offer mb-30" style="height: 200px;">
+                        <img class="img-fluid" src="{{ asset('storage/promosi/' . $promosi[1]->foto) }}" alt="">
+                        <div class="offer-text">
+                            <h6 class="text-white text-uppercase">{{ $promosi[1]->judul }}</h6>
+                            <h3 class="text-white mb-3">{{ $promosi[1]->sub_judul }}</h3>
+                            <a href="{{ route('produk.list') }}" class="btn btn-primary">Shop Now</a>
+                        </div>
+                    </div>
+                @endif
             </div>
-            @if (isset($promosi))
-                <div class="col-lg-4">
-                    @if (isset($promosi[0]))
-                        <div class="product-offer mb-30" style="height: 200px;">
-                            <img class="img-fluid" src="{{ asset('storage/promosi/' . $promosi[0]->foto) }}" alt="">
-                            <div class="offer-text">
-                                <h6 class="text-white text-uppercase">{{ $promosi[0]->judul }}</h6>
-                                <h3 class="text-white mb-3">{{ $promosi[0]->sub_judul }}</h3>
-                                <a href="{{ route('produk.list') }}" class="btn btn-primary">Shop Now</a>
-                            </div>
-                        </div>
-                    @endif
-                    @if (isset($promosi[1]))
-                        <div class="product-offer mb-30" style="height: 200px;">
-                            <img class="img-fluid" src="{{ asset('storage/promosi/' . $promosi[1]->foto) }}"
-                                alt="">
-                            <div class="offer-text">
-                                <h6 class="text-white text-uppercase">{{ $promosi[1]->judul }}</h6>
-                                <h3 class="text-white mb-3">{{ $promosi[1]->sub_judul }}</h3>
-                                <a href="{{ route('produk.list') }}" class="btn btn-primary">Shop Now</a>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            @endif
-        </div>
+        @endif
+    </div>
     </div>
 
     <div class="container-fluid pt-5">
@@ -92,73 +95,79 @@
         </div>
     </div>
 
-    <div class="container-fluid pt-5">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Produk
-                Diskon</span></h2>
-        <div class="row px-xl-5 pb-3">
-            @foreach ($produk_diskon as $item)
-                <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                    <a class="text-decoration-none" href="">
-                        <div class="cat-item d-flex align-items-center mb-4">
-                            <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                                <img class="img-fluid" src="{{ asset('storage/foto-produk/' . $item['foto']) }}"
-                                    alt="">
-                            </div>
-                            <div class="flex-fill pl-3 d-flex flex-column justify-content-between h-100">
-                                <div>
-                                    <h6 class="mb-1 text-truncate">{{ $item['nama'] }}</h6>
-                                    <h6 class="font-weight-semi-bold mb-2">
-                                        <del class="text-muted mr-2">Rp {{ number_format($item['harga']) }}</del>
-                                        <span class="text-danger">Rp {{ number_format($item['harga_diskon']) }}</span>
-                                    </h6>
+    @if (isset($produk_diskon))
+        <div class="container-fluid pt-5">
+            <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Produk
+                    Diskon</span></h2>
+            <div class="row px-xl-5 pb-3">
+                @foreach ($produk_diskon as $item)
+                    <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                        <a class="text-decoration-none" href="">
+                            <div class="cat-item d-flex align-items-center mb-4">
+                                <div class="overflow-hidden" style="width: 100px; height: 100px;">
+                                    <img class="img-fluid" src="{{ asset('storage/foto-produk/' . $item['foto']) }}"
+                                        alt="">
                                 </div>
-                                <small class="text-body">Stok : {{ $item['stok'] }}</small>
-                            </div>
+                                <div class="flex-fill pl-3 d-flex flex-column justify-content-between h-100">
+                                    <div>
+                                        <h6 class="mb-1 text-truncate">{{ $item['nama'] }}</h6>
+                                        <h6 class="font-weight-semi-bold mb-2">
+                                            <del class="text-muted mr-2">Rp {{ number_format($item['harga']) }}</del>
+                                            <span class="text-danger">Rp {{ number_format($item['harga_diskon']) }}</span>
+                                        </h6>
+                                    </div>
+                                    <small class="text-body">Stok : {{ $item['stok'] }}</small>
+                                </div>
 
-                        </div>
-                    </a>
-                </div>
-            @endforeach
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
         </div>
-    </div>
+    @endif
 
-    <div class="container-fluid pt-5 pb-3">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Beberapa
-                produk dari E-Ndog</span></h2>
-        <div class="row px-xl-5">
-            @foreach ($produk as $item)
-                <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                    <div class="product-item bg-light mb-4 shadow-sm">
-                        <div class="product-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="{{ asset('storage/foto-produk/' . $item['foto']) }}"
-                                alt="{{ $item['nama'] }}" style="height: 200px; width: 150px; object-fit: contain;">
-                            <div class="product-action">
-                                <a class="btn btn-outline-dark btn-square"
-                                    href="{{ route('produk.detail', ['id' => $item['id']]) }}"><i
-                                        class="fa fa-search"></i></a>
+    @if (isset($produk))
+        <div class="container-fluid pt-5 pb-3">
+            <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Beberapa
+                    produk dari E-Ndog</span></h2>
+            <div class="row px-xl-5">
+                @foreach ($produk as $item)
+                    <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                        <div class="product-item bg-light mb-4 shadow-sm">
+                            <div class="product-img position-relative overflow-hidden">
+                                <img class="img-fluid w-100" src="{{ asset('storage/foto-produk/' . $item['foto']) }}"
+                                    alt="{{ $item['nama'] }}" style="height: 200px; width: 150px; object-fit: contain;">
+                                <div class="product-action">
+                                    <a class="btn btn-outline-dark btn-square"
+                                        href="{{ route('produk.detail', ['id' => $item['id']]) }}"><i
+                                            class="fa fa-search"></i></a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="text-center py-4">
-                            <a class="h6 text-decoration-none text-truncate" href="">{{ $item['nama'] }}</a>
-                            <div class="d-flex align-items-center justify-content-center mt-2">
-                                @if (isset($item['harga_diskon']) && $item['harga_diskon'] > 0)
-                                    <h6 class="font-weight-semi-bold mb-4">
-                                        <del class="text-muted mr-2">Rp. {{ number_format($item['harga']) }}</del>
-                                        Rp. {{ number_format($item['harga_diskon']) }}
-                                    </h6>
-                                @else
-                                    <h6 class="font-weight-semi-bold mb-4">Rp. {{ number_format($item['harga']) }}</h6>
-                                @endif
-                            </div>
-                            <div class="mt-2 {{ $item['stok'] != 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
-                                {{ $item['stok'] != 0 ? 'Stok tersedia (' . $item['stok'] . ')' : 'Stok habis' }}
+                            <div class="text-center py-4">
+                                <a class="h6 text-decoration-none text-truncate" href="">{{ $item['nama'] }}</a>
+                                <div class="d-flex align-items-center justify-content-center mt-2">
+                                    @if (isset($item['harga_diskon']) && $item['harga_diskon'] > 0)
+                                        <h6 class="font-weight-semi-bold mb-4">
+                                            <del class="text-muted mr-2">Rp. {{ number_format($item['harga']) }}</del>
+                                            Rp. {{ number_format($item['harga_diskon']) }}
+                                        </h6>
+                                    @else
+                                        <h6 class="font-weight-semi-bold mb-4">Rp. {{ number_format($item['harga']) }}
+                                        </h6>
+                                    @endif
+                                </div>
+                                <div
+                                    class="mt-2 {{ $item['stok'] != 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
+                                    {{ $item['stok'] != 0 ? 'Stok tersedia (' . $item['stok'] . ')' : 'Stok habis' }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
-    </div>
+    @endif
 
     @if (isset($promosi))
         <div class="container-fluid pt-5 pb-3">
