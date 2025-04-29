@@ -21,4 +21,6 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ asset('pengunjung') }}/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 </head>

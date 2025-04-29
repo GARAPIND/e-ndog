@@ -30,5 +30,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
+    'rajaongkir' => [
+        'api_key' => env('RAJAONGKIR_API_KEY', '2472843d6a402ff2319489c07cc5cf73'),
+        'base_url' => env('RAJAONGKIR_BASE_URL', 'https://api.rajaongkir.com/starter'),
+        'origin_city_id' => 174, // Kediri city ID
+    ],
 ];

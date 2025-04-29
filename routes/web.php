@@ -9,11 +9,13 @@ use App\Http\Controllers\Admin\Data\StokKeluarController;
 use App\Http\Controllers\Admin\Data\StokMasukController;
 use App\Http\Controllers\Admin\Tampilan\CarouselController;
 use App\Http\Controllers\Admin\Tampilan\PromosiController;
+use App\Http\Controllers\Api\RajaOngkirController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Pengunjung\BelanjaController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
 use App\Http\Controllers\Pengunjung\ProdukController as PengunjungProdukController;
+use App\Http\Controllers\Pengunjung\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
@@ -108,4 +110,28 @@ Route::middleware(['pelanggan'])->group(function () {
     Route::group(['prefix' => 'belanja', 'as' => 'belanja.'], function () {
         Route::get('/', [BelanjaController::class, 'index'])->name('list');
     });
+    Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
+        Route::get('/', [ProfileController::class, 'profile'])->name('index');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+        Route::post('/update', [ProfileController::class, 'update'])->name('update');
+        Route::post('/update-password', [ProfileController::class, 'updatePassword'])->name('update-password');
+
+        Route::get('/addresses', [ProfileController::class, 'addresses'])->name('addresses');
+        Route::get('/addresses/add', [ProfileController::class, 'addAddress'])->name('addresses.add');
+        Route::post('/addresses/store', [ProfileController::class, 'storeAddress'])->name('addresses.store');
+        Route::get('/addresses/edit/{id}', [ProfileController::class, 'editAddress'])->name('addresses.edit');
+        Route::post('/addresses/update/{id}', [ProfileController::class, 'updateAddress'])->name('addresses.update');
+        Route::post('/addresses/set-primary/{id}', [ProfileController::class, 'setPrimaryAddress'])->name('addresses.set-primary');
+        Route::delete('/addresses/delete/{id}', [ProfileController::class, 'destroyAddress'])->name('addresses.delete');
+        Route::get('/get-addresses', [ProfileController::class, 'getAddresses'])->name('get-addresses');
+    });
 });
+Route::prefix('api/rajaongkir')->group(function () {
+    Route::get('/provinces', [RajaOngkirController::class, 'getProvinces'])->name('rajaongkir.provinces');
+    Route::get('/cities', [RajaOngkirController::class, 'getCities'])->name('rajaongkir.cities');
+    Route::get('/districts', [RajaOngkirController::class, 'getDistricts'])->name('rajaongkir.districts');
+    Route::post('/cost', [RajaOngkirController::class, 'getCost'])->name('rajaongkir.cost');
+    Route::get('/origin', [RajaOngkirController::class, 'getOriginCity'])->name('rajaongkir.origin');
+});
+// Raja Ongkir API Routes
+Route::middleware(['auth'])->group(function () {});
