@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Data\DashboardController;
 use App\Http\Controllers\Admin\Data\KategoriProdukController;
 use App\Http\Controllers\Admin\Data\KurirController;
 use App\Http\Controllers\Admin\Data\ProdukController;
+use App\Http\Controllers\Admin\Data\ProfileTokoController;
 use App\Http\Controllers\Admin\Data\StokController;
 use App\Http\Controllers\Admin\Data\StokKeluarController;
 use App\Http\Controllers\Admin\Data\StokMasukController;
@@ -53,7 +54,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::put('/{id}', [KategoriProdukController::class, 'update'])->name('update');
             Route::delete('/{id}', [KategoriProdukController::class, 'destroy'])->name('destroy');
         });
-
+        // Profile Toko
+        Route::prefix('profile-toko')->name('admin.profile-toko.')->group(function () {
+            Route::get('profile-toko', [ProfileTokoController::class, 'index'])->name('index');
+            Route::post('profile-toko', [ProfileTokoController::class, 'update'])->name('update');
+        });
+        
         // Produk
         Route::prefix('produk')->name('admin.produk.')->group(function () {
             Route::get('/', [ProdukController::class, 'index'])->name('index');
