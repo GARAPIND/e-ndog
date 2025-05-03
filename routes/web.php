@@ -18,6 +18,7 @@ use App\Http\Controllers\Pengunjung\BelanjaController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
 use App\Http\Controllers\Pengunjung\ProdukController as PengunjungProdukController;
 use App\Http\Controllers\Pengunjung\ProfileController;
+use App\Http\Controllers\Pengunjung\TentangKamiController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
@@ -59,7 +60,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('profile-toko', [ProfileTokoController::class, 'index'])->name('index');
             Route::post('profile-toko', [ProfileTokoController::class, 'update'])->name('update');
         });
-        
+
         // Produk
         Route::prefix('produk')->name('admin.produk.')->group(function () {
             Route::get('/', [ProdukController::class, 'index'])->name('index');
@@ -138,6 +139,8 @@ Route::middleware(['pelanggan'])->group(function () {
     Route::group(['prefix' => 'belanja', 'as' => 'belanja.'], function () {
         Route::get('/', [BelanjaController::class, 'index'])->name('list');
     });
+    Route::get('/tentang-kami', [TentangKamiController::class, 'index'])->name('tentang-kami');
+
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
         Route::get('/', [ProfileController::class, 'profile'])->name('index');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');

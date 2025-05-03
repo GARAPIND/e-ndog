@@ -62,7 +62,7 @@
             </div>
             <div class="col-lg-4 col-6 text-right">
                 <p class="m-0">Kontak Kami</p>
-                <h5 class="m-0">0894-7584-38391</h5>
+                <h5 class="m-0">{{ $profileToko->whatsapp }}</h5>
             </div>
         </div>
     </div>
@@ -115,7 +115,7 @@
 
                             <a href="{{ route('produk.list') }}"
                                 class="nav-item nav-link {{ request()->routeIs('produk.list') ? 'active' : '' }}">Produk</a>
-                            <a href="" class="nav-item nav-link">Tentang Kami</a>
+                            <a href="{{ route('tentang-kami') }}" class="nav-item nav-link">Tentang Kami</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                             <a href="#" class="btn px-0 ml-3 text-light" onclick="cekLogin()">

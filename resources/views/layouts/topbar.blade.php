@@ -188,8 +188,8 @@
                         </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('logout') }}">
-                            <i data-feather="shopping-bag" class="svg-icon mr-2 ml-1"></i>
-                            Logout {{ $shopName }}
+                            <i data-feather="log-out" class="svg-icon mr-2 ml-1"></i>
+                            Logout
                         </a>
                         <div class="dropdown-divider"></div>
                     </div>
