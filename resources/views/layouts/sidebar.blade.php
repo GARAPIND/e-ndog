@@ -37,14 +37,20 @@
                         <span class="hide-menu">Pelanggan</span>
                     </a>
                 </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('admin.data.kategori.index') }}" aria-expanded="false">
+                {{-- <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('admin.kategori.index') }}" aria-expanded="false">
                         <i data-feather="tag" class="feather-icon"></i>
                         <span class="hide-menu">Kategori Produk</span>
                     </a>
+                </li> --}}
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('admin.kurir.index') }}" aria-expanded="false">
+                        <i data-feather="user" class="feather-icon"></i>
+                        <span class="hide-menu">Kurir</span>
+                    </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('admin.data.produk.index') }}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('admin.produk.index') }}" aria-expanded="false">
                         <i data-feather="package" class="feather-icon"></i>
                         <span class="hide-menu">Produk</span>
                     </a>
@@ -54,7 +60,7 @@
                 <li class="nav-small-cap"><span class="hide-menu">Stok</span></li>
 
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('admin.data.stok.index') }}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('admin.stok.index') }}" aria-expanded="false">
                         <i data-feather="layers" class="feather-icon"></i>
                         <span class="hide-menu">Manajemen Stok</span>
                     </a>

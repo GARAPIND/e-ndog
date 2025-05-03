@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Data\CustomerController;
 use App\Http\Controllers\Admin\Data\DashboardController;
 use App\Http\Controllers\Admin\Data\KategoriProdukController;
+use App\Http\Controllers\Admin\Data\KurirController;
 use App\Http\Controllers\Admin\Data\ProdukController;
 use App\Http\Controllers\Admin\Data\StokController;
 use App\Http\Controllers\Admin\Data\StokKeluarController;
@@ -43,39 +44,60 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
     });
     Route::prefix('admin/data')->group(function () {
-        Route::get('/kategori', [KategoriProdukController::class, 'index'])->name('admin.data.kategori.index');
-        Route::get('/kategori/data', [KategoriProdukController::class, 'getData'])->name('admin.data.kategori.data');
-        Route::get('/kategori/{id}', [KategoriProdukController::class, 'getKategori']);
-        Route::post('/kategori', [KategoriProdukController::class, 'store'])->name('admin.data.kategori.store');
-        Route::put('/kategori/{id}', [KategoriProdukController::class, 'update']);
-        Route::delete('/kategori/{id}', [KategoriProdukController::class, 'destroy']);
 
-        Route::get('/produk', [ProdukController::class, 'index'])->name('admin.data.produk.index');
-        Route::get('/produk/data', [ProdukController::class, 'getData'])->name('admin.data.produk.data');
-        Route::get('/produk/list', [ProdukController::class, 'getDataList'])->name('admin.data.produk.list');
-        Route::get('/produk/{id}', [ProdukController::class, 'getProduk']);
-        Route::post('/produk', [ProdukController::class, 'store'])->name('admin.data.produk.store');
-        Route::put('/produk/{id}', [ProdukController::class, 'update']);
-        Route::delete('/produk/{id}', [ProdukController::class, 'destroy']);
+        Route::prefix('kategori')->name('admin.kategori.')->group(function () {
+            Route::get('/', [KategoriProdukController::class, 'index'])->name('index');
+            Route::get('/data', [KategoriProdukController::class, 'getData'])->name('data');
+            Route::get('/{id}', [KategoriProdukController::class, 'getKategori']);
+            Route::post('/', [KategoriProdukController::class, 'store'])->name('store');
+            Route::put('/{id}', [KategoriProdukController::class, 'update'])->name('update');
+            Route::delete('/{id}', [KategoriProdukController::class, 'destroy'])->name('destroy');
+        });
 
-        Route::get('/stok', [StokController::class, 'index'])->name('admin.data.stok.index');
-        Route::get('/stok/data', [StokController::class, 'getStokData'])->name('admin.data.stok.data');
-        Route::get('/stok/history/{id}', [StokController::class, 'getStokHistory']);
-        Route::post('/stok/update', [StokController::class, 'updateStok'])->name('admin.data.stok.update');
-        Route::get('/stok-masuk', [StokMasukController::class, 'index'])
-            ->name('admin.stok-masuk.index');
-        Route::get('/stok-masuk/data', [StokMasukController::class, 'getStokMasukData'])
-            ->name('admin.stok-masuk.data');
-        Route::get('/stok-masuk/detail/{id}', [StokMasukController::class, 'getStokMasukDetail']);
-        Route::post('/stok-masuk/tambah', [StokMasukController::class, 'tambahStok'])
-            ->name('admin.stok-masuk.tambah');
-        Route::get('/stok-keluar', [StokKeluarController::class, 'index'])
-            ->name('admin.stok-keluar.index');
-        Route::get('/stok-keluar/data', [StokKeluarController::class, 'getStokKeluarData'])
-            ->name('admin.stok-keluar.data');
-        Route::get('/stok-keluar/detail/{id}', [StokKeluarController::class, 'getStokKeluarDetail']);
-        Route::post('/stok-keluar/kurangi', [StokKeluarController::class, 'kurangiStok'])
-            ->name('admin.stok-keluar.kurangi');
+        // Produk
+        Route::prefix('produk')->name('admin.produk.')->group(function () {
+            Route::get('/', [ProdukController::class, 'index'])->name('index');
+            Route::get('/data', [ProdukController::class, 'getData'])->name('data');
+            Route::get('/list', [ProdukController::class, 'getDataList'])->name('list');
+            Route::get('/{id}', [ProdukController::class, 'getProduk']);
+            Route::post('/', [ProdukController::class, 'store'])->name('store');
+            Route::put('/{id}', [ProdukController::class, 'update'])->name('update');
+            Route::delete('/{id}', [ProdukController::class, 'destroy'])->name('destroy');
+        });
+
+        // Stok
+        Route::prefix('stok')->name('admin.stok.')->group(function () {
+            Route::get('/', [StokController::class, 'index'])->name('index');
+            Route::get('/data', [StokController::class, 'getStokData'])->name('data');
+            Route::get('/history/{id}', [StokController::class, 'getStokHistory'])->name('history');
+            Route::post('/update', [StokController::class, 'updateStok'])->name('update');
+        });
+
+        // Stok Masuk
+        Route::prefix('stok-masuk')->name('admin.stok-masuk.')->group(function () {
+            Route::get('/', [StokMasukController::class, 'index'])->name('index');
+            Route::get('/data', [StokMasukController::class, 'getStokMasukData'])->name('data');
+            Route::get('/detail/{id}', [StokMasukController::class, 'getStokMasukDetail'])->name('detail');
+            Route::post('/tambah', [StokMasukController::class, 'tambahStok'])->name('tambah');
+        });
+
+        // Stok Keluar
+        Route::prefix('stok-keluar')->name('admin.stok-keluar.')->group(function () {
+            Route::get('/', [StokKeluarController::class, 'index'])->name('index');
+            Route::get('/data', [StokKeluarController::class, 'getStokKeluarData'])->name('data');
+            Route::get('/detail/{id}', [StokKeluarController::class, 'getStokKeluarDetail'])->name('detail');
+            Route::post('/kurangi', [StokKeluarController::class, 'kurangiStok'])->name('kurangi');
+        });
+
+        // Kurir
+        Route::prefix('kurir')->name('admin.kurir.')->group(function () {
+            Route::get('/', [KurirController::class, 'index'])->name('index');
+            Route::get('/data', [KurirController::class, 'getData'])->name('data');
+            Route::get('/{id}', [KurirController::class, 'getKurir']);
+            Route::post('/', [KurirController::class, 'store'])->name('store');
+            Route::put('/{id}', [KurirController::class, 'update'])->name('update');
+            Route::delete('/{id}', [KurirController::class, 'destroy'])->name('destroy');
+        });
 
         Route::group(['prefix' => 'carousel', 'as' => 'carousel.'], function () {
             Route::get('/', [CarouselController::class, 'index'])->name('index');

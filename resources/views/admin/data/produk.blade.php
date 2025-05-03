@@ -24,7 +24,7 @@
                                         <th>Foto</th>
                                         <th>Kode</th>
                                         <th>Nama</th>
-                                        <th>Kategori</th>
+                                        {{-- <th>Kategori</th> --}}
                                         <th>Harga</th>
                                         <th>Stok</th>
                                         <th>Status</th>
@@ -64,7 +64,7 @@
                                     <input type="text" class="form-control" id="kode" name="kode" required>
                                     <div class="invalid-feedback" id="kode-error"></div>
                                 </div>
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <label for="kategori_id">Kategori</label>
                                     <select class="form-control" id="kategori_id" name="kategori_id">
                                         <option value="">Pilih Kategori</option>
@@ -73,7 +73,7 @@
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback" id="kategori_id-error"></div>
-                                </div>
+                                </div> --}}
                                 <div class="form-group">
                                     <label for="foto">Foto Produk</label>
                                     <input type="file" class="form-control-file" id="foto" name="foto">
@@ -169,7 +169,7 @@
                                     <input type="text" class="form-control" id="edit_kode" name="kode" required>
                                     <div class="invalid-feedback" id="edit-kode-error"></div>
                                 </div>
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <label for="edit_kategori_id">Kategori</label>
                                     <select class="form-control" id="edit_kategori_id" name="kategori_id">
                                         <option value="">Pilih Kategori</option>
@@ -178,7 +178,7 @@
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback" id="edit-kategori_id-error"></div>
-                                </div>
+                                </div> --}}
                                 <div class="form-group">
                                     <label for="edit_foto">Foto Produk</label>
                                     <div class="mb-2" id="current_foto_container">
@@ -275,7 +275,7 @@
                         <div class="col-md-8">
                             <h4 id="view_nama"></h4>
                             <p><strong>Kode:</strong> <span id="view_kode"></span></p>
-                            <p><strong>Kategori:</strong> <span id="view_kategori"></span></p>
+                            {{-- <p><strong>Kategori:</strong> <span id="view_kategori"></span></p> --}}
                             <p>
                                 <strong>Harga:</strong> <span id="view_harga"></span><br>
                                 <span id="view_diskon_container" style="display: none;">
@@ -291,15 +291,6 @@
                         <div class="col-12">
                             <h5>Deskripsi Produk</h5>
                             <p id="view_deskripsi"></p>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Tanggal Dibuat:</strong> <span id="view_created_at"></span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Terakhir Diperbarui:</strong> <span id="view_updated_at"></span></p>
                         </div>
                     </div>
                 </div>
@@ -341,7 +332,7 @@
             var table = $('#produk-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('admin.data.produk.data') }}",
+                ajax: "{{ route('admin.produk.data') }}",
                 columns: [{
                         data: 'foto',
                         name: 'foto',
@@ -356,10 +347,10 @@
                         data: 'nama',
                         name: 'nama'
                     },
-                    {
-                        data: 'kategori',
-                        name: 'kategori_id'
-                    },
+                    // {
+                    //     data: 'kategori',
+                    //     name: 'kategori_id'
+                    // },
                     {
                         data: 'harga_format',
                         name: 'harga',
@@ -401,7 +392,7 @@
                 var formData = new FormData(this);
 
                 $.ajax({
-                    url: "{{ route('admin.data.produk.store') }}",
+                    url: "{{ route('admin.produk.store') }}",
                     type: "POST",
                     data: formData,
                     contentType: false,
@@ -439,8 +430,8 @@
                     success: function(response) {
                         $('#view_nama').text(response.nama);
                         $('#view_kode').text(response.kode);
-                        $('#view_kategori').text(response.kategori ? response.kategori.nama :
-                            'Tidak Terkategori');
+                        // $('#view_kategori').text(response.kategori ? response.kategori.nama :
+                        //     'Tidak Terkategori');
                         $('#view_harga').text('Rp ' + numberFormat(response.harga));
 
                         if (response.harga_diskon) {
@@ -488,7 +479,7 @@
                         $('#edit_id').val(response.id);
                         $('#edit_nama').val(response.nama);
                         $('#edit_kode').val(response.kode);
-                        $('#edit_kategori_id').val(response.kategori_id);
+                        // $('#edit_kategori_id').val(response.kategori_id);
                         $('#edit_harga').val(response.harga);
                         $('#edit_harga_diskon').val(response.harga_diskon);
                         $('#edit_stok').val(response.stok);

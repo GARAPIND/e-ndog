@@ -16,14 +16,16 @@ class ProdukController extends Controller
 {
     public function index()
     {
-        $kategoriList = KategoriProduk::where('aktif', true)->get();
-        return view('admin.data.produk', compact('kategoriList'));
+        // $kategoriList = KategoriProduk::where('aktif', true)->get();
+        // return view('admin.data.produk', compact('kategoriList'));
+        return view('admin.data.produk');
     }
 
     public function getData(Request $request)
     {
-        $produk = Produk::with('kategori')
-            ->select([
+        $produk = Produk::
+            // with('kategori')->
+            select([
                 'produk.id',
                 'produk.nama',
                 'produk.kode',
@@ -34,7 +36,7 @@ class ProdukController extends Controller
                 'produk.satuan',
                 'produk.foto',
                 'produk.aktif',
-                'produk.kategori_id',
+                // 'produk.kategori_id',
                 'produk.created_at'
             ]);
 
@@ -45,9 +47,9 @@ class ProdukController extends Controller
                 }
                 return '<span class="badge badge-secondary">Tidak Ada Foto</span>';
             })
-            ->addColumn('kategori', function ($row) {
-                return $row->kategori ? $row->kategori->nama : 'Tidak Terkategori';
-            })
+            // ->addColumn('kategori', function ($row) {
+            //     return $row->kategori ? $row->kategori->nama : 'Tidak Terkategori';
+            // })
             ->addColumn('harga_format', function ($row) {
                 $harga = 'Rp ' . number_format($row->harga, 0, ',', '.');
                 if ($row->harga_diskon) {
@@ -80,7 +82,7 @@ class ProdukController extends Controller
 
     public function getProduk($id)
     {
-        $produk = Produk::with('kategori')->findOrFail($id);
+        $produk = Produk::findOrFail($id);
         return response()->json($produk);
     }
 
@@ -95,7 +97,7 @@ class ProdukController extends Controller
             'stok' => 'required|integer|min:0',
             'berat' => 'required|numeric|min:0',
             'satuan' => 'required|string|max:20',
-            'kategori_id' => 'nullable|exists:kategori_produk,id',
+            // 'kategori_id' => 'nullable|exists:kategori_produk,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -140,7 +142,7 @@ class ProdukController extends Controller
             'stok' => 'required|integer|min:0',
             'berat' => 'required|numeric|min:0',
             'satuan' => 'required|string|max:20',
-            'kategori_id' => 'nullable|exists:kategori_produk,id',
+            // 'kategori_id' => 'nullable|exists:kategori_produk,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
