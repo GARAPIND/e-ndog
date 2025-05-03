@@ -93,6 +93,7 @@ class ProfileController extends Controller
 
     public function storeAddress(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'alamat' => 'required|string',
             'keterangan' => 'required|string|max:255',

@@ -21,6 +21,9 @@ class Address extends Model
         'is_primary',
         'latitude',
         'longitude',
+        'province_id',
+        'city_id',
+
     ];
 
     public function customer()

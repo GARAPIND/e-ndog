@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class ProfileToko extends Model
 {
     use HasFactory;
+
     protected $table = 'profile_toko';
+
     protected $fillable = [
         'nama_toko',
         'logo',
@@ -20,6 +22,8 @@ class ProfileToko extends Model
         'facebook',
         'instagram',
         'twitter',
-        'whatsapp'
+        'whatsapp',
+        'latitude',
+        'longitude'
     ];
 }

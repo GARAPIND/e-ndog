@@ -2,7 +2,14 @@
 @section('title', 'Profil Toko')
 @section('page-title', 'Profil Toko')
 @section('page-subtitle', 'Master/Profil-Toko')
+
 @section('content')
+    <style>
+        #map {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -202,6 +209,70 @@
                                 </div>
                             </div>
 
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Lokasi Toko</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info mb-2">
+                                        <i class="fas fa-info-circle mr-1"></i> Klik pada peta untuk menentukan lokasi toko
+                                        atau geser marker untuk menyesuaikan posisi.
+                                    </div>
+
+                                    <div id="map" class="mb-3"></div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="latitude">Latitude</label>
+                                                <input type="text"
+                                                    class="form-control @error('latitude') is-invalid @enderror"
+                                                    id="latitude" name="latitude"
+                                                    value="{{ old('latitude', $profile->latitude ?? '-7.8166') }}"
+                                                    readonly>
+                                                @error('latitude')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="longitude">Longitude</label>
+                                                <input type="text"
+                                                    class="form-control @error('longitude') is-invalid @enderror"
+                                                    id="longitude" name="longitude"
+                                                    value="{{ old('longitude', $profile->longitude ?? '112.0114') }}"
+                                                    readonly>
+                                                @error('longitude')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mb-0">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="searchAddress"
+                                                placeholder="Cari alamat atau tempat...">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button"
+                                                    id="searchButton">
+                                                    <i class="fas fa-search"></i> Cari
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Masukkan alamat atau nama tempat untuk mencari lokasi pada peta
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="text-right mt-4">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save mr-1"></i> Simpan Perubahan
@@ -216,15 +287,109 @@
 @endsection
 
 @section('script')
+    <!-- Leaflet JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script>
         $(document).ready(function() {
             $('.custom-file-input').on('change', function() {
                 let fileName = $(this).val().split('\\').pop();
                 $(this).next('.custom-file-label').addClass("selected").html(fileName);
             });
+
             if (typeof CKEDITOR !== 'undefined') {
                 CKEDITOR.replace('deskripsi');
             }
+
+            const initialLat = parseFloat($('#latitude').val()) || -7.8166;
+            const initialLng = parseFloat($('#longitude').val()) || 112.0114;
+
+
+            const map = L.map('map', {
+                zoomControl: true,
+                scrollWheelZoom: false
+            }).setView([initialLat, initialLng], 15);
+
+            // Google Maps Layer
+            const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '&copy; Google Maps'
+            }).addTo(map);
+
+            // Google Satellite Layer
+            const googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '&copy; Google Maps Satellite'
+            });
+
+            // Base Maps for Layer Control
+            const baseMaps = {
+                "Google Streets": googleStreets,
+                "Google Satellite": googleSat
+            };
+
+            // Add layer control
+            L.control.layers(baseMaps, null, {
+                collapsed: false
+            }).addTo(map);
+
+            // Create marker with custom icon
+            const marker = L.marker([initialLat, initialLng], {
+                draggable: true
+            }).addTo(map);
+
+            // Update coordinates when marker is dragged
+            marker.on('dragend', function(event) {
+                const position = marker.getLatLng();
+                $('#latitude').val(position.lat.toFixed(6));
+                $('#longitude').val(position.lng.toFixed(6));
+            });
+
+            // Update marker position when map is clicked
+            map.on('click', function(e) {
+                marker.setLatLng(e.latlng);
+                $('#latitude').val(e.latlng.lat.toFixed(6));
+                $('#longitude').val(e.latlng.lng.toFixed(6));
+            });
+
+            // Search functionality using Nominatim
+            $('#searchButton').on('click', function() {
+                const query = $('#searchAddress').val();
+                if (query) {
+                    $.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
+                        function(data) {
+                            if (data && data.length > 0) {
+                                const location = data[0];
+                                const latlng = L.latLng(parseFloat(location.lat), parseFloat(location
+                                    .lon));
+
+                                marker.setLatLng(latlng);
+                                map.setView(latlng, 16);
+
+                                $('#latitude').val(parseFloat(location.lat).toFixed(6));
+                                $('#longitude').val(parseFloat(location.lon).toFixed(6));
+                            } else {
+                                alert('Lokasi tidak ditemukan. Silakan coba dengan kata kunci lain.');
+                            }
+                        });
+                }
+            });
+
+            // Search on Enter key press
+            $('#searchAddress').on('keypress', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $('#searchButton').click();
+                }
+            });
+
+            // Fix map display issues by triggering resize
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
         });
     </script>
 @endsection

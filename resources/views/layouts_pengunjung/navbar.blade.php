@@ -11,7 +11,7 @@
                             <button type="button" class="btn btn-sm btn-light dropdown-toggle"
                                 data-toggle="dropdown">{{ auth()->user()->name }}</button>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a href="" class="dropdown-item" type="button">Profile</a>
+                                <a href="{{ route('profile.index') }}" class="dropdown-item" type="button">Profile</a>
                                 <a href="{{ route('logout') }}" class="dropdown-item" type="button">Log out</a>
                             </div>
                         </div>

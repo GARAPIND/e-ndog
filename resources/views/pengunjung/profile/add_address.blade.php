@@ -103,7 +103,6 @@
                                 </div>
                             </div>
 
-                            <!-- Store province, city names in hidden fields -->
                             <input type="hidden" name="provinsi" id="provinsi">
                             <input type="hidden" name="kota" id="kota">
                             <input type="hidden" name="district_id" id="district_id" value="0">
@@ -162,30 +161,25 @@
 @endsection
 
 @section('script')
-    <!-- Include Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Initialize map
         let map;
         let marker;
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Set initial center coordinates (Indonesia)
             const initialLat = -0.789275;
             const initialLng = 113.921327;
             const initialZoom = 5;
 
-            // Initialize map
             map = L.map('map').setView([initialLat, initialLng], initialZoom);
 
-            // Add OpenStreetMap tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                maxZoom: 19
+            const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '&copy; Google Maps'
             }).addTo(map);
 
-            // Restore marker if latitude and longitude values already exist
             const savedLat = document.getElementById('latitude').value;
             const savedLng = document.getElementById('longitude').value;
 
@@ -195,27 +189,21 @@
                 }).addTo(map);
                 map.setView([savedLat, savedLng], 15);
 
-                // Update coordinates when marker is dragged
                 marker.on('dragend', updateCoordinates);
             } else {
-                // Try to get user's current location when page loads
                 getUserLocation();
             }
 
-            // Handle map click to add/move marker
             map.on('click', function(e) {
                 placeMarker(e.latlng);
             });
 
-            // Get current location button
             document.getElementById('getCurrentLocation').addEventListener('click', function() {
                 getUserLocation();
             });
 
-            // Load provinces from Raja Ongkir API
             loadProvinces();
 
-            // Event listeners for dropdowns
             document.getElementById('province_id').addEventListener('change', function() {
                 const provinceId = this.value;
                 const provinceName = this.options[this.selectedIndex].text;
@@ -238,10 +226,7 @@
                         const lng = position.coords.longitude;
                         const latlng = L.latLng(lat, lng);
 
-                        // Update map view to user's location
                         map.setView(latlng, 15);
-
-                        // Place marker at user's location
                         placeMarker(latlng);
                     },
                     function(error) {
@@ -255,21 +240,17 @@
         }
 
         function placeMarker(latlng) {
-            // Remove existing marker if any
             if (marker) {
                 map.removeLayer(marker);
             }
 
-            // Add new marker at clicked position
             marker = L.marker(latlng, {
                 draggable: true
             }).addTo(map);
 
-            // Update form fields with coordinates
             document.getElementById('latitude').value = latlng.lat.toFixed(6);
             document.getElementById('longitude').value = latlng.lng.toFixed(6);
 
-            // Update coordinates when marker is dragged
             marker.on('dragend', updateCoordinates);
         }
 
@@ -279,7 +260,6 @@
             document.getElementById('longitude').value = position.lng.toFixed(6);
         }
 
-        // Raja Ongkir API integration
         function loadProvinces() {
             fetch('{{ route('rajaongkir.provinces') }}')
                 .then(response => response.json())

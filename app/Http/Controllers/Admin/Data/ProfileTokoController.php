@@ -16,6 +16,8 @@ class ProfileTokoController extends Controller
         if (!$profile) {
             $profile = ProfileToko::create([
                 'nama_toko' => 'Nama Toko',
+                'latitude' => '-7.8166',
+                'longitude' => '112.0114',
             ]);
         }
 
@@ -35,7 +37,7 @@ class ProfileTokoController extends Controller
             'facebook' => 'nullable|string|max:255',
             'instagram' => 'nullable|string|max:255',
             'twitter' => 'nullable|string|max:255',
-            'whatsapp' => 'nullable|string|max:255'
+            'whatsapp' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -60,6 +62,9 @@ class ProfileTokoController extends Controller
             $profile->instagram = $request->instagram;
             $profile->twitter = $request->twitter;
             $profile->whatsapp = $request->whatsapp;
+            $profile->latitude = $request->latitude;
+            $profile->longitude = $request->longitude;
+
             if ($request->hasFile('logo')) {
                 if ($profile->logo) {
                     Storage::delete('public/' . $profile->logo);
