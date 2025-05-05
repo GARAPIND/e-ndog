@@ -40,9 +40,17 @@
                             <div class="col-sm-4">
                                 <div class="form-group">
                                     <label for="alamat" class="col-form-label">Dikirim ke alamat</label>
-                                    <select class="form-control" id="alamat" name="alamat">
-                                        <option value="">Pilih alamat</option>
-                                    </select>
+                                    <div class="input-group">
+                                        <input type="hidden" name="alamat_id_aktif" id="alamat_id_aktif">
+                                        <input class="form-control" type="text" name="alamat" id="alamat"
+                                            placeholder="Masukkan alamat" readonly>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button" data-toggle="modal"
+                                                data-target="#modalTambahAlamat" onclick="get_data_alamat()">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -53,16 +61,15 @@
                                 <div class="form-group">
                                     <input type="hidden" name="id_produk" id="id_produk">
                                     <label for="produk_id" class="col-form-label">Nama Produk</label>
-                                    <select class="form-control" id="produk_id" name="produk_id">
+                                    <select class="form-control" id="produk_id" name="produk_id"
+                                        onchange="change_produk(this)">
                                         <option value="">Pilih produk</option>
                                         @foreach ($produk as $item)
                                             <option value="{{ $item->id }}" data-id-produk="{{ $item->id }}"
-                                                data-kode=""="{{ $item->kode }}" data-nama="{{ $item->nama }}"
-                                                data-stok="{{ intval($item->stok) }}"
-                                                data-harga="{{ rupiahFormat($item->harga) }}"
-                                                data-harga-diskon="{{ rupiahFormat($item->harga_diskon) }}"
-                                                data-berat="{{ intval($item->berat) }}"
-                                                data-satuan="{{ intval($item->satuan) }}">
+                                                data-kode="{{ $item->kode }}" data-nama="{{ $item->nama }}"
+                                                data-stok="{{ intval($item->stok) }}" data-harga="{{ $item->harga }}"
+                                                data-harga-diskon="{{ $item->harga_diskon }}"
+                                                data-berat="{{ intval($item->berat) }}" data-satuan="{{ $item->satuan }}">
                                                 {{ $item->kode }} || {{ $item->nama }}
                                             </option>
                                         @endforeach
@@ -80,16 +87,16 @@
                                 </div>
                                 <div class="form-group mt-0">
                                     <label for="harga" class="col-form-label">Harga</label>
-                                    <input class="form-control" type="text" name="harga" id="harga" value="-"
-                                        disabled>
+                                    <input class="form-control" type="text" name="harga" id="harga"
+                                        value="-" disabled>
                                 </div>
                                 <div class="form-group mt-0">
                                     <label for="harga_diskon" class="col-form-label">Harga Diskon</label>
                                     <input class="form-control" type="text" name="harga_diskon" id="harga_diskon"
                                         value="-" disabled>
                                 </div>
-                                <button class="btn btn-primary" id="btn_tambah"><i class="fas fa-plus-circle"></i>
-                                    Tambahkan</button>
+                                <button class="btn btn-primary" id="btn_tambah" onclick="tambah_barang()"><i
+                                        class="fas fa-plus-circle"></i>Tambahkan</button>
                             </div>
                             <div class="col-sm-8">
                                 <div class="card card-body shadow-lg">
@@ -140,4 +147,287 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalTambahAlamat" tabindex="-1" role="dialog"
+        aria-labelledby="modalTambahAlamatLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTambahAlamatLabel">Data Alamat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="alamat_id" id="alamat_id">
+                    <div id="data_alamat"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="ganti_alamat()">Gunakan Alamat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('script')
+    <script>
+        $(document).ready(function() {
+            get_alamat_aktif();
+        })
+
+        function get_alamat_aktif() {
+            $.ajax({
+                url: "{{ route('belanja.get_data_alamat_aktif') }}",
+                type: 'get',
+                beforeSend: () => {
+                    $('#alamat').val(`Loading alamat ...`);
+                },
+                success: (response) => {
+                    $('#alamat').val(response['alamat']);
+                    $('#alamat_id_aktif').val(response['alamat_id']);
+                },
+                error: ({
+                    responseText
+                }) => {
+                    Notiflix.Notify.failure(responseText);
+                }
+            })
+        }
+
+        function get_data_alamat() {
+            $.ajax({
+                url: "{{ route('belanja.get_data_alamat') }}",
+                type: 'get',
+                beforeSend: () => {
+                    $('#data_alamat').html(`
+                <div class="col-12 d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                        <div>Loading data alamat...</div>
+                    </div>
+                </div>
+            `);
+                },
+                success: (response) => {
+                    let html = '';
+
+                    if (response.length > 0) {
+                        response.forEach((item) => {
+                            html += `
+                        <div class="card mb-3 alamat-card" 
+                             data-id="${item.id}" style="cursor: pointer;">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    ${item.keterangan} ${item.is_primary == 1 ? '<span class="badge badge-success">Utama</span>' : ''}
+                                </h5>
+                                <p class="card-text mb-1"><strong>Alamat:</strong> ${item.alamat}</p>
+                                <p class="card-text mb-1"><strong>Provinsi:</strong> ${item.provinsi}</p>
+                                <p class="card-text mb-1"><strong>Kota:</strong> ${item.kota}</p>
+                                <p class="card-text mb-1"><strong>Kecamatan:</strong> ${item.kecamatan}</p>
+                                <p class="card-text mb-1"><strong>Kode Pos:</strong> ${item.kode_pos}</p>
+                            </div>
+                        </div>
+                    `;
+                            if (item.is_primary == 1) {
+                                $('#alamat_id').val(item.id);
+                            }
+                        });
+                    } else {
+                        html =
+                            `<div class="alert alert-warning text-center">Tidak ada data alamat tersedia.</div>`;
+                    }
+
+                    $('#data_alamat').html(html);
+
+                    $('.alamat-card').on('click', function() {
+                        $('.alamat-card').removeClass('border-primary');
+                        $(this).addClass('border-primary');
+                        $('#alamat_id').val($(this).data('id'));
+                    });
+                },
+                error: ({
+                    responseText
+                }) => {
+                    Notiflix.Notify.failure(responseText);
+                }
+            });
+        }
+
+        function ganti_alamat() {
+            var alamat_id = $('#alamat_id').val();
+
+            $.ajax({
+                url: "{{ route('belanja.ganti_alamat') }}",
+                type: 'post',
+                data: {
+                    alamat_id: alamat_id
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: (response) => {
+                    $('#modalTambahAlamat').modal('hide');
+                    get_alamat_aktif();
+                    Notiflix.Notify.success('Alamat berhasil diganti');
+                },
+                error: (xhr) => {
+                    Notiflix.Notify.failure('Terjadi kesalahan saat mengganti alamat.');
+                }
+            });
+        }
+
+        let idProduk = "";
+        let kode = "";
+        let nama = "";
+        let stok = "";
+        let harga = "";
+        let hargaDiskon = "";
+        let satuan = "";
+
+        function change_produk(this_) {
+            const selectedOption = this_.options[this_.selectedIndex];
+
+            idProduk = selectedOption.getAttribute('data-id-produk');
+            kode = selectedOption.getAttribute('data-kode');
+            nama = selectedOption.getAttribute('data-nama');
+            stok = selectedOption.getAttribute('data-stok');
+            harga = selectedOption.getAttribute('data-harga-diskon') || selectedOption.getAttribute('data-harga');
+            hargaDiskon = selectedOption.getAttribute('data-harga-diskon');
+            satuan = selectedOption.getAttribute('data-satuan');
+
+            $('#stok').val(stok);
+            $('#satuan').val(satuan);
+            $('#harga').val(rupiahFormat(selectedOption.getAttribute('data-harga')));
+            $('#harga_diskon').val(rupiahFormat(hargaDiskon));
+        }
+
+        function tambah_barang() {
+            if (kode == "") {
+                Notiflix.Notify.failure("Pilih produk terlebih dahulu!");
+                return;
+            }
+
+            const idBarang = idProduk;
+            const stokBarang = parseInt(stok);
+            const barangId = kode;
+            const barangNama = nama;
+            const hargaJual = harga;
+
+            const jumlah = 1;
+
+            if (jumlah > stokBarang) {
+                Notiflix.Notify.failure("Jumlah barang melebihi stok yang tersedia!");
+                return;
+            }
+
+            const total = hargaJual * jumlah;
+            const table = document.getElementById('table-transaksi').getElementsByTagName('tbody')[0];
+            let rowExists = false;
+
+            for (let i = 0; i < table.rows.length; i++) {
+                const row = table.rows[i];
+                const currentBarangId = row.cells[0].textContent;
+
+                if (currentBarangId == barangId) {
+                    const currentQuantity = parseInt(row.cells[3].textContent);
+                    const newQuantity = currentQuantity + jumlah;
+
+                    if (newQuantity > stokBarang) {
+                        Notiflix.Notify.failure("Jumlah barang melebihi stok yang tersedia!");
+                        return;
+                    }
+
+                    row.cells[3].textContent = newQuantity;
+                    row.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
+                    rowExists = true;
+                    break;
+                }
+            }
+
+            if (!rowExists) {
+                const newRow = table.insertRow(table.rows.length);
+                newRow.innerHTML = `
+                <td data-barang-id="${idBarang}">${barangId}</td>
+                <td data-stok="${stokBarang}">${barangNama}</td>
+                <td class="text-right">${rupiahFormat(hargaJual)}</td>
+                <td>${jumlah}</td>
+                <td class="text-right">${rupiahFormat(total)}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm subtract-item"><i class="fas fa-minus-circle"></i></button>
+                    <button class="btn btn-success btn-sm add-item"><i class="fas fa-plus-circle"></i></button>
+                    <button class="btn btn-danger btn-sm remove-item"><i class="fas fa-trash"></i> Hapus</button>
+                </td>
+            `;
+
+                // proses untuk menambah jumlah barang di dalam tabel
+                newRow.querySelector('.add-item').addEventListener('click', function() {
+                    const currentQuantity = parseInt(newRow.cells[3].textContent);
+                    const stokTersedia = parseInt(newRow.cells[1].getAttribute('data-stok'));
+
+                    if (currentQuantity + 1 > stokTersedia) {
+                        Notiflix.Notify.failure("Jumlah barang melebihi stok yang tersedia!");
+                        return;
+                    }
+
+                    const newQuantity = currentQuantity + 1;
+                    newRow.cells[3].textContent = newQuantity;
+                    newRow.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
+                    updateFooter();
+                });
+
+                // proses untuk mengurangi jumlah barang di dalam tabel
+                newRow.querySelector('.subtract-item').addEventListener('click', function() {
+                    const currentQuantity = parseInt(newRow.cells[3].textContent);
+                    if (currentQuantity > 1) {
+                        const newQuantity = currentQuantity - 1;
+                        newRow.cells[3].textContent = newQuantity;
+                        newRow.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
+                    } else {
+                        newRow.remove();
+                    }
+                    updateFooter();
+                });
+
+                // proses untuk menghapus barang dalam tabel
+                newRow.querySelector('.remove-item').addEventListener('click', function() {
+                    newRow.remove();
+                    updateFooter();
+                });
+            }
+            updateFooter();
+            $('#produk_id').val('').change();
+            $('#stok').val('');
+            $('#satuan').val('');
+            $('#harga').val('');
+            $('#harga_diskon').val('');
+
+            idProduk = "";
+            kode = "";
+            nama = "";
+            stok = "";
+            harga = "";
+            hargaDiskon = "";
+            satuan = "";
+        }
+
+        function updateFooter() {
+            const table = document.getElementById('table-transaksi').getElementsByTagName('tbody')[0];
+            let totalHarga = 0;
+            let totalJumlah = 0;
+            let totalSemua = 0;
+
+            for (let i = 0; i < table.rows.length; i++) {
+                const row = table.rows[i];
+                totalHarga += parseInt(row.cells[2].textContent.replace(/\D/g, ''), 10);
+                totalJumlah += parseInt(row.cells[3].textContent, 10);
+                totalSemua += parseInt(row.cells[4].textContent.replace(/\D/g, ''), 10);
+            }
+
+            $('#total-harga').html(rupiahFormat(totalHarga));
+            $('#total-jumlah').html(rupiahFormat(totalJumlah));
+            $('#total-semua').html(rupiahFormat(totalSemua));
+        }
+    </script>
 @endsection
