@@ -5,6 +5,7 @@
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="Permissions-Policy" content="clipboard-write=(self)">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon.png') }}">

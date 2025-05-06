@@ -16,10 +16,12 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Pengunjung\BelanjaController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
+use App\Http\Controllers\Pengunjung\MidtransController;
 use App\Http\Controllers\Pengunjung\ProdukController as PengunjungProdukController;
 use App\Http\Controllers\Pengunjung\ProfileController;
 use App\Http\Controllers\Pengunjung\TentangKamiController;
 use Illuminate\Support\Facades\Route;
+
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -142,6 +144,8 @@ Route::middleware(['pelanggan'])->group(function () {
         Route::get('/get_data_alamat', [BelanjaController::class, 'get_data_alamat'])->name('get_data_alamat');
         Route::post('/ganti_alamat', [BelanjaController::class, 'ganti_alamat'])->name('ganti_alamat');
         Route::post('/cek_ongkir', [BelanjaController::class, 'cek_ongkir'])->name('cek_ongkir');
+
+        Route::post('/create-transaction', [MidtransController::class, 'createTransaction'])->name('createTransaction');
     });
     Route::get('/tentang-kami', [TentangKamiController::class, 'index'])->name('tentang-kami');
 

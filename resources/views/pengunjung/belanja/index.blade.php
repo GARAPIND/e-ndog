@@ -180,7 +180,7 @@
                                 <button class="btn btn-danger float-left" id="btn_batal"><i
                                         class="fas fa-window-close"></i>
                                     Batalkan Transaksi</button>
-                                <button class="btn btn-success float-right" id="btn_submit"><i
+                                <button class="btn btn-success float-right" id="btn_submit" onclick="buat_transaksi()"><i
                                         class="fas fa-cart-plus"></i> Buat Transaksi</button>
                             </div>
                         </div>
@@ -215,6 +215,7 @@
 @endsection
 
 @section('script')
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-XlYKYpWQKtLrtPtA"></script>
     <script>
         $(document).ready(function() {
             get_alamat_aktif();
@@ -524,6 +525,39 @@
                 $('#form_kurir_cod').hide();
                 $('#form_kurir_raja_ongkir').show();
             }
+        }
+
+        function buat_transaksi() {
+            $.ajax({
+                url: "{{ route('belanja.createTransaction') }}",
+                type: 'post',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: (response) => {
+                    payWithMidtrans(response['snap_token']);
+                },
+                error: (xhr) => {
+                    Notiflix.Notify.failure('Terjadi kesalahan saat ambil ekspedisi.');
+                }
+            });
+        }
+
+        function payWithMidtrans(snapToken) {
+            snap.pay(snapToken, {
+                onSuccess: function(result) {
+                    alert('Pembayaran berhasil!');
+                    console.log(result);
+                },
+                onPending: function(result) {
+                    alert('Pembayaran pending!');
+                    console.log(result);
+                },
+                onError: function(result) {
+                    alert('Terjadi kesalahan pada pembayaran!');
+                    console.log(result);
+                }
+            });
         }
     </script>
 @endsection
