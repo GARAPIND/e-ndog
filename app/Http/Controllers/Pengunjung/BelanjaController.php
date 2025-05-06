@@ -52,6 +52,8 @@ class BelanjaController extends Controller
     public function cek_ongkir(Request $request)
     {
         $city_id = $request->city_id;
+        $weight = $request->weight;
+
         $couriers = ['jne', 'pos', 'tiki'];
         $allCosts = [];
 
@@ -66,7 +68,7 @@ class BelanjaController extends Controller
                 CURLOPT_TIMEOUT => 30,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => "origin=501&destination=$city_id&weight=1700&courier=$courier",
+                CURLOPT_POSTFIELDS => "origin=409&destination=$city_id&weight=$weight&courier=$courier",
                 CURLOPT_HTTPHEADER => array(
                     "content-type: application/x-www-form-urlencoded",
                     "key: 2472843d6a402ff2319489c07cc5cf73"

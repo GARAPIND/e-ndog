@@ -133,7 +133,8 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label for="catatan" class="col-form-label">Catatan untuk penjual</label>
+                                            <label for="catatan" class="col-form-label">Catatan untuk penjual
+                                                <small>(Bisa dikosongkan)</small> </label>
                                             <textarea class="form-control" id="catatan" name="catatan" rows="3"
                                                 placeholder="Tambahkan catatan untuk penjual"></textarea>
                                         </div>
@@ -218,14 +219,17 @@
         $(document).ready(function() {
             get_alamat_aktif();
             ubah_metode_pembayaran();
+            $('#kurir_raja_ongkir, #kurir_cod, #metode_pembayaran').select2();
         })
 
-        function get_data_ongkir(city_id) {
+        function get_data_ongkir() {
+            var city_id = $('#city_id').val();
             $.ajax({
                 url: "{{ route('belanja.cek_ongkir') }}",
                 type: 'post',
                 data: {
-                    city_id: city_id
+                    city_id: city_id,
+                    weight: 1000
                 },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -267,7 +271,7 @@
                     $('#alamat').val(response['alamat']);
                     $('#alamat_id_aktif').val(response['alamat_id']);
                     $('#city_id').val(response['city_id']);
-                    get_data_ongkir(response['city_id']);
+                    get_data_ongkir();
                 },
                 error: ({
                     responseText
