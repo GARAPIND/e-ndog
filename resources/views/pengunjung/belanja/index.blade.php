@@ -2,6 +2,13 @@
 @section('title', 'Belanja')
 
 @section('content')
+    <div id="loading-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.7); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Memproses Data...</span>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-12">
@@ -35,6 +42,8 @@
                                     <label for="tanggal" class="col-form-label">Tanggal</label>
                                     <input class="form-control" type="text" name="tanggal" id="tanggal"
                                         value="{{ tanggalIndoLengkap(Date('Y-m-d')) }}" disabled>
+                                    <input type="hidden" name="tanggal_transaksi" id="tanggal_transaksi"
+                                        value="{{ Date('Y-m-d') }}">
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -82,9 +91,9 @@
                                         disabled>
                                 </div>
                                 <div class="form-group mt-0">
-                                    <label for="satuan" class="col-form-label">Satuan</label>
-                                    <input class="form-control" type="text" name="satuan" id="satuan" value="-"
-                                        disabled>
+                                    <label for="berat" class="col-form-label">Berat (gram)</label>
+                                    <input class="form-control" type="text" name="berat" id="berat"
+                                        value="-" disabled>
                                 </div>
                                 <div class="form-group mt-0">
                                     <label for="harga" class="col-form-label">Harga</label>
@@ -112,6 +121,7 @@
                                                     <th width="15%">Harga</th>
                                                     <th width="10%">Jumlah</th>
                                                     <th width="15%">Total</th>
+                                                    <th width="15%">Berat</th>
                                                     <th width="20%">Aksi</th>
                                                 </tr>
                                             </thead>
@@ -123,6 +133,7 @@
                                                     <th id="total-harga" class="text-right">Rp 0</th>
                                                     <th id="total-jumlah">0</th>
                                                     <th id="total-semua" class="text-right">Rp 0</th>
+                                                    <th id="total-berat" class="text-right">0</th>
                                                     <th></th>
                                                 </tr>
                                             </tfoot>
@@ -133,6 +144,8 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
+                                            <input type="hidden" name="nama_ekspedisi" id="nama_ekspedisi">
+                                            <input type="hidden" name="harga_ekspedisi" id="harga_ekspedisi">
                                             <label for="catatan" class="col-form-label">Catatan untuk penjual
                                                 <small>(Bisa dikosongkan)</small> </label>
                                             <textarea class="form-control" id="catatan" name="catatan" rows="3"
@@ -145,8 +158,8 @@
                                                 Pembayaran</label>
                                             <select class="form-control" id="metode_pembayaran" name="metode_pembayaran"
                                                 onchange="ubah_metode_pembayaran()">
-                                                <option value="COD">COD (Cash on Delivery)</option>
-                                                <option value="online">Pembayaran Online</option>
+                                                <option value="0">Pembayaran Online</option>
+                                                <option value="1">COD (Cash on Delivery)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -166,7 +179,8 @@
                                         <div class="form-group">
                                             <label for="kurir_raja_ongkir" class="col-form-label">Ekspedisi</label>
                                             <select class="form-control select2" id="kurir_raja_ongkir"
-                                                name="kurir_raja_ongkir" style="width: 100%;">
+                                                name="kurir_raja_ongkir" style="width: 100%;"
+                                                onchange="change_ekspedisi(this)">
                                                 <option value="">Loading ...</option>
                                             </select>
                                         </div>
@@ -215,9 +229,10 @@
 @endsection
 
 @section('script')
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-XlYKYpWQKtLrtPtA"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-VizuQvv54xcuk1Yg"></script>
     <script>
         $(document).ready(function() {
+            $('#loading-overlay').fadeOut();
             get_alamat_aktif();
             ubah_metode_pembayaran();
             $('#kurir_raja_ongkir, #kurir_cod, #metode_pembayaran').select2();
@@ -225,15 +240,19 @@
 
         function get_data_ongkir() {
             var city_id = $('#city_id').val();
+            var totalweight = $('#total-berat').text();
             $.ajax({
                 url: "{{ route('belanja.cek_ongkir') }}",
                 type: 'post',
                 data: {
                     city_id: city_id,
-                    weight: 1000
+                    weight: totalweight
                 },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('#kurir_raja_ongkir').html('<option value="">Loading ...</option>');
                 },
                 success: (response) => {
                     const $select = $('#kurir_raja_ongkir');
@@ -251,7 +270,9 @@
                             const value =
                                 `${kurir}|${service.service}|${harga}|${etd}`;
 
-                            $select.append(`<option value="${value}">${label}</option>`);
+                            $select.append(
+                                `<option value="${value}" data-nama-kurir="${namaLayanan}" data-harga-kurir="${harga}">${label}</option>`
+                            );
                         });
                     });
                 },
@@ -364,12 +385,19 @@
             });
         }
 
+        function change_ekspedisi(this_) {
+            const selectedOption = this_.options[this_.selectedIndex];
+            $('#nama_ekspedisi').val(selectedOption.getAttribute('data-nama-kurir'));
+            $('#harga_ekspedisi').val(selectedOption.getAttribute('data-harga-kurir'));
+        }
+
         let idProduk = "";
         let kode = "";
         let nama = "";
         let stok = "";
         let harga = "";
         let hargaDiskon = "";
+        let berat = "";
         let satuan = "";
 
         function change_produk(this_) {
@@ -381,10 +409,11 @@
             stok = selectedOption.getAttribute('data-stok');
             harga = selectedOption.getAttribute('data-harga-diskon') || selectedOption.getAttribute('data-harga');
             hargaDiskon = selectedOption.getAttribute('data-harga-diskon');
+            berat = parseInt(selectedOption.getAttribute('data-berat'));
             satuan = selectedOption.getAttribute('data-satuan');
 
             $('#stok').val(stok);
-            $('#satuan').val(satuan);
+            $('#berat').val(`${berat} ${satuan}`);
             $('#harga').val(rupiahFormat(selectedOption.getAttribute('data-harga')));
             $('#harga_diskon').val(rupiahFormat(hargaDiskon));
         }
@@ -397,9 +426,11 @@
 
             const idBarang = idProduk;
             const stokBarang = parseInt(stok);
-            const barangId = kode;
+            const barangId = idProduk;
             const barangNama = nama;
             const hargaJual = harga;
+            const beratBarang = berat
+
 
             const jumlah = 1;
 
@@ -420,6 +451,9 @@
                     const currentQuantity = parseInt(row.cells[3].textContent);
                     const newQuantity = currentQuantity + jumlah;
 
+                    const currentWeight = parseInt(row.cells[5].textContent);
+                    const newWeight = currentWeight + beratBarang;
+
                     if (newQuantity > stokBarang) {
                         Notiflix.Notify.failure("Jumlah barang melebihi stok yang tersedia!");
                         return;
@@ -427,6 +461,7 @@
 
                     row.cells[3].textContent = newQuantity;
                     row.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
+                    row.cells[5].textContent = newWeight;
                     rowExists = true;
                     break;
                 }
@@ -440,6 +475,7 @@
                 <td class="text-right">${rupiahFormat(hargaJual)}</td>
                 <td>${jumlah}</td>
                 <td class="text-right">${rupiahFormat(total)}</td>
+                <td class="text-right">${beratBarang}</td>
                 <td>
                     <button class="btn btn-warning btn-sm subtract-item"><i class="fas fa-minus-circle"></i></button>
                     <button class="btn btn-success btn-sm add-item"><i class="fas fa-plus-circle"></i></button>
@@ -452,6 +488,9 @@
                     const currentQuantity = parseInt(newRow.cells[3].textContent);
                     const stokTersedia = parseInt(newRow.cells[1].getAttribute('data-stok'));
 
+                    const currentWeight = parseInt(newRow.cells[5].textContent);
+                    const newWeight = currentWeight + beratBarang;
+
                     if (currentQuantity + 1 > stokTersedia) {
                         Notiflix.Notify.failure("Jumlah barang melebihi stok yang tersedia!");
                         return;
@@ -460,16 +499,20 @@
                     const newQuantity = currentQuantity + 1;
                     newRow.cells[3].textContent = newQuantity;
                     newRow.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
+                    newRow.cells[5].textContent = newWeight;
                     updateFooter();
                 });
 
                 // proses untuk mengurangi jumlah barang di dalam tabel
                 newRow.querySelector('.subtract-item').addEventListener('click', function() {
                     const currentQuantity = parseInt(newRow.cells[3].textContent);
+                    const currentWeight = parseInt(newRow.cells[5].textContent);
+                    const newWeight = currentWeight - beratBarang;
                     if (currentQuantity > 1) {
                         const newQuantity = currentQuantity - 1;
                         newRow.cells[3].textContent = newQuantity;
                         newRow.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
+                        newRow.cells[5].textContent = newWeight;
                     } else {
                         newRow.remove();
                     }
@@ -485,7 +528,7 @@
             updateFooter();
             $('#produk_id').val('').change();
             $('#stok').val('');
-            $('#satuan').val('');
+            $('#berat').val('');
             $('#harga').val('');
             $('#harga_diskon').val('');
 
@@ -495,6 +538,7 @@
             stok = "";
             harga = "";
             hargaDiskon = "";
+            berat = "";
             satuan = "";
         }
 
@@ -503,22 +547,26 @@
             let totalHarga = 0;
             let totalJumlah = 0;
             let totalSemua = 0;
+            let totalBerat = 0;
 
             for (let i = 0; i < table.rows.length; i++) {
                 const row = table.rows[i];
                 totalHarga += parseInt(row.cells[2].textContent.replace(/\D/g, ''), 10);
                 totalJumlah += parseInt(row.cells[3].textContent, 10);
                 totalSemua += parseInt(row.cells[4].textContent.replace(/\D/g, ''), 10);
+                totalBerat += parseInt(row.cells[5].textContent.replace(/\D/g, ''), 10);
             }
 
             $('#total-harga').html(rupiahFormat(totalHarga));
             $('#total-jumlah').html(rupiahFormat(totalJumlah));
             $('#total-semua').html(rupiahFormat(totalSemua));
+            $('#total-berat').html(totalBerat);
+            get_data_ongkir();
         }
 
         function ubah_metode_pembayaran() {
             var metode = $('#metode_pembayaran').val();
-            if (metode == "COD") {
+            if (metode == "1") {
                 $('#form_kurir_cod').show();
                 $('#form_kurir_raja_ongkir').hide();
             } else {
@@ -528,17 +576,58 @@
         }
 
         function buat_transaksi() {
+            var formData = new FormData();
+            var barangData = [];
+            var table = document.getElementById('table-transaksi').getElementsByTagName('tbody')[0];
+            for (let i = 0; i < table.rows.length; i++) {
+                const row = table.rows[i];
+                var barang = {
+                    barang_id: row.cells[0].getAttribute('data-barang-id'),
+                    jumlah: row.cells[3].textContent,
+                    sub_total: parseInt(row.cells[4].textContent.replace(/\D/g, ''), 10),
+                    berat: parseInt(row.cells[5].textContent)
+                };
+                barangData.push(barang);
+            }
+            formData.append("users_id", $('#users_id').val());
+            formData.append("tanggal_transaksi", $('#tanggal_transaksi').val());
+            formData.append("alamat_id", $('#alamat_id_aktif').val());
+            formData.append("is_cod", $('#metode_pembayaran').val());
+            formData.append("kurir_id", $('#kurir_cod').val());
+            formData.append("ekspedisi", $('#nama_ekspedisi').val());
+            formData.append("sub_total", parseInt($('#total-semua').text().replace(/\D/g, ''), 10));
+            formData.append("ongkir", $('#harga_ekspedisi').val());
+            formData.append("catatan_pelanggan", $('#catatan').val());
+
+            formData.append("barang_data", JSON.stringify(barangData));
+
             $.ajax({
                 url: "{{ route('belanja.createTransaction') }}",
                 type: 'post',
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: () => {
+                    $('#loading-overlay').fadeIn();
+                },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: (response) => {
-                    payWithMidtrans(response['snap_token']);
+                    $('#loading-overlay').fadeOut();
+                    if (response.status === 'success') {
+                        payWithMidtrans(response.snap_token);
+                    } else {
+                        Notiflix.Notify.failure(response.message || 'Transaksi gagal.');
+                    }
                 },
                 error: (xhr) => {
-                    Notiflix.Notify.failure('Terjadi kesalahan saat ambil ekspedisi.');
+                    $('#loading-overlay').fadeOut();
+                    let message = 'Terjadi kesalahan saat membuat transaksi.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    Notiflix.Notify.failure(message);
                 }
             });
         }
@@ -546,16 +635,23 @@
         function payWithMidtrans(snapToken) {
             snap.pay(snapToken, {
                 onSuccess: function(result) {
-                    alert('Pembayaran berhasil!');
+                    Notiflix.Notify.success('Pembayaran Berhasil');
                     console.log(result);
+                    const finishRedirectUrl = '/belanja/sukses';
+                    const orderId = result.order_id;
+                    window.location.href = `${finishRedirectUrl}/${orderId}`;
                 },
                 onPending: function(result) {
-                    alert('Pembayaran pending!');
-                    console.log(result);
+                    Notiflix.Notify.warning('Pembayaran Pending!');
+                    const finishRedirectUrl = '/belanja/sukses';
+                    const orderId = result.order_id;
+                    window.location.href = `${finishRedirectUrl}/${orderId}`;
                 },
                 onError: function(result) {
-                    alert('Terjadi kesalahan pada pembayaran!');
-                    console.log(result);
+                    Notiflix.Notify.failure('Terjadi kesalahan pada pembayaran!');
+                    const finishRedirectUrl = '/belanja/sukses';
+                    const orderId = result.order_id;
+                    window.location.href = `${finishRedirectUrl}/${orderId}`;
                 }
             });
         }

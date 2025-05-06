@@ -7,6 +7,7 @@ use App\Models\Address;
 use App\Models\Customer;
 use App\Models\Kurir;
 use App\Models\Produk;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
@@ -53,6 +54,7 @@ class BelanjaController extends Controller
     {
         $city_id = $request->city_id;
         $weight = $request->weight;
+        $city_id_toko = 256; // Kota Malang
 
         $couriers = ['jne', 'pos', 'tiki'];
         $allCosts = [];
@@ -68,7 +70,7 @@ class BelanjaController extends Controller
                 CURLOPT_TIMEOUT => 30,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => "origin=409&destination=$city_id&weight=$weight&courier=$courier",
+                CURLOPT_POSTFIELDS => "origin=$city_id_toko&destination=$city_id&weight=$weight&courier=$courier",
                 CURLOPT_HTTPHEADER => array(
                     "content-type: application/x-www-form-urlencoded",
                     "key: 2472843d6a402ff2319489c07cc5cf73"
@@ -91,5 +93,18 @@ class BelanjaController extends Controller
         }
 
         return response()->json($allCosts);
+    }
+
+    public function sukses($orderId)
+    {
+        $kode_transaksi = $orderId;
+        $data = Transaksi::with('alamat', 'pelanggan', 'detail.produk')->where('kode_transaksi', $kode_transaksi)->first();
+
+        return view('pengunjung.belanja.sukses', compact('data'));
+    }
+
+    public function pesanan(Request $request)
+    {
+        return view('pengunjung.belanja.pesanan');
     }
 }
