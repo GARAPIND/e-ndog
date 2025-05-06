@@ -141,6 +141,7 @@ Route::middleware(['pelanggan'])->group(function () {
         Route::get('/get_data_alamat_aktif', [BelanjaController::class, 'get_data_alamat_aktif'])->name('get_data_alamat_aktif');
         Route::get('/get_data_alamat', [BelanjaController::class, 'get_data_alamat'])->name('get_data_alamat');
         Route::post('/ganti_alamat', [BelanjaController::class, 'ganti_alamat'])->name('ganti_alamat');
+        Route::post('/cek_ongkir', [BelanjaController::class, 'cek_ongkir'])->name('cek_ongkir');
     });
     Route::get('/tentang-kami', [TentangKamiController::class, 'index'])->name('tentang-kami');
 

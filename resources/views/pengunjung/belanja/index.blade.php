@@ -42,6 +42,7 @@
                                     <label for="alamat" class="col-form-label">Dikirim ke alamat</label>
                                     <div class="input-group">
                                         <input type="hidden" name="alamat_id_aktif" id="alamat_id_aktif">
+                                        <input type="hidden" name="city_id" id="city_id">
                                         <input class="form-control" type="text" name="alamat" id="alamat"
                                             placeholder="Masukkan alamat" readonly>
                                         <div class="input-group-append">
@@ -101,7 +102,7 @@
                             <div class="col-sm-8">
                                 <div class="card card-body shadow-lg">
                                     <h5>Daftar Pembelian</h5>
-                                    <div class="table_transaksi" style="width:100%; height: 400px; overflow-y: auto;">
+                                    <div class="table_transaksi" style="width:100%; height: 200px; overflow-y: auto;">
                                         <table id="table-transaksi"
                                             class="table table-bordered table-hover table-sm text-center">
                                             <thead class="thead-light">
@@ -129,6 +130,47 @@
                                     </div>
                                 </div>
                                 <hr>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="catatan" class="col-form-label">Catatan untuk penjual</label>
+                                            <textarea class="form-control" id="catatan" name="catatan" rows="3"
+                                                placeholder="Tambahkan catatan untuk penjual"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="metode_pembayaran" class="col-form-label">Metode
+                                                Pembayaran</label>
+                                            <select class="form-control" id="metode_pembayaran" name="metode_pembayaran"
+                                                onchange="ubah_metode_pembayaran()">
+                                                <option value="COD">COD (Cash on Delivery)</option>
+                                                <option value="online">Pembayaran Online</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6" id="form_kurir_cod">
+                                        <div class="form-group">
+                                            <label for="kurir_cod" class="col-form-label">Kurir COD</label>
+                                            <select class="form-control select2" id="kurir_cod" name="kurir_cod"
+                                                style="width: 100%;">
+                                                <option value="">-- Pilih Kurir --</option>
+                                                @foreach ($kurir as $item)
+                                                    <option value="{{ $item->id }}">{{ $item->user->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6" id="form_kurir_raja_ongkir">
+                                        <div class="form-group">
+                                            <label for="kurir_raja_ongkir" class="col-form-label">Ekspedisi</label>
+                                            <select class="form-control select2" id="kurir_raja_ongkir"
+                                                name="kurir_raja_ongkir" style="width: 100%;">
+                                                <option value="">Loading ...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <hr>
@@ -175,7 +217,44 @@
     <script>
         $(document).ready(function() {
             get_alamat_aktif();
+            ubah_metode_pembayaran();
         })
+
+        function get_data_ongkir(city_id) {
+            $.ajax({
+                url: "{{ route('belanja.cek_ongkir') }}",
+                type: 'post',
+                data: {
+                    city_id: city_id
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: (response) => {
+                    const $select = $('#kurir_raja_ongkir');
+                    $select.empty().append('<option value="">-- Pilih Ekspedisi --</option>');
+
+                    Object.keys(response).forEach(kurir => {
+                        const layanan = response[kurir];
+                        layanan.forEach(service => {
+                            const namaLayanan = `${kurir.toUpperCase()} - ${service.service}`;
+                            const harga = service.cost[0].value;
+                            const etd = service.cost[0].etd;
+
+                            const label =
+                                `${namaLayanan} | Rp ${harga.toLocaleString()} | ${etd} hari`;
+                            const value =
+                                `${kurir}|${service.service}|${harga}|${etd}`;
+
+                            $select.append(`<option value="${value}">${label}</option>`);
+                        });
+                    });
+                },
+                error: (xhr) => {
+                    Notiflix.Notify.failure('Terjadi kesalahan saat ambil ekspedisi.');
+                }
+            });
+        }
 
         function get_alamat_aktif() {
             $.ajax({
@@ -187,6 +266,8 @@
                 success: (response) => {
                     $('#alamat').val(response['alamat']);
                     $('#alamat_id_aktif').val(response['alamat_id']);
+                    $('#city_id').val(response['city_id']);
+                    get_data_ongkir(response['city_id']);
                 },
                 error: ({
                     responseText
@@ -428,6 +509,17 @@
             $('#total-harga').html(rupiahFormat(totalHarga));
             $('#total-jumlah').html(rupiahFormat(totalJumlah));
             $('#total-semua').html(rupiahFormat(totalSemua));
+        }
+
+        function ubah_metode_pembayaran() {
+            var metode = $('#metode_pembayaran').val();
+            if (metode == "COD") {
+                $('#form_kurir_cod').show();
+                $('#form_kurir_raja_ongkir').hide();
+            } else {
+                $('#form_kurir_cod').hide();
+                $('#form_kurir_raja_ongkir').show();
+            }
         }
     </script>
 @endsection

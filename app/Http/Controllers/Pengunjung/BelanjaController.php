@@ -5,16 +5,19 @@ namespace App\Http\Controllers\Pengunjung;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Customer;
+use App\Models\Kurir;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 
 class BelanjaController extends Controller
 {
     public function index()
     {
         $produk = Produk::where('aktif', 1)->get();
-        return view('pengunjung.belanja.index', compact('produk'));
+        $kurir = Kurir::with('user')->where('status', 'active')->get();
+        return view('pengunjung.belanja.index', compact('produk', 'kurir'));
     }
 
     public function get_data_alamat_aktif()
@@ -23,7 +26,8 @@ class BelanjaController extends Controller
         $data = Address::where('pelanggan_id', $pelanggan->id)->where('is_primary', 1)->first();
         return response()->json([
             'alamat' => $data->alamat . " ($data->keterangan)",
-            'alamat_id' => $data->id
+            'alamat_id' => $data->id,
+            'city_id' => $data->city_id
         ]);
     }
 
@@ -43,5 +47,47 @@ class BelanjaController extends Controller
         Address::where('id', $alamat_id)->where('pelanggan_id', $pelanggan)->update(['is_primary' => 1]);
 
         return response()->json(['message' => 'Alamat berhasil diperbarui']);
+    }
+
+    public function cek_ongkir(Request $request)
+    {
+        $city_id = $request->city_id;
+        $couriers = ['jne', 'pos', 'tiki'];
+        $allCosts = [];
+
+        foreach ($couriers as $courier) {
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.rajaongkir.com/starter/cost",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => "origin=501&destination=$city_id&weight=1700&courier=$courier",
+                CURLOPT_HTTPHEADER => array(
+                    "content-type: application/x-www-form-urlencoded",
+                    "key: 2472843d6a402ff2319489c07cc5cf73"
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            if ($err) {
+                return response()->json(['error' => $err], 500);
+            }
+
+            $decoded = json_decode($response, true);
+
+            if (isset($decoded['rajaongkir']['results'][0])) {
+                $allCosts[$courier] = $decoded['rajaongkir']['results'][0]['costs'];
+            }
+        }
+
+        return response()->json($allCosts);
     }
 }
