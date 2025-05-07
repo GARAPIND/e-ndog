@@ -144,8 +144,16 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
+                                            <input type="hidden" name="latitude_toko" id="latitude_toko"
+                                                value="{{ $profileToko->latitude }}">
+                                            <input type="hidden" name="longitude_toko" id="longitude_toko"
+                                                value="{{ $profileToko->longitude }}">
+                                            <input type="hidden" name="latitude_pelanggan" id="latitude_pelanggan">
+                                            <input type="hidden" name="longitude_pelanggan" id="longitude_pelanggan">
+
                                             <input type="hidden" name="nama_ekspedisi" id="nama_ekspedisi">
                                             <input type="hidden" name="harga_ekspedisi" id="harga_ekspedisi">
+                                            <input type="hidden" name="jarak" id="jarak">
                                             <label for="catatan" class="col-form-label">Catatan untuk penjual
                                                 <small>(Bisa dikosongkan)</small> </label>
                                             <textarea class="form-control" id="catatan" name="catatan" rows="3"
@@ -179,7 +187,7 @@
                         <hr>
                         <div class="row">
                             <div class="col-12">
-                                <button class="btn btn-danger float-left" id="btn_batal"><i
+                                <button class="btn btn-danger float-left" id="btn_batal" onclick="batal_transaksi()"><i
                                         class="fas fa-window-close"></i>
                                     Batalkan Transaksi</button>
                                 <button class="btn btn-success float-right" id="btn_submit" onclick="buat_transaksi()"><i
@@ -281,7 +289,10 @@
                     $('#alamat').val(response['alamat']);
                     $('#alamat_id_aktif').val(response['alamat_id']);
                     $('#city_id').val(response['city_id']);
+                    $('#latitude_pelanggan').val(response['latitude']);
+                    $('#longitude_pelanggan').val(response['longitude']);
                     get_data_ongkir();
+                    hitungJarak();
                 },
                 error: ({
                     responseText
@@ -554,13 +565,37 @@
 
         function ubah_metode_pembayaran() {
             var metode = $('#metode_pembayaran').val();
+            var jarak = parseFloat($('#jarak').val());
+            var berat = parseFloat($('#total-berat').text());
             if (metode == "1") {
-                $('#form_kurir_raja_ongkir').hide();
-                $('#nama_ekspedisi').val('Lokal');
-                $('#harga_ekspedisi').val('0');
+                if (jarak <= 10000 && berat >= 5000) {
+                    $('#form_kurir_raja_ongkir').hide();
+                    $('#nama_ekspedisi').val('Lokal');
+                    $('#harga_ekspedisi').val('0');
+                } else {
+                    Notiflix.Notify.failure('COD hanya berlaku untuk jarak <= 10km dan berat >= 5kg');
+                    $('#metode_pembayaran').val(0).change();
+                }
             } else {
                 $('#form_kurir_raja_ongkir').show();
             }
+        }
+
+        function batal_transaksi() {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Transaksi yang sedang berjalan akan dibatalkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan!',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload();
+                }
+            });
         }
 
         function buat_transaksi() {
@@ -580,6 +615,7 @@
             formData.append("users_id", $('#users_id').val());
             formData.append("tanggal_transaksi", $('#tanggal_transaksi').val());
             formData.append("alamat_id", $('#alamat_id_aktif').val());
+            formData.append("jarak", $('#jarak').val());
             formData.append("is_cod", $('#metode_pembayaran').val());
             formData.append("kurir_id", $('#kurir_cod').val());
             formData.append("ekspedisi", $('#nama_ekspedisi').val());
@@ -642,6 +678,23 @@
                     window.location.href = `${finishRedirectUrl}/${orderId}`;
                 }
             });
+        }
+
+        function hitungJarak() {
+            var lat1 = $('#latitude_pelanggan').val();
+            var lon1 = $('#longitude_pelanggan').val();
+            var lat2 = $('#latitude_toko').val();
+            var lon2 = $('#longitude_toko').val();
+
+            var R = 6371000;
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var distance = R * c;
+            $('#jarak').val(distance.toFixed(0));
         }
     </script>
 @endsection

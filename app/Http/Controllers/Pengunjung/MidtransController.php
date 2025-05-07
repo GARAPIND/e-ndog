@@ -34,6 +34,7 @@ class MidtransController extends Controller
         $pelanggan_id = $pelanggan->id;
         $tanggal_transaksi = $request->tanggal_transaksi;
         $alamat_id = $request->alamat_id;
+        $jarak = $request->jarak;
         $is_cod = $request->is_cod;
         $kurir_id = $request->kurir_id;
         $ekspedisi = $request->ekspedisi;
@@ -75,6 +76,7 @@ class MidtransController extends Controller
                 'alamat_id' => $alamat_id,
                 'status_pembayaran' => 'Menunggu Pembayaran',
                 'status_pengiriman' => 'Dikemas',
+                'jarak' => $jarak,
                 'is_cod' => $is_cod,
                 'kurir_id' => $kurir_id,
                 'ekspedisi' => $ekspedisi,

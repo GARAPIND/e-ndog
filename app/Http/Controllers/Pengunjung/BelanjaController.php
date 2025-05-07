@@ -28,7 +28,9 @@ class BelanjaController extends Controller
         return response()->json([
             'alamat' => $data->alamat . " ($data->keterangan)",
             'alamat_id' => $data->id,
-            'city_id' => $data->city_id
+            'city_id' => $data->city_id,
+            'latitude' => $data->latitude,
+            'longitude' => $data->longitude
         ]);
     }
 
