@@ -61,33 +61,7 @@ class MidtransController extends Controller
         DB::beginTransaction();
 
         try {
-            $data_transaksi = [
-                'kode_transaksi' => $kode_transaksi,
-                'tanggal_transaksi' => $tanggal_transaksi,
-                'pelanggan_id' => $pelanggan_id,
-                'alamat_id' => $alamat_id,
-                'status_pembayaran' => 'Menunggu Pembayaran',
-                'status_pengiriman' => 'Dikemas',
-                'jarak' => $jarak,
-                'is_cod' => $is_cod,
-                'ekspedisi' => $ekspedisi,
-                'sub_total' => $sub_total,
-                'ongkir' => $ongkir,
-                'catatan_pelanggan' => $catatan_pelanggan,
-            ];
-            $transaksi = Transaksi::create($data_transaksi);
-
-            foreach ($barang_data as $barang) {
-                DetailTransaksi::create([
-                    'transaksi_id' => $transaksi->id,
-                    'produk_id' => $barang['barang_id'],
-                    'jumlah' => $barang['jumlah'],
-                    'berat' => $barang['berat'],
-                    'sub_total' => $barang['sub_total']
-                ]);
-                Produk::where('id', $barang['barang_id'])->decrement('stok', $barang['jumlah']);
-            }
-
+            // insert data ke MIDTRANS
             $transactionDetails = [
                 'order_id' => $kode_transaksi,
                 'gross_amount' => $sub_total + $ongkir,
@@ -106,6 +80,35 @@ class MidtransController extends Controller
             ];
 
             $snapToken = Snap::getSnapToken($transaction);
+
+            /// insert data ke DATABASE APLIKASI
+            $data_transaksi = [
+                'kode_transaksi' => $kode_transaksi,
+                'tanggal_transaksi' => $tanggal_transaksi,
+                'pelanggan_id' => $pelanggan_id,
+                'alamat_id' => $alamat_id,
+                'status_pembayaran' => 'Menunggu Pembayaran',
+                'status_pengiriman' => 'Menunggu Pembayaran',
+                'jarak' => $jarak,
+                'is_cod' => $is_cod,
+                'ekspedisi' => $ekspedisi,
+                'sub_total' => $sub_total,
+                'ongkir' => $ongkir,
+                'catatan_pelanggan' => $catatan_pelanggan,
+                'snap_token' => $snapToken,
+            ];
+            $transaksi = Transaksi::create($data_transaksi);
+
+            foreach ($barang_data as $barang) {
+                DetailTransaksi::create([
+                    'transaksi_id' => $transaksi->id,
+                    'produk_id' => $barang['barang_id'],
+                    'jumlah' => $barang['jumlah'],
+                    'berat' => $barang['berat'],
+                    'sub_total' => $barang['sub_total']
+                ]);
+                Produk::where('id', $barang['barang_id'])->decrement('stok', $barang['jumlah']);
+            }
 
             DB::commit();
 

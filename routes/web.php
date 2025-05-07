@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Pengunjung\BelanjaController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
 use App\Http\Controllers\Pengunjung\MidtransController;
+use App\Http\Controllers\Pengunjung\PesananController;
 use App\Http\Controllers\Pengunjung\ProdukController as PengunjungProdukController;
 use App\Http\Controllers\Pengunjung\ProfileController;
 use App\Http\Controllers\Pengunjung\TentangKamiController;
@@ -159,6 +160,11 @@ Route::middleware(['pelanggan'])->group(function () {
 
         Route::post('/create-transaction', [MidtransController::class, 'createTransaction'])->name('createTransaction');
     });
+
+    Route::group(['prefix' => 'pesanan', 'as' => 'pesanan.'], function () {
+        Route::get('/get_data_pesanan', [PesananController::class, 'get_data_pesanan'])->name('get_data_pesanan');
+    });
+
     Route::get('/tentang-kami', [TentangKamiController::class, 'index'])->name('tentang-kami');
 
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {

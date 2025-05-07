@@ -118,17 +118,24 @@
                             <a href="{{ route('tentang-kami') }}" class="nav-item nav-link">Tentang Kami</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="#" class="btn px-0 ml-3 text-light" onclick="cekLogin()">
+                            <a href="#" class="btn px-0 ml-3 text-light" onclick="cekLogin('belanja')">
                                 <i class="fas fa-shopping-cart text-primary"></i> Belanja
+                            </a>
+                            <a href="#" class="btn px-0 ml-3 text-light" onclick="cekLogin('pesanan')">
+                                <i class="fas fa-receipt text-primary"></i> Pesanan
                             </a>
                         </div>
                         <script src="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-aio-3.2.6.min.js"></script>
                         <script>
-                            function cekLogin() {
+                            function cekLogin(type) {
                                 @if (Auth::check())
-                                    window.location.href = "{{ route('belanja.list') }}";
+                                    if (type == 'belanja') {
+                                        window.location.href = "{{ route('belanja.list') }}";
+                                    } else if (type == 'pesanan') {
+                                        window.location.href = "{{ route('belanja.pesanan') }}";
+                                    }
                                 @else
-                                    Notiflix.Notify.failure('Silakan login terlebih dahulu untuk belanja');
+                                    Notiflix.Notify.failure('Silakan login terlebih dahulu untuk melanjutkan');
                                 @endif
                             }
                         </script>
