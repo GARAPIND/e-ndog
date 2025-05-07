@@ -105,6 +105,14 @@ class BelanjaController extends Controller
         return view('pengunjung.belanja.sukses', compact('data'));
     }
 
+    public function gagal($orderId)
+    {
+        $kode_transaksi = $orderId;
+        $data = Transaksi::with('alamat', 'pelanggan', 'detail.produk')->where('kode_transaksi', $kode_transaksi)->first();
+
+        return view('pengunjung.belanja.gagal', compact('data'));
+    }
+
     public function pesanan(Request $request)
     {
         return view('pengunjung.belanja.pesanan');

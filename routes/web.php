@@ -156,6 +156,7 @@ Route::middleware(['pelanggan'])->group(function () {
         Route::post('/ganti_alamat', [BelanjaController::class, 'ganti_alamat'])->name('ganti_alamat');
         Route::post('/cek_ongkir', [BelanjaController::class, 'cek_ongkir'])->name('cek_ongkir');
         Route::get('/sukses/{orderId}', [BelanjaController::class, 'sukses'])->name('sukses');
+        Route::get('/gagal/{orderId}', [BelanjaController::class, 'gagal'])->name('gagal');
         Route::get('/pesanan', [BelanjaController::class, 'pesanan'])->name('pesanan');
 
         Route::post('/create-transaction', [MidtransController::class, 'createTransaction'])->name('createTransaction');

@@ -254,6 +254,11 @@
                     const $select = $('#kurir_raja_ongkir');
                     $select.empty().append('<option value="">-- Pilih Ekspedisi --</option>');
 
+                    if (Object.keys(response).length === 0) {
+                        $select.append('<option value="">Tidak ada ekspedisi tersedia</option>');
+                        return;
+                    }
+
                     Object.keys(response).forEach(kurir => {
                         const layanan = response[kurir];
                         layanan.forEach(service => {
@@ -676,14 +681,16 @@
                     window.location.href = `${finishRedirectUrl}/${orderId}`;
                 },
                 onPending: function(result) {
+                    console.log(result);
                     Notiflix.Notify.warning('Pembayaran Pending!');
-                    const finishRedirectUrl = '/belanja/sukses';
+                    const finishRedirectUrl = '/belanja/gagal';
                     const orderId = result.order_id;
                     window.location.href = `${finishRedirectUrl}/${orderId}`;
                 },
                 onError: function(result) {
+                    console.log(result);
                     Notiflix.Notify.failure('Terjadi kesalahan pada pembayaran!');
-                    const finishRedirectUrl = '/belanja/sukses';
+                    const finishRedirectUrl = '/belanja/gagal';
                     const orderId = result.order_id;
                     window.location.href = `${finishRedirectUrl}/${orderId}`;
                 }
