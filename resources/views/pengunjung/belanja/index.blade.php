@@ -617,7 +617,6 @@
             formData.append("alamat_id", $('#alamat_id_aktif').val());
             formData.append("jarak", $('#jarak').val());
             formData.append("is_cod", $('#metode_pembayaran').val());
-            formData.append("kurir_id", $('#kurir_cod').val());
             formData.append("ekspedisi", $('#nama_ekspedisi').val());
             formData.append("sub_total", parseInt($('#total-semua').text().replace(/\D/g, ''), 10));
             formData.append("ongkir", $('#harga_ekspedisi').val());
