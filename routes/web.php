@@ -133,6 +133,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/data', [KelolaPesananController::class, 'getData'])->name('data');
         Route::get('/{id}', [KelolaPesananController::class, 'getPesanan'])->name('detail');
         Route::post('/{id}/update-status', [KelolaPesananController::class, 'updateStatus'])->name('update-status');
+        Route::get('/{id}/get-data', [KelolaPesananController::class, 'getTransaksiData'])->name('pesanan.get-data');
+        Route::get('/kurir/recommendations', [KelolaPesananController::class, 'getKurirRecommendations'])->name('kurir.recommendations');
     });
 });
 

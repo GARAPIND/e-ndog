@@ -25,6 +25,7 @@ class Transaksi extends Model
         'jarak',
         'catatan_pelanggan',
         'catatan_penjual',
+        'foto',
         'snap_token'
     ];
 

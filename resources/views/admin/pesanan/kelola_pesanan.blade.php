@@ -33,6 +33,7 @@
                                 <th>Total</th>
                                 <th>Status Pembayaran</th>
                                 <th>Status Pengiriman</th>
+                                <th>COD</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -55,6 +56,7 @@
                 <div class="modal-body">
                     <form id="status-form">
                         <input type="hidden" id="transaksi-id" name="transaksi_id">
+                        <input type="hidden" id="is_cod" name="is_cod">
                         <div class="mb-3">
                             <label for="status" class="form-label">Status Pengiriman</label>
                             <select class="form-control select2" id="status" name="status">
@@ -123,6 +125,7 @@
                         data: 'status_pembayaran',
                         name: 'status_pembayaran'
                     },
+
                     {
                         data: 'status_pengiriman',
                         name: 'status_pengiriman',
@@ -141,6 +144,20 @@
                         }
                     },
                     {
+                        data: 'is_cod',
+                        name: 'is_cod',
+                        render: function(data) {
+                            let badgeClass = 'badge text-white ';
+                            if (data === 1) {
+                                badgeClass += 'bg-success';
+                                return '<span class="' + badgeClass + '">' + 'Aktif' + '</span>';
+                            } else {
+                                badgeClass += 'bg-danger';
+                                return '<span class="' + badgeClass + '">' + 'Tidak' + '</span>';
+                            }
+                        }
+                    },
+                    {
                         data: 'id',
                         name: 'aksi',
                         orderable: false,
@@ -150,7 +167,7 @@
                                 <a href="/admin/pesanan/${data}" class="btn btn-sm btn-info">
                                     <i class="fas fa-eye"></i> Detail
                                 </a>
-                                <button type="button" class="btn btn-sm btn-success change-status" data-id="${data}" data-status="${row.status_pengiriman}">
+                                <button type="button" class="btn btn-sm btn-success change-status" data-id="${data}" data-status="${row.status_pengiriman}" data-cod="${row.is_cod}">
                                     <i class="fas fa-sync-alt"></i> Status
                                 </button>
                             `;
@@ -166,7 +183,7 @@
 
             function loadKurir() {
                 $.ajax({
-                    url: "{{ route('admin.kurir.recommendations') }}",
+                    url: "{{ route('admin.pesanan.kurir.recommendations') }}",
                     type: 'GET',
                     success: function(response) {
                         var options = '<option value="">Pilih Kurir</option>';
@@ -188,14 +205,16 @@
 
             $('#status').change(function() {
                 var status = $(this).val();
-
+                var cod = $('#is_cod').val();
                 $('.kurir-selection, .catatan-penjual').hide();
                 $('#kurir_id').prop('required', false);
 
                 if (status === 'Dikirim') {
-                    $('.kurir-selection').show();
-                    $('#kurir_id').prop('required', true);
-                    loadKurir();
+                    if (cod == 1) {
+                        $('.kurir-selection').show();
+                        $('#kurir_id').prop('required', true);
+                        loadKurir();
+                    }
                     $('.catatan-penjual').show();
                 } else if (status === 'Selesai') {
                     $('.catatan-penjual').show();
@@ -204,12 +223,15 @@
 
             $(document).on('click', '.change-status', function() {
                 var id = $(this).data('id');
+                var cod = $(this).data('cod');
+                // console.log(cod);
                 var currentStatus = $(this).data('status');
 
                 $('#status-form')[0].reset();
                 $('.kurir-selection, .catatan-penjual').hide();
 
                 $('#transaksi-id').val(id);
+                $('#is_cod').val(cod);
                 $('#status').val(currentStatus).trigger('change');
 
                 $.ajax({
