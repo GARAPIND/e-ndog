@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pelanggan_id');
             $table->unsignedBigInteger('alamat_id');
             $table->string('status_pembayaran')->nullable();
-            $table->string('status_pengiriman')->nullable();
+            $table->string('status_pengiriman')->nullable()->comment('Dikemas, Dikirim, Selesai');
             $table->tinyInteger('is_cod')->default(0);
             $table->unsignedBigInteger('kurir_id')->nullable();
             $table->string('ekspedisi')->nullable();
