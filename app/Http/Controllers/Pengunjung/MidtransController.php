@@ -148,21 +148,27 @@ class MidtransController extends Controller
             case 'capture':
             case 'settlement':
                 $transaksi->status_pembayaran = 'Sudah Dibayar';
+                $transaksi->status_pengiriman = 'Dikemas';
                 break;
             case 'pending':
                 $transaksi->status_pembayaran = 'Menunggu Pembayaran';
+                $transaksi->status_pengiriman = 'Menunggu Pembayaran';
                 break;
             case 'deny':
                 $transaksi->status_pembayaran = 'Pembayaran Ditolak';
+                $transaksi->status_pengiriman = 'Menunggu Pembayaran';
                 break;
             case 'expire':
                 $transaksi->status_pembayaran = 'Kadaluarsa';
+                $transaksi->status_pengiriman = 'Menunggu Pembayaran';
                 break;
             case 'cancel':
                 $transaksi->status_pembayaran = 'Dibatalkan';
+                $transaksi->status_pengiriman = 'Menunggu Pembayaran';
                 break;
             default:
                 $transaksi->status_pembayaran = 'Status Tidak Dikenal';
+                $transaksi->status_pengiriman = 'Menunggu Pembayaran';
                 break;
         }
 
