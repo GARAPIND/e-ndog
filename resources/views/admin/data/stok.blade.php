@@ -223,7 +223,7 @@
             var table = $('#stok-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('admin.data.stok.data') }}",
+                ajax: "{{ route('admin.stok.data') }}",
                 columns: [{
                         data: 'nama_lengkap',
                         name: 'nama'
@@ -369,7 +369,7 @@
 
             function submitStokForm(form, successMessage) {
                 $.ajax({
-                    url: "{{ route('admin.data.stok.update') }}",
+                    url: "{{ route('admin.stok.update') }}",
                     type: "POST",
                     data: form.serialize(),
                     headers: {
