@@ -36,7 +36,6 @@ class MidtransController extends Controller
         $alamat_id = $request->alamat_id;
         $jarak = $request->jarak;
         $is_cod = $request->is_cod;
-        $kurir_id = $request->kurir_id;
         $ekspedisi = $request->ekspedisi;
         $sub_total = $request->sub_total;
         $ongkir = $request->ongkir;
@@ -50,14 +49,7 @@ class MidtransController extends Controller
             ], 400);
         }
 
-        if ($is_cod == 1) {
-            if ($kurir_id == null) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Pilih kurir terlebih dahulu'
-                ], 400);
-            }
-        } else {
+        if ($is_cod == 0) {
             if ($ekspedisi == null) {
                 return response()->json([
                     'status' => 'error',
@@ -78,7 +70,6 @@ class MidtransController extends Controller
                 'status_pengiriman' => 'Dikemas',
                 'jarak' => $jarak,
                 'is_cod' => $is_cod,
-                'kurir_id' => $kurir_id,
                 'ekspedisi' => $ekspedisi,
                 'sub_total' => $sub_total,
                 'ongkir' => $ongkir,
