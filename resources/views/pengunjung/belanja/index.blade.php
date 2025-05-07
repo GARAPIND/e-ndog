@@ -163,18 +163,6 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-6" id="form_kurir_cod">
-                                        <div class="form-group">
-                                            <label for="kurir_cod" class="col-form-label">Kurir COD</label>
-                                            <select class="form-control select2" id="kurir_cod" name="kurir_cod"
-                                                style="width: 100%;">
-                                                <option value="">-- Pilih Kurir --</option>
-                                                @foreach ($kurir as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->user->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
                                     <div class="col-6" id="form_kurir_raja_ongkir">
                                         <div class="form-group">
                                             <label for="kurir_raja_ongkir" class="col-form-label">Ekspedisi</label>
@@ -567,10 +555,10 @@
         function ubah_metode_pembayaran() {
             var metode = $('#metode_pembayaran').val();
             if (metode == "1") {
-                $('#form_kurir_cod').show();
                 $('#form_kurir_raja_ongkir').hide();
+                $('#nama_ekspedisi').val('Lokal');
+                $('#harga_ekspedisi').val('0');
             } else {
-                $('#form_kurir_cod').hide();
                 $('#form_kurir_raja_ongkir').show();
             }
         }

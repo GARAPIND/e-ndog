@@ -55,8 +55,6 @@ class MidtransController extends Controller
                     'status' => 'error',
                     'message' => 'Pilih kurir terlebih dahulu'
                 ], 400);
-            } else {
-                $ongkir = 10000;
             }
         } else {
             if ($ekspedisi == null) {
@@ -76,6 +74,7 @@ class MidtransController extends Controller
                 'pelanggan_id' => $pelanggan_id,
                 'alamat_id' => $alamat_id,
                 'status_pembayaran' => 'Menunggu Pembayaran',
+                'status_pengiriman' => 'Dikemas',
                 'is_cod' => $is_cod,
                 'kurir_id' => $kurir_id,
                 'ekspedisi' => $ekspedisi,
