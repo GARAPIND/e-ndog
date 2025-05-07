@@ -35,6 +35,7 @@ class MidtransController extends Controller
         $tanggal_transaksi = $request->tanggal_transaksi;
         $alamat_id = $request->alamat_id;
         $jarak = $request->jarak;
+        $total_berat = $request->total_berat;
         $is_cod = $request->is_cod;
         $ekspedisi = $request->ekspedisi;
         $sub_total = $request->sub_total;
@@ -49,79 +50,139 @@ class MidtransController extends Controller
             ], 400);
         }
 
-        if ($is_cod == 0) {
+        if ($is_cod == 1) {
+            DB::beginTransaction();
+            try {
+                if ($jarak < 1000) {
+                    $ongkirJarak = 2000;
+                } else {
+                    $ongkirJarak = ($jarak / 1000) * 2000;
+                }
+
+                if ($total_berat < 5000) {
+                    $ongkirBerat = 1000;
+                } else {
+                    $ongkirBerat = ($total_berat / 5000) * 1000;
+                }
+                $ongkir = round($ongkirJarak + $ongkirBerat);
+
+                $data_transaksi = [
+                    'kode_transaksi' => $kode_transaksi,
+                    'tanggal_transaksi' => $tanggal_transaksi,
+                    'pelanggan_id' => $pelanggan_id,
+                    'alamat_id' => $alamat_id,
+                    'status_pembayaran' => 'Dikemas',
+                    'status_pengiriman' => 'Dikemas',
+                    'jarak' => $jarak,
+                    'is_cod' => $is_cod,
+                    'ekspedisi' => $ekspedisi,
+                    'sub_total' => $sub_total,
+                    'ongkir' => $ongkir,
+                    'catatan_pelanggan' => $catatan_pelanggan,
+                ];
+                $transaksi = Transaksi::create($data_transaksi);
+
+                foreach ($barang_data as $barang) {
+                    DetailTransaksi::create([
+                        'transaksi_id' => $transaksi->id,
+                        'produk_id' => $barang['barang_id'],
+                        'jumlah' => $barang['jumlah'],
+                        'berat' => $barang['berat'],
+                        'sub_total' => $barang['sub_total']
+                    ]);
+                    $produk = Produk::findOrFail($barang['barang_id']);
+                    $produk->kurangiStok($barang['jumlah'], 'Pembelian Online');
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => 'success',
+                    'type' => 'COD',
+                    'order_id' => $transaksi->kode_transaksi
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Transaksi gagal: ' . $e->getMessage()
+                ], 500);
+            }
+        } else {
             if ($ekspedisi == null) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Pilih ekspedisi terlebih dahulu'
                 ], 400);
             }
-        }
 
-        DB::beginTransaction();
+            DB::beginTransaction();
 
-        try {
-            // insert data ke MIDTRANS
-            $transactionDetails = [
-                'order_id' => $kode_transaksi,
-                'gross_amount' => $sub_total + $ongkir,
-            ];
+            try {
+                // insert data ke MIDTRANS
+                $transactionDetails = [
+                    'order_id' => $kode_transaksi,
+                    'gross_amount' => $sub_total + $ongkir,
+                ];
 
-            $customerDetails = [
-                'first_name' => Auth::user()->name,
-                'last_name' => '',
-                'email' => Auth::user()->email,
-                'phone' => $pelanggan->telp ?? '0',
-            ];
+                $customerDetails = [
+                    'first_name' => Auth::user()->name,
+                    'last_name' => '',
+                    'email' => Auth::user()->email,
+                    'phone' => $pelanggan->telp ?? '0',
+                ];
 
-            $transaction = [
-                'transaction_details' => $transactionDetails,
-                'customer_details' => $customerDetails,
-            ];
+                $transaction = [
+                    'transaction_details' => $transactionDetails,
+                    'customer_details' => $customerDetails,
+                ];
 
-            $snapToken = Snap::getSnapToken($transaction);
+                $snapToken = Snap::getSnapToken($transaction);
 
-            /// insert data ke DATABASE APLIKASI
-            $data_transaksi = [
-                'kode_transaksi' => $kode_transaksi,
-                'tanggal_transaksi' => $tanggal_transaksi,
-                'pelanggan_id' => $pelanggan_id,
-                'alamat_id' => $alamat_id,
-                'status_pembayaran' => 'Menunggu Pembayaran',
-                'status_pengiriman' => 'Menunggu Pembayaran',
-                'jarak' => $jarak,
-                'is_cod' => $is_cod,
-                'ekspedisi' => $ekspedisi,
-                'sub_total' => $sub_total,
-                'ongkir' => $ongkir,
-                'catatan_pelanggan' => $catatan_pelanggan,
-                'snap_token' => $snapToken,
-            ];
-            $transaksi = Transaksi::create($data_transaksi);
+                /// insert data ke DATABASE APLIKASI
+                $data_transaksi = [
+                    'kode_transaksi' => $kode_transaksi,
+                    'tanggal_transaksi' => $tanggal_transaksi,
+                    'pelanggan_id' => $pelanggan_id,
+                    'alamat_id' => $alamat_id,
+                    'status_pembayaran' => 'Menunggu Pembayaran',
+                    'status_pengiriman' => 'Menunggu Pembayaran',
+                    'jarak' => $jarak,
+                    'is_cod' => $is_cod,
+                    'ekspedisi' => $ekspedisi,
+                    'sub_total' => $sub_total,
+                    'ongkir' => $ongkir,
+                    'catatan_pelanggan' => $catatan_pelanggan,
+                    'snap_token' => $snapToken,
+                ];
+                $transaksi = Transaksi::create($data_transaksi);
 
-            foreach ($barang_data as $barang) {
-                DetailTransaksi::create([
-                    'transaksi_id' => $transaksi->id,
-                    'produk_id' => $barang['barang_id'],
-                    'jumlah' => $barang['jumlah'],
-                    'berat' => $barang['berat'],
-                    'sub_total' => $barang['sub_total']
+                foreach ($barang_data as $barang) {
+                    DetailTransaksi::create([
+                        'transaksi_id' => $transaksi->id,
+                        'produk_id' => $barang['barang_id'],
+                        'jumlah' => $barang['jumlah'],
+                        'berat' => $barang['berat'],
+                        'sub_total' => $barang['sub_total']
+                    ]);
+                    $produk = Produk::findOrFail($barang['barang_id']);
+                    $produk->kurangiStok($barang['jumlah'], 'Pembelian Online');
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => 'success',
+                    'snap_token' => $snapToken,
+                    'type' => 'ONLINE',
                 ]);
-                Produk::where('id', $barang['barang_id'])->decrement('stok', $barang['jumlah']);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Transaksi gagal: ' . $e->getMessage()
+                ], 500);
             }
-
-            DB::commit();
-
-            return response()->json([
-                'status' => 'success',
-                'snap_token' => $snapToken
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Transaksi gagal: ' . $e->getMessage()
-            ], 500);
         }
     }
 

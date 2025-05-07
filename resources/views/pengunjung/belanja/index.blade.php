@@ -619,6 +619,7 @@
             formData.append("is_cod", $('#metode_pembayaran').val());
             formData.append("ekspedisi", $('#nama_ekspedisi').val());
             formData.append("sub_total", parseInt($('#total-semua').text().replace(/\D/g, ''), 10));
+            formData.append("total_berat", parseInt($('#total-berat').text()));
             formData.append("ongkir", $('#harga_ekspedisi').val());
             formData.append("catatan_pelanggan", $('#catatan').val());
 
@@ -638,10 +639,21 @@
                 },
                 success: (response) => {
                     $('#loading-overlay').fadeOut();
-                    if (response.status === 'success') {
-                        payWithMidtrans(response.snap_token);
+                    if (response.type == 'COD') {
+                        if (response.status === 'success') {
+                            Notiflix.Notify.success('Pemesanan Berhasil');
+                            const finishRedirectUrl = '/belanja/sukses';
+                            const orderId = response.order_id;
+                            window.location.href = `${finishRedirectUrl}/${orderId}`;
+                        } else {
+                            Notiflix.Notify.failure(response.message || 'Transaksi gagal.');
+                        }
                     } else {
-                        Notiflix.Notify.failure(response.message || 'Transaksi gagal.');
+                        if (response.status === 'success') {
+                            payWithMidtrans(response.snap_token);
+                        } else {
+                            Notiflix.Notify.failure(response.message || 'Transaksi gagal.');
+                        }
                     }
                 },
                 error: (xhr) => {
@@ -659,7 +671,6 @@
             snap.pay(snapToken, {
                 onSuccess: function(result) {
                     Notiflix.Notify.success('Pembayaran Berhasil');
-                    console.log(result);
                     const finishRedirectUrl = '/belanja/sukses';
                     const orderId = result.order_id;
                     window.location.href = `${finishRedirectUrl}/${orderId}`;
