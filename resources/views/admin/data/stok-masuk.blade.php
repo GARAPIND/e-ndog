@@ -212,7 +212,7 @@
 
             function loadProduk() {
                 $.ajax({
-                    url: "{{ route('admin.data.produk.list') }}",
+                    url: "{{ route('admin.produk.list') }}",
                     type: "GET",
                     dataType: "json",
                     success: function(response) {

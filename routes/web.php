@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Data\ProfileTokoController;
 use App\Http\Controllers\Admin\Data\StokController;
 use App\Http\Controllers\Admin\Data\StokKeluarController;
 use App\Http\Controllers\Admin\Data\StokMasukController;
+use App\Http\Controllers\Admin\Pesanan\KelolaPesananController;
 use App\Http\Controllers\Admin\Tampilan\CarouselController;
 use App\Http\Controllers\Admin\Tampilan\PromosiController;
 use App\Http\Controllers\Api\RajaOngkirController;
@@ -107,6 +108,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::put('/{id}', [KurirController::class, 'update'])->name('update');
             Route::delete('/{id}', [KurirController::class, 'destroy'])->name('destroy');
         });
+        // Pesanan
 
         Route::group(['prefix' => 'carousel', 'as' => 'carousel.'], function () {
             Route::get('/', [CarouselController::class, 'index'])->name('index');
@@ -125,6 +127,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::post('/edit_data', [PromosiController::class, 'edit_data'])->name('edit_data');
             Route::post('/hapus_data', [PromosiController::class, 'hapus_data'])->name('hapus_data');
         });
+    });
+    Route::prefix('admin/pesanan')->name('admin.pesanan.')->group(function () {
+        Route::get('/', [KelolaPesananController::class, 'index'])->name('index');
+        Route::get('/data', [KelolaPesananController::class, 'getData'])->name('data');
+        Route::get('/{id}', [KelolaPesananController::class, 'getPesanan'])->name('detail');
+        Route::post('/{id}/update-status', [KelolaPesananController::class, 'updateStatus'])->name('update-status');
     });
 });
 

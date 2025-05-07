@@ -22,8 +22,10 @@ class Transaksi extends Model
         'ekspedisi',
         'sub_total',
         'ongkir',
+        'jarak',
         'catatan_pelanggan',
         'catatan_penjual',
+        'snap_token'
     ];
 
     public function produk()
@@ -39,6 +41,10 @@ class Transaksi extends Model
     public function pelanggan()
     {
         return $this->belongsTo(Customer::class);
+    }
+    public function kurir()
+    {
+        return $this->belongsTo(Kurir::class);
     }
     public function detail()
     {
