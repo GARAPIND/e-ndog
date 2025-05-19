@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Egulias\EmailValidator\Result\Reason\DetailedReason;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,6 +24,7 @@ class Transaksi extends Model
         'jarak',
         'catatan_pelanggan',
         'catatan_penjual',
+        'catatan_kurir',
         'foto',
         'snap_token'
     ];
@@ -43,12 +43,19 @@ class Transaksi extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
     public function kurir()
     {
         return $this->belongsTo(Kurir::class);
     }
+
     public function detail()
     {
         return $this->hasMany(DetailTransaksi::class);
+    }
+
+    public function getFotoUrlAttribute()
+    {
+        return $this->foto ? asset('storage/' . $this->foto) : null;
     }
 }

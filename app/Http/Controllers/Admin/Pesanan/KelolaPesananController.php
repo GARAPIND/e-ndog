@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Pesanan;
 
+use App\Helpers\SendWaHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Transaksi;
 use App\Models\Kurir;
@@ -77,28 +78,28 @@ class KelolaPesananController extends Controller
 
         if ($request->status === 'Dikirim' && $request->has('kurir_id')) {
             $transaksi->kurir_id = $request->kurir_id;
-
-            // Hitung total berat rpoduknya
             $totalBerat = $transaksi->detail->sum('berat');
-
-            // Ambil jarak dari transaksi
             $jarakMeter = $transaksi->jarak ?? 0;
-
-            // Hitung ongkir berdasarkan jarak dan berat
             if ($jarakMeter < 1000) {
                 $ongkirJarak = 2000;
             } else {
-                $ongkirJarak = ($jarakMeter / 1000) * 2000; // Rp 2.000 per km
+                $ongkirJarak = ($jarakMeter / 1000) * 2000;
             }
-
             if ($totalBerat < 5000) {
-                $ongkirBerat = 1000; // Rp 1.000 per 5kg
+                $ongkirBerat = 1000;
             } else {
-                $ongkirBerat = ($totalBerat / 5000) * 1000; // Rp 1.000 per 5kg
+                $ongkirBerat = ($totalBerat / 5000) * 1000;
             }
 
             $totalOngkir = round($ongkirJarak + $ongkirBerat);
             $transaksi->ongkir = $totalOngkir;
+        }
+        if ($transaksi->status_pengiriman == 'Dikirim') {
+            $sendWaHelper = new SendWaHelper();
+            $sendWaHelper->sendOrderShippingNotification($transaksi->id, $transaksi->kurir_id);
+        } else if ($transaksi->status_pengiriman == 'Selesai') {
+            $sendWaHelper = new SendWaHelper();
+            $sendWaHelper->sendOrderCompletedNotification($transaksi->id);
         }
 
         $transaksi->save();

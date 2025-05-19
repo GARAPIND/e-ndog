@@ -82,7 +82,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary" id="save-status">Simpan</button>
                 </div>
             </div>
@@ -198,7 +198,7 @@
                         $('#kurir_id').html(options);
                     },
                     error: function(xhr) {
-                        toastr.error('Gagal memuat data kurir. Silakan coba lagi.');
+                        showAlert('error', 'Gagal memuat data kurir. Silakan coba lagi.');
                     }
                 });
             }
@@ -272,15 +272,16 @@
                     success: function(response) {
                         $('#statusModal').modal('hide');
                         table.ajax.reload();
-                        toastr.success('Status pengiriman berhasil diubah');
+                        showAlert('success', 'Status pengiriman berhasil diperbarui.');
                     },
                     error: function(xhr) {
                         if (xhr.responseJSON && xhr.responseJSON.errors) {
                             $.each(xhr.responseJSON.errors, function(key, value) {
-                                toastr.error(value[0]);
+                                showAlert('error', value[0]);
                             });
                         } else {
-                            toastr.error('Terjadi kesalahan. Silakan coba lagi.');
+                            showAlert('error',
+                                'Gagal memperbarui status pengiriman. Silakan coba lagi.');
                         }
                     }
                 });

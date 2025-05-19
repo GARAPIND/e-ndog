@@ -40,6 +40,8 @@ class LoginController extends Controller
                 return redirect()->route('dashboard');
             } elseif ($user->role === 'customer') {
                 return redirect()->route('dashboard.pengunjung');
+            } elseif ($user->role === 'kurir') {
+                return redirect()->route('dashboard.kurir');
             } else {
                 Auth::logout();
                 return back()->withErrors([

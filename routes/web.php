@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\Tampilan\PromosiController;
 use App\Http\Controllers\Api\RajaOngkirController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Kurir\DashboardKurirController;
+use App\Http\Controllers\Kurir\PesananKurirController;
 use App\Http\Controllers\Pengunjung\BelanjaController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
 use App\Http\Controllers\Pengunjung\MidtransController;
@@ -136,6 +138,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/{id}/update-status', [KelolaPesananController::class, 'updateStatus'])->name('update-status');
         Route::get('/{id}/get-data', [KelolaPesananController::class, 'getTransaksiData'])->name('pesanan.get-data');
         Route::get('/kurir/recommendations', [KelolaPesananController::class, 'getKurirRecommendations'])->name('kurir.recommendations');
+    });
+});
+
+Route::middleware(['auth', 'kurir'])->group(function () {
+    Route::get('/dashboard/kurir', [DashboardKurirController::class, 'index'])->name('dashboard.kurir');
+
+    Route::prefix('kurir/pesanan')->name('kurir.pesanan.')->group(function () {
+        Route::get('/', [PesananKurirController::class, 'index'])->name('index');
+        Route::get('/data', [PesananKurirController::class, 'getData'])->name('data');
+        Route::get('/{id}', [PesananKurirController::class, 'getPesanan'])->name('detail');
+        Route::post('/{id}/update-status', [PesananKurirController::class, 'updateStatus'])->name('update-status');
     });
 });
 
