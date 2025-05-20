@@ -77,8 +77,9 @@ class SendWaHelper
         $items = "";
         $no = 1;
         foreach ($transaksi->detail as $item) {
-            $subtotal = $item->jumlah * $item->produk->harga;
-            $items .= "{$no}. {$item->produk->nama} ({$item->jumlah} x " . number_format($item->produk->harga, 0, ',', '.') . ") = Rp " . number_format($subtotal, 0, ',', '.') . "\n";
+            $harga = $item->produk->harga_diskon ?? $item->produk->harga;
+            $subtotal = $item->jumlah *  $harga;
+            $items .= "{$no}. {$item->produk->nama} ({$item->jumlah} x " . number_format($harga, 0, ',', '.') . ") = Rp " . number_format($subtotal, 0, ',', '.') . "\n";
             $no++;
         }
         return $items;

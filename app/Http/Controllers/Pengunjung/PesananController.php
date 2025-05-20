@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pengunjung;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\ProfileToko;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,9 +68,29 @@ class PesananController extends Controller
             'order_id' => $kode_transaksi
         ]);
     }
-
     private function isSnapTokenExpired($updatedAt)
     {
         return now()->diffInMinutes($updatedAt) > 1440;
+    }
+
+    public function detail($id)
+    {
+        $data = Transaksi::with('alamat', 'pelanggan.user', 'detail.produk', 'kurir')->find($id);
+        $profile = ProfileToko::find(1);
+        return view('pengunjung.belanja.detail_pesanan', compact('data', 'profile'));
+    }
+
+    public function hapus_pesanan(Request $request)
+    {
+        $id = $request->id;
+        $transaksi = Transaksi::find($id);
+
+        if (!$transaksi) {
+            return response()->json(['status' => 'error', 'message' => 'Pesanan tidak ditemukan'], 404);
+        }
+
+        $transaksi->delete();
+
+        return response()->json(['status' => 'success', 'message' => 'Pesanan berhasil dihapus']);
     }
 }

@@ -96,6 +96,8 @@ class MidtransController extends Controller
                 }
 
                 DB::commit();
+                $sendWaHelper = new SendWaHelper();
+                $sendWaHelper->sendOrderSuccessNotification($transaksi->id);
 
                 return response()->json([
                     'status' => 'success',
