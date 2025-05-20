@@ -48,13 +48,13 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="" aria-expanded="false">
+                        <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false">
                             <i data-feather="clock" class="feather-icon"></i>
                             <span class="hide-menu">History Pesanan</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="" aria-expanded="false">
+                        <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false">
                             <i data-feather="file-text" class="feather-icon"></i>
                             <span class="hide-menu">Laporan</span>
                         </a>

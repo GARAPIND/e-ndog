@@ -177,6 +177,7 @@ Route::middleware(['pelanggan'])->group(function () {
 
     Route::group(['prefix' => 'pesanan', 'as' => 'pesanan.'], function () {
         Route::get('/get_data_pesanan', [PesananController::class, 'get_data_pesanan'])->name('get_data_pesanan');
+        Route::get('/bayar_ulang', [PesananController::class, 'bayar_ulang'])->name('bayar_ulang');
     });
 
     Route::get('/tentang-kami', [TentangKamiController::class, 'index'])->name('tentang-kami');

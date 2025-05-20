@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Pengunjung;
 
+use App\Helpers\SendWaHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\DetailTransaksi;
@@ -175,6 +176,7 @@ class MidtransController extends Controller
                     'status' => 'success',
                     'snap_token' => $snapToken,
                     'type' => 'ONLINE',
+                    'order_id' => $kode_transaksi
                 ]);
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -213,6 +215,8 @@ class MidtransController extends Controller
             case 'settlement':
                 $transaksi->status_pembayaran = 'Sudah Dibayar';
                 $transaksi->status_pengiriman = 'Dikemas';
+                $sendWaHelper = new SendWaHelper();
+                $sendWaHelper->sendOrderSuccessNotification($transaksi->id);
                 break;
             case 'pending':
                 $transaksi->status_pembayaran = 'Menunggu Pembayaran';

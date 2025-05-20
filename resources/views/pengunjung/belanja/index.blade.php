@@ -166,8 +166,8 @@
                                                 Pembayaran</label>
                                             <select class="form-control" id="metode_pembayaran" name="metode_pembayaran"
                                                 onchange="ubah_metode_pembayaran()">
-                                                <option value="0">Pembayaran Online</option>
                                                 <option value="1">COD (Cash on Delivery)</option>
+                                                <option value="0">Pembayaran Online</option>
                                             </select>
                                         </div>
                                     </div>
@@ -296,7 +296,6 @@
                     $('#city_id').val(response['city_id']);
                     $('#latitude_pelanggan').val(response['latitude']);
                     $('#longitude_pelanggan').val(response['longitude']);
-                    get_data_ongkir();
                     hitungJarak();
                 },
                 error: ({
@@ -565,7 +564,6 @@
             $('#total-jumlah').html(rupiahFormat(totalJumlah));
             $('#total-semua').html(rupiahFormat(totalSemua));
             $('#total-berat').html(totalBerat);
-            get_data_ongkir();
         }
 
         function ubah_metode_pembayaran() {
@@ -573,15 +571,18 @@
             var jarak = parseFloat($('#jarak').val());
             var berat = parseFloat($('#total-berat').text());
             if (metode == "1") {
-                if (jarak <= 10000 && berat >= 5000) {
-                    $('#form_kurir_raja_ongkir').hide();
-                    $('#nama_ekspedisi').val('Lokal');
-                    $('#harga_ekspedisi').val('0');
-                } else {
-                    Notiflix.Notify.failure('COD hanya berlaku untuk jarak <= 10km dan berat >= 5kg');
-                    $('#metode_pembayaran').val(0).change();
+                $('#form_kurir_raja_ongkir').hide();
+                if (jarak > 0 && berat > 0) {
+                    if (jarak <= 10000 && berat >= 5000) {
+                        $('#nama_ekspedisi').val('Lokal');
+                        $('#harga_ekspedisi').val('0');
+                    } else {
+                        Notiflix.Notify.failure('COD hanya berlaku untuk jarak <= 10km dan berat >= 5kg');
+                        $('#metode_pembayaran').val(0).change();
+                    }
                 }
             } else {
+                get_data_ongkir();
                 $('#form_kurir_raja_ongkir').show();
             }
         }
@@ -655,7 +656,7 @@
                         }
                     } else {
                         if (response.status === 'success') {
-                            payWithMidtrans(response.snap_token);
+                            payWithMidtrans(response.snap_token, response.order_id);
                         } else {
                             Notiflix.Notify.failure(response.message || 'Transaksi gagal.');
                         }
@@ -672,7 +673,7 @@
             });
         }
 
-        function payWithMidtrans(snapToken) {
+        function payWithMidtrans(snapToken, order_id) {
             snap.pay(snapToken, {
                 onSuccess: function(result) {
                     Notiflix.Notify.success('Pembayaran Berhasil');
@@ -681,17 +682,21 @@
                     window.location.href = `${finishRedirectUrl}/${orderId}`;
                 },
                 onPending: function(result) {
-                    console.log(result);
                     Notiflix.Notify.warning('Pembayaran Pending!');
                     const finishRedirectUrl = '/belanja/gagal';
                     const orderId = result.order_id;
                     window.location.href = `${finishRedirectUrl}/${orderId}`;
                 },
                 onError: function(result) {
-                    console.log(result);
                     Notiflix.Notify.failure('Terjadi kesalahan pada pembayaran!');
                     const finishRedirectUrl = '/belanja/gagal';
                     const orderId = result.order_id;
+                    window.location.href = `${finishRedirectUrl}/${orderId}`;
+                },
+                onClose: function() {
+                    Notiflix.Notify.failure('Pembayaran Ditunda!');
+                    const finishRedirectUrl = '/belanja/gagal';
+                    const orderId = order_id;
                     window.location.href = `${finishRedirectUrl}/${orderId}`;
                 }
             });
