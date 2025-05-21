@@ -28,174 +28,187 @@
                         <b class="text-dark">Daftar Transaksi</b>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <label for="pelanggan" class="col-form-label">Pelanggan</label>
-                                    <input type="hidden" id="users_id" value="{{ Auth::user()->id }}">
-                                    <input class="form-control" type="text" name="pelanggan" id="pelanggan"
-                                        value="{{ Auth::user()->name }}" disabled>
+                        <!-- Step Container -->
+                        <div id="step-1">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="pelanggan">Pelanggan</label>
+                                        <input type="hidden" id="users_id" value="{{ Auth::user()->id }}">
+                                        <input class="form-control" type="text" value="{{ Auth::user()->name }}"
+                                            disabled>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <label for="tanggal" class="col-form-label">Tanggal</label>
-                                    <input class="form-control" type="text" name="tanggal" id="tanggal"
-                                        value="{{ tanggalIndoLengkap(Date('Y-m-d')) }}" disabled>
-                                    <input type="hidden" name="tanggal_transaksi" id="tanggal_transaksi"
-                                        value="{{ Date('Y-m-d') }}">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="tanggal">Tanggal</label>
+                                        <input class="form-control" type="text"
+                                            value="{{ tanggalIndoLengkap(Date('Y-m-d')) }}" disabled>
+                                        <input type="hidden" id="tanggal_transaksi" value="{{ Date('Y-m-d') }}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="form-group">
-                                    <label for="alamat" class="col-form-label">Dikirim ke alamat</label>
-                                    <div class="input-group">
-                                        <input type="hidden" name="alamat_id_aktif" id="alamat_id_aktif">
-                                        <input type="hidden" name="city_id" id="city_id">
-                                        <input class="form-control" type="text" name="alamat" id="alamat"
-                                            placeholder="Masukkan alamat" readonly>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button" data-toggle="modal"
-                                                data-target="#modalTambahAlamat" onclick="get_data_alamat()">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="alamat">Dikirim ke alamat</label>
+                                        <div class="input-group">
+                                            <input type="hidden" id="alamat_id_aktif">
+                                            <input type="hidden" id="city_id">
+                                            <input class="form-control" type="text" id="alamat"
+                                                placeholder="Masukkan alamat" readonly>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" type="button" data-toggle="modal"
+                                                    data-target="#modalTambahAlamat" onclick="get_data_alamat()">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Tambah produk -->
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <h5>Tambah Pembelian</h5>
+                                    <div class="form-group">
+                                        <input type="hidden" id="id_produk">
+                                        <label for="produk_id">Nama Produk</label>
+                                        <select class="form-control" id="produk_id" onchange="change_produk(this)">
+                                            <option value="">Pilih produk</option>
+                                            @foreach ($produk as $item)
+                                                <option value="{{ $item->id }}" data-id-produk="{{ $item->id }}"
+                                                    data-kode="{{ $item->kode }}" data-nama="{{ $item->nama }}"
+                                                    data-stok="{{ intval($item->stok) }}" data-harga="{{ $item->harga }}"
+                                                    data-harga-diskon="{{ $item->harga_diskon }}"
+                                                    data-berat="{{ intval($item->berat) }}"
+                                                    data-satuan="{{ $item->satuan }}">
+                                                    {{ $item->kode }} || {{ $item->nama }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Stok</label>
+                                        <input class="form-control" type="text" id="stok" value="-" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Berat (gram)</label>
+                                        <input class="form-control" type="text" id="berat" value="-" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Harga</label>
+                                        <input class="form-control" type="text" id="harga" value="-" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Harga Diskon</label>
+                                        <input class="form-control" type="text" id="harga_diskon" value="-"
+                                            disabled>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="tambah_barang()">
+                                        <i class="fas fa-plus-circle"></i> Tambahkan
+                                    </button>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="card card-body shadow-lg">
+                                        <h5>Daftar Pembelian</h5>
+                                        <div class="table_transaksi" style="width:100%; height: 350px; overflow-y: auto;">
+                                            <table id="table-transaksi"
+                                                class="table table-bordered table-hover table-sm text-center">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Kode</th>
+                                                        <th>Nama Barang</th>
+                                                        <th>Harga</th>
+                                                        <th>Jumlah</th>
+                                                        <th>Total</th>
+                                                        <th>Berat</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot class="thead-light">
+                                                    <tr>
+                                                        <th colspan="2">Total</th>
+                                                        <th id="total-harga" class="text-right">Rp 0</th>
+                                                        <th id="total-jumlah">0</th>
+                                                        <th id="total-semua" class="text-right">Rp 0</th>
+                                                        <th id="total-berat" class="text-right">0</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <input type="hidden" id="latitude_toko" value="{{ $profileToko->latitude }}">
+                                    <input type="hidden" id="longitude_toko" value="{{ $profileToko->longitude }}">
+                                    <input type="hidden" id="latitude_pelanggan">
+                                    <input type="hidden" id="longitude_pelanggan">
+                                    <input type="hidden" id="nama_ekspedisi">
+                                    <input type="hidden" id="harga_ekspedisi">
+                                    <input type="hidden" id="jarak">
+                                    <button class="btn btn-primary float-right" onclick="nextStep()">Selanjutnya</button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <h5>Tambah Pembelian</h5>
-                                <div class="form-group">
-                                    <input type="hidden" name="id_produk" id="id_produk">
-                                    <label for="produk_id" class="col-form-label">Nama Produk</label>
-                                    <select class="form-control" id="produk_id" name="produk_id"
-                                        onchange="change_produk(this)">
-                                        <option value="">Pilih produk</option>
-                                        @foreach ($produk as $item)
-                                            <option value="{{ $item->id }}" data-id-produk="{{ $item->id }}"
-                                                data-kode="{{ $item->kode }}" data-nama="{{ $item->nama }}"
-                                                data-stok="{{ intval($item->stok) }}" data-harga="{{ $item->harga }}"
-                                                data-harga-diskon="{{ $item->harga_diskon }}"
-                                                data-berat="{{ intval($item->berat) }}" data-satuan="{{ $item->satuan }}">
-                                                {{ $item->kode }} || {{ $item->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                        <!-- Step 2 -->
+                        <div id="step-2" style="display: none;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Catatan untuk penjual <small>(Bisa dikosongkan)</small></label>
+                                        <textarea class="form-control" id="catatan" rows="3" placeholder="Tambahkan catatan untuk penjual"></textarea>
+                                    </div>
                                 </div>
-                                <div class="form-group mt-0">
-                                    <label for="stok" class="col-form-label">Stok</label>
-                                    <input class="form-control" type="text" name="stok" id="stok" value="-"
-                                        disabled>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Metode Pembayaran</label>
+                                        <select class="form-control" id="metode_pembayaran"
+                                            onchange="ubah_metode_pembayaran()">
+                                            <option value="1">COD (Cash on Delivery)</option>
+                                            <option value="0">Pembayaran Online</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="form-group mt-0">
-                                    <label for="berat" class="col-form-label">Berat (gram)</label>
-                                    <input class="form-control" type="text" name="berat" id="berat"
-                                        value="-" disabled>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>Sub Total</label>
+                                        <input type="text" id="sub_total" class="form-control" readonly>
+                                    </div>
                                 </div>
-                                <div class="form-group mt-0">
-                                    <label for="harga" class="col-form-label">Harga</label>
-                                    <input class="form-control" type="text" name="harga" id="harga"
-                                        value="-" disabled>
+                                <div class="col-6" id="form_harga_ongkir">
+                                    <div class="form-group">
+                                        <label>Harga Ongkir</label>
+                                        <input type="text" id="harga_ongkir" class="form-control" readonly>
+                                    </div>
                                 </div>
-                                <div class="form-group mt-0">
-                                    <label for="harga_diskon" class="col-form-label">Harga Diskon</label>
-                                    <input class="form-control" type="text" name="harga_diskon" id="harga_diskon"
-                                        value="-" disabled>
+                                <div class="col-6" id="form_kurir_raja_ongkir">
+                                    <div class="form-group">
+                                        <label>Ekspedisi</label><br>
+                                        <select class="form-control" id="kurir_raja_ongkir"
+                                            onchange="change_ekspedisi(this)">
+                                            <option value="">Loading ...</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <button class="btn btn-primary" id="btn_tambah" onclick="tambah_barang()"><i
-                                        class="fas fa-plus-circle"></i>Tambahkan</button>
                             </div>
-                            <div class="col-sm-8">
-                                <div class="card card-body shadow-lg">
-                                    <h5>Daftar Pembelian</h5>
-                                    <div class="table_transaksi" style="width:100%; height: 200px; overflow-y: auto;">
-                                        <table id="table-transaksi"
-                                            class="table table-bordered table-hover table-sm text-center">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th width="10%">Kode</th>
-                                                    <th width="15%">Nama Barang</th>
-                                                    <th width="15%">Harga</th>
-                                                    <th width="10%">Jumlah</th>
-                                                    <th width="15%">Total</th>
-                                                    <th width="15%">Berat</th>
-                                                    <th width="20%">Aksi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                            <tfoot class="thead-light">
-                                                <tr>
-                                                    <th colspan="2" class="text-center">Total</th>
-                                                    <th id="total-harga" class="text-right">Rp 0</th>
-                                                    <th id="total-jumlah">0</th>
-                                                    <th id="total-semua" class="text-right">Rp 0</th>
-                                                    <th id="total-berat" class="text-right">0</th>
-                                                    <th></th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <input type="hidden" name="latitude_toko" id="latitude_toko"
-                                                value="{{ $profileToko->latitude }}">
-                                            <input type="hidden" name="longitude_toko" id="longitude_toko"
-                                                value="{{ $profileToko->longitude }}">
-                                            <input type="hidden" name="latitude_pelanggan" id="latitude_pelanggan">
-                                            <input type="hidden" name="longitude_pelanggan" id="longitude_pelanggan">
-
-                                            <input type="hidden" name="nama_ekspedisi" id="nama_ekspedisi">
-                                            <input type="hidden" name="harga_ekspedisi" id="harga_ekspedisi">
-                                            <input type="hidden" name="jarak" id="jarak">
-                                            <label for="catatan" class="col-form-label">Catatan untuk penjual
-                                                <small>(Bisa dikosongkan)</small> </label>
-                                            <textarea class="form-control" id="catatan" name="catatan" rows="3"
-                                                placeholder="Tambahkan catatan untuk penjual"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label for="metode_pembayaran" class="col-form-label">Metode
-                                                Pembayaran</label>
-                                            <select class="form-control" id="metode_pembayaran" name="metode_pembayaran"
-                                                onchange="ubah_metode_pembayaran()">
-                                                <option value="1">COD (Cash on Delivery)</option>
-                                                <option value="0">Pembayaran Online</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-6" id="form_kurir_raja_ongkir">
-                                        <div class="form-group">
-                                            <label for="kurir_raja_ongkir" class="col-form-label">Ekspedisi</label>
-                                            <select class="form-control select2" id="kurir_raja_ongkir"
-                                                name="kurir_raja_ongkir" style="width: 100%;"
-                                                onchange="change_ekspedisi(this)">
-                                                <option value="">Loading ...</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button class="btn btn-secondary float-left" onclick="prevStep()">
+                                        <i class="fas fa-arrow-left"></i> Kembali
+                                    </button>
+                                    <button class="btn btn-danger float-left ml-2" onclick="batal_transaksi()">
+                                        <i class="fas fa-window-close"></i> Batalkan Transaksi
+                                    </button>
+                                    <button class="btn btn-success float-right" onclick="buat_transaksi()">
+                                        <i class="fas fa-cart-plus"></i> Buat Transaksi
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-12">
-                                <button class="btn btn-danger float-left" id="btn_batal" onclick="batal_transaksi()"><i
-                                        class="fas fa-window-close"></i>
-                                    Batalkan Transaksi</button>
-                                <button class="btn btn-success float-right" id="btn_submit" onclick="buat_transaksi()"><i
-                                        class="fas fa-cart-plus"></i> Buat Transaksi</button>
-                            </div>
-                        </div>
-
-                    </div>
+                    </div> <!-- end card-body -->
                 </div>
             </div>
         </div>
@@ -230,9 +243,29 @@
         $(document).ready(function() {
             $('#loading-overlay').fadeOut();
             get_alamat_aktif();
-            ubah_metode_pembayaran();
+            // ubah_metode_pembayaran();
             $('#kurir_raja_ongkir, #kurir_cod, #metode_pembayaran').select2();
         })
+
+        function nextStep() {
+            const rowCount = $('#table-transaksi tbody tr').length;
+
+            if (rowCount === 0) {
+                Notiflix.Notify.warning('Tidak ada produk yang dipesan.');
+                return;
+            }
+
+            $('#step-1').hide();
+            $('#step-2').show();
+            ubah_metode_pembayaran();
+            get_data_ongkir();
+        }
+
+        function prevStep() {
+            $('#step-2').hide();
+            $('#step-1').show();
+        }
+
 
         function get_data_ongkir() {
             var city_id = $('#city_id').val();
@@ -564,29 +597,51 @@
             $('#total-jumlah').html(rupiahFormat(totalJumlah));
             $('#total-semua').html(rupiahFormat(totalSemua));
             $('#total-berat').html(totalBerat);
-            ubah_metode_pembayaran();
-            get_data_ongkir();
+            // ubah_metode_pembayaran();
+            // get_data_ongkir();
         }
 
         function ubah_metode_pembayaran() {
             var metode = $('#metode_pembayaran').val();
             var jarak = parseFloat($('#jarak').val());
             var berat = parseFloat($('#total-berat').text());
+            $('#sub_total').val($('#total-semua').text());
             if (metode == "1") {
                 $('#form_kurir_raja_ongkir').hide();
+                $('#form_harga_ongkir').show();
                 if (jarak > 0 && berat > 0) {
                     if (jarak <= 10000 && berat >= 5000) {
+                        const ongkir = hitungOngkir(jarak, berat);
                         $('#nama_ekspedisi').val('Lokal');
-                        $('#harga_ekspedisi').val('0');
+                        $('#harga_ekspedisi').val(ongkir);
+                        $('#harga_ongkir').val(rupiahFormat(ongkir));
                     } else {
                         Notiflix.Notify.failure('COD hanya berlaku untuk jarak <= 10km dan berat >= 5kg');
                         $('#metode_pembayaran').val(0).change();
                     }
                 }
             } else {
-                get_data_ongkir();
+                $('#form_harga_ongkir').hide();
                 $('#form_kurir_raja_ongkir').show();
             }
+        }
+
+        function hitungOngkir(jarak, total_berat) {
+            let ongkirJarak, ongkirBerat;
+
+            if (jarak < 1000) {
+                ongkirJarak = 2000;
+            } else {
+                ongkirJarak = (jarak / 1000) * 2000;
+            }
+
+            if (total_berat < 5000) {
+                ongkirBerat = 1000;
+            } else {
+                ongkirBerat = (total_berat / 5000) * 1000;
+            }
+
+            return Math.round(ongkirJarak + ongkirBerat);
         }
 
         function batal_transaksi() {
@@ -719,8 +774,8 @@
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             var distance = R * c;
             $('#jarak').val(distance.toFixed(0));
-            ubah_metode_pembayaran();
-            get_data_ongkir();
+            // ubah_metode_pembayaran();
+            // get_data_ongkir();
         }
     </script>
 @endsection

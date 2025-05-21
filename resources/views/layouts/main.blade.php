@@ -153,6 +153,17 @@
                 $('.alert').alert('close');
             }, 5000);
         }
+
+        function rupiahFormat(angka) {
+            angka = Number(angka);
+            var options = {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            };
+            return angka.toLocaleString('id-ID', options);
+        }
     </script>
     @yield('script')
 </body>
