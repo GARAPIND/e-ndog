@@ -564,6 +564,8 @@
             $('#total-jumlah').html(rupiahFormat(totalJumlah));
             $('#total-semua').html(rupiahFormat(totalSemua));
             $('#total-berat').html(totalBerat);
+            ubah_metode_pembayaran();
+            get_data_ongkir();
         }
 
         function ubah_metode_pembayaran() {
@@ -717,6 +719,8 @@
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             var distance = R * c;
             $('#jarak').val(distance.toFixed(0));
+            ubah_metode_pembayaran();
+            get_data_ongkir();
         }
     </script>
 @endsection

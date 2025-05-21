@@ -108,9 +108,8 @@ class PesananKurirController extends Controller
             ->firstOrFail();
 
         $transaksi->status_pengiriman = $request->status;
-
-        if ($request->filled('catatan_kurir')) {
-            $transaksi->catatan_penjual = $transaksi->catatan_penjual . "\n\nCatatan Kurir: " . $request->catatan_kurir;
+        if ($request->catatan_kurir) {
+            $transaksi->catatan_kurir = $request->catatan_kurir;
         }
 
         if ($request->status == 'Dikirim' && $request->hasFile('foto_bukti')) {

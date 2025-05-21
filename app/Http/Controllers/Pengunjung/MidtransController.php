@@ -72,7 +72,7 @@ class MidtransController extends Controller
                     'tanggal_transaksi' => $tanggal_transaksi,
                     'pelanggan_id' => $pelanggan_id,
                     'alamat_id' => $alamat_id,
-                    'status_pembayaran' => 'Dikemas',
+                    'status_pembayaran' => 'Menunggu Pembayaran',
                     'status_pengiriman' => 'Dikemas',
                     'jarak' => $jarak,
                     'is_cod' => $is_cod,

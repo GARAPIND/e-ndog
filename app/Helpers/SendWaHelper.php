@@ -143,8 +143,8 @@ class SendWaHelper
 
             // Send notification to customer
             $customerName = $transaksi->pelanggan->user->name;
-            $courierName = $transaksi->kurir->user->name;
-            $courierPhone = $transaksi->kurir->telp;
+            $courierName = $transaksi->kurir->user->name ?? $transaksi->ekspedisi;
+            $courierPhone = $transaksi->kurir->telp ?? '-';
             $orderCode = $transaksi->kode_transaksi;
             $customerAddress = $transaksi->alamat->alamat_lengkap;
 
@@ -195,7 +195,11 @@ class SendWaHelper
             $courierMessage .= "Mohon segera lakukan pengiriman dan konfirmasi setelah pesanan diterima oleh pelanggan.\n";
             $courierMessage .= "Terima kasih! 🙏";
 
-            $courierResult = $this->sendWa($transaksi->kurir->telp, $courierMessage);
+            if ($transaksi->is_cod == 1) {
+                $courierResult = $this->sendWa($transaksi->kurir->telp, $courierMessage);
+            } else {
+                $courierResult = [];
+            }
 
             return [
                 'customer' => $customerResult,

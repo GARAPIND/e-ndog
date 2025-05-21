@@ -183,7 +183,31 @@
                                                 {{ ucfirst($data->status_pengiriman) }}
                                             </span>
                                         </div>
-                                        @if ($data->status_pembauaran == 'menunggu pembayaran')
+                                        @if ($data->status_pengiriman == 'Dikirim')
+                                            @if ($data->is_cod == 1)
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-box mr-2"></i>Kurir E-Ndog:</span>
+                                                    <span class="highlight-text">{{ $data->kurir->user->name }}</span>
+                                                </div>
+                                                @if ($data->foto)
+                                                    <div class="d-flex justify-content-between mb-3">
+                                                        <span><i class="fas fa-box mr-2"></i>Catatan Kurir:</span>
+                                                        <span>{{ $data->catatan_kurir }}</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mb-3">
+                                                        <span><i class="fas fa-image mr-2"></i>Foto Bukti:</span>
+                                                        <span>
+                                                            <a href="{{ asset('storage/' . $data->foto) }}"
+                                                                target="_blank">
+                                                                <img src="{{ asset('storage/' . $data->foto) }}"
+                                                                    alt="Bukti Foto"
+                                                                    style="max-width: 120px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                                                            </a>
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            @endif
+                                        @else
                                             <div class="d-flex justify-content-between mb-3">
                                                 <span><i class="fas fa-box mr-2"></i>Ekspedisi:</span>
                                                 <span class="highlight-text">{{ $data->ekspedisi }}</span>

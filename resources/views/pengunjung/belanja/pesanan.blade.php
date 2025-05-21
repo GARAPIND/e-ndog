@@ -111,11 +111,11 @@
                                     <small>Jumlah: ${item.detail[0].jumlah}</small>
                                     <div class="mt-2">
                                         ${item.detail[0].produk.harga_diskon ? `
-                                                                                            <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(item.detail[0].produk.harga)}</del></span>
-                                                                                            <span class="font-weight-bold text-danger ml-2">${rupiahFormat(item.detail[0].produk.harga_diskon)}</span>
-                                                                                            ` : `
-                                                                                            <span class="font-weight-bold text-success">${rupiahFormat(item.detail[0].produk.harga)}</span>
-                                                                                            `}
+                                                                                                                                            <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(item.detail[0].produk.harga)}</del></span>
+                                                                                                                                            <span class="font-weight-bold text-danger ml-2">${rupiahFormat(item.detail[0].produk.harga_diskon)}</span>
+                                                                                                                                            ` : `
+                                                                                                                                            <span class="font-weight-bold text-success">${rupiahFormat(item.detail[0].produk.harga)}</span>
+                                                                                                                                            `}
                                     </div>
                                     <div class="mt-2">
                                         <strong>Total ${item.detail[0].jumlah} produk:</strong>
@@ -145,11 +145,11 @@
                                                             <small>Jumlah: ${detail.jumlah}</small>
                                                             <div class="mt-2">
                                                                 ${detail.produk.harga_diskon ? `
-                                                                                                                            <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(detail.produk.harga)}</del></span>
-                                                                                                                            <span class="font-weight-bold text-danger ml-2">${rupiahFormat(detail.produk.harga_diskon)}</span>
-                                                                                                                            ` : `
-                                                                                                                            <span class="font-weight-bold text-success">${rupiahFormat(detail.produk.harga)}</span>
-                                                                                                                            `}
+                                                                                                                                                                            <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(detail.produk.harga)}</del></span>
+                                                                                                                                                                            <span class="font-weight-bold text-danger ml-2">${rupiahFormat(detail.produk.harga_diskon)}</span>
+                                                                                                                                                                            ` : `
+                                                                                                                                                                            <span class="font-weight-bold text-success">${rupiahFormat(detail.produk.harga)}</span>
+                                                                                                                                                                            `}
                                                             </div>
                                                             <div class="mt-2">
                                                                 <strong>Total ${detail.jumlah} produk:</strong>
@@ -318,11 +318,11 @@
                                     <small>Jumlah: ${item.detail[0].jumlah}</small>
                                     <div class="mt-2">
                                         ${item.detail[0].produk.harga_diskon ? `
-                                                                                                                                                                                                                <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(item.detail[0].produk.harga)}</del></span>
-                                                                                                                                                                                                                <span class="font-weight-bold text-danger ml-2">${rupiahFormat(item.detail[0].produk.harga_diskon)}</span>
-                                                                                                                                                                                                                ` : `
-                                                                                                                                                                                                                <span class="font-weight-bold text-success">${rupiahFormat(item.detail[0].produk.harga)}</span>
-                                                                                                                                                                                                                `}
+                                                                                                                                                                                                                                                                <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(item.detail[0].produk.harga)}</del></span>
+                                                                                                                                                                                                                                                                <span class="font-weight-bold text-danger ml-2">${rupiahFormat(item.detail[0].produk.harga_diskon)}</span>
+                                                                                                                                                                                                                                                                ` : `
+                                                                                                                                                                                                                                                                <span class="font-weight-bold text-success">${rupiahFormat(item.detail[0].produk.harga)}</span>
+                                                                                                                                                                                                                                                                `}
                                     </div>
                                     <div class="mt-2">
                                         <strong>Total ${item.detail[0].jumlah} produk:</strong>
@@ -352,11 +352,11 @@
                                                             <small>Jumlah: ${detail.jumlah}</small>
                                                             <div class="mt-2">
                                                                 ${detail.produk.harga_diskon ? `
-                                                                                                                                                                                                                                    <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(detail.produk.harga)}</del></span>
-                                                                                                                                                                                                                                    <span class="font-weight-bold text-danger ml-2">${rupiahFormat(detail.produk.harga_diskon)}</span>
-                                                                                                                                                                                                                                    ` : `
-                                                                                                                                                                                                                                    <span class="font-weight-bold text-success">${rupiahFormat(detail.produk.harga)}</span>
-                                                                                                                                                                                                                                    `}
+                                                                                                                                                                                                                                                                                    <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(detail.produk.harga)}</del></span>
+                                                                                                                                                                                                                                                                                    <span class="font-weight-bold text-danger ml-2">${rupiahFormat(detail.produk.harga_diskon)}</span>
+                                                                                                                                                                                                                                                                                    ` : `
+                                                                                                                                                                                                                                                                                    <span class="font-weight-bold text-success">${rupiahFormat(detail.produk.harga)}</span>
+                                                                                                                                                                                                                                                                                    `}
                                                             </div>
                                                             <div class="mt-2">
                                                                 <strong>Total ${detail.jumlah} produk:</strong>
@@ -429,11 +429,11 @@
                                     <small>Jumlah: ${item.detail[0].jumlah}</small>
                                     <div class="mt-2">
                                         ${item.detail[0].produk.harga_diskon ? `
-                                                                                                                                                                                                                <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(item.detail[0].produk.harga)}</del></span>
-                                                                                                                                                                                                                <span class="font-weight-bold text-danger ml-2">${rupiahFormat(item.detail[0].produk.harga_diskon)}</span>
-                                                                                                                                                                                                                ` : `
-                                                                                                                                                                                                                <span class="font-weight-bold text-success">${rupiahFormat(item.detail[0].produk.harga)}</span>
-                                                                                                                                                                                                                `}
+                                                                                                                                                                                                                                                                <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(item.detail[0].produk.harga)}</del></span>
+                                                                                                                                                                                                                                                                <span class="font-weight-bold text-danger ml-2">${rupiahFormat(item.detail[0].produk.harga_diskon)}</span>
+                                                                                                                                                                                                                                                                ` : `
+                                                                                                                                                                                                                                                                <span class="font-weight-bold text-success">${rupiahFormat(item.detail[0].produk.harga)}</span>
+                                                                                                                                                                                                                                                                `}
                                     </div>
                                     <div class="mt-2">
                                         <strong>Total ${item.detail[0].jumlah} produk:</strong>
@@ -463,11 +463,11 @@
                                                             <small>Jumlah: ${detail.jumlah}</small>
                                                             <div class="mt-2">
                                                                 ${detail.produk.harga_diskon ? `
-                                                                                                                                                                                                                                    <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(detail.produk.harga)}</del></span>
-                                                                                                                                                                                                                                    <span class="font-weight-bold text-danger ml-2">${rupiahFormat(detail.produk.harga_diskon)}</span>
-                                                                                                                                                                                                                                    ` : `
-                                                                                                                                                                                                                                    <span class="font-weight-bold text-success">${rupiahFormat(detail.produk.harga)}</span>
-                                                                                                                                                                                                                                    `}
+                                                                                                                                                                                                                                                                                    <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(detail.produk.harga)}</del></span>
+                                                                                                                                                                                                                                                                                    <span class="font-weight-bold text-danger ml-2">${rupiahFormat(detail.produk.harga_diskon)}</span>
+                                                                                                                                                                                                                                                                                    ` : `
+                                                                                                                                                                                                                                                                                    <span class="font-weight-bold text-success">${rupiahFormat(detail.produk.harga)}</span>
+                                                                                                                                                                                                                                                                                    `}
                                                             </div>
                                                             <div class="mt-2">
                                                                 <strong>Total ${detail.jumlah} produk:</strong>
@@ -481,9 +481,11 @@
 
                                 html += `</div>`;
                             }
-
+                            if (item.foto !== null) {
+                                var status = 'Sudah diterima';
+                            }
                             html += `<div class="bg-secondary mt-3 p-2 rounded">
-                                <span class="text-dark font-weight-bold">Pesanan dikirim</span><br>
+                                <span class="text-dark font-weight-bold">Pesanan dikirim</span> <span class="text-success font-weight-bold"> (${status || '-'})</span><br>
                                 <small class="text-muted">Harap klik "pesanan selesai" jika sudah sampai di alamat
                                     anda</small>
                             </div>
@@ -491,7 +493,7 @@
                                 <a href=${getPesananDetailUrl(item.id)}" class="btn btn-dark btn-sm">
                                     <i class="fas fa-eye"></i> Detail
                                 </a>
-                                <a href="javascript:void(0)" class="btn btn-success btn-sm">
+                                <a href="javascript:void(0)" class="btn btn-success btn-sm" onclick="pesanan_selesai(${item.id})">
                                     <i class="fas fa-check-circle"></i> Selesai
                                 </a>
                             </div>
@@ -544,11 +546,11 @@
                                     <small>Jumlah: ${item.detail[0].jumlah}</small>
                                     <div class="mt-2">
                                         ${item.detail[0].produk.harga_diskon ? `
-                                                                                                                                                                                                            <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(item.detail[0].produk.harga)}</del></span>
-                                                                                                                                                                                                            <span class="font-weight-bold text-danger ml-2">${rupiahFormat(item.detail[0].produk.harga_diskon)}</span>
-                                                                                                                                                                                                            ` : `
-                                                                                                                                                                                                            <span class="font-weight-bold text-success">${rupiahFormat(item.detail[0].produk.harga)}</span>
-                                                                                                                                                                                                            `}
+                                                                <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(item.detail[0].produk.harga)}</del></span>
+                                                                <span class="font-weight-bold text-danger ml-2">${rupiahFormat(item.detail[0].produk.harga_diskon)}</span>
+                                                                ` : `
+                                                                <span class="font-weight-bold text-success">${rupiahFormat(item.detail[0].produk.harga)}</span>
+                                                                `}
                                     </div>
                                     <div class="mt-2">
                                         <strong>Total ${item.detail[0].jumlah} produk:</strong>
@@ -578,11 +580,11 @@
                                                             <small>Jumlah: ${detail.jumlah}</small>
                                                             <div class="mt-2">
                                                                 ${detail.produk.harga_diskon ? `
-                                                                                                                                                                                                                                <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(detail.produk.harga)}</del></span>
-                                                                                                                                                                                                                                <span class="font-weight-bold text-danger ml-2">${rupiahFormat(detail.produk.harga_diskon)}</span>
-                                                                                                                                                                                                                                ` : `
-                                                                                                                                                                                                                                <span class="font-weight-bold text-success">${rupiahFormat(detail.produk.harga)}</span>
-                                                                                                                                                                                                                                `}
+                                                                                        <span class="text-muted text-decoration-line-through"><del>${rupiahFormat(detail.produk.harga)}</del></span>
+                                                                                        <span class="font-weight-bold text-danger ml-2">${rupiahFormat(detail.produk.harga_diskon)}</span>
+                                                                                        ` : `
+                                                                                        <span class="font-weight-bold text-success">${rupiahFormat(detail.produk.harga)}</span>
+                                                                                        `}
                                                             </div>
                                                             <div class="mt-2">
                                                                 <strong>Total ${detail.jumlah} produk:</strong>
@@ -617,6 +619,42 @@
                     Notiflix.Notify.failure(responseText);
                 }
             })
+        }
+
+        function pesanan_selesai(id) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Pesanan yang diselesaikan tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, selesaikan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('pesanan.selesai_pesanan') }}",
+                        type: 'get',
+                        data: {
+                            id: id
+                        },
+                        beforeSend: () => {
+                            Notiflix.Loading.hourglass('Loading...');
+                        },
+                        success: (response) => {
+                            Notiflix.Loading.remove();
+                            Notiflix.Notify.success('Berhasil menyelesaikan pesanan');
+                            get_data_pesanan_dikirim();
+                            get_data_pesanan_selesai();
+                        },
+                        error: (xhr) => {
+                            Notiflix.Loading.remove();
+                            Notiflix.Notify.failure(xhr.responseText || 'Terjadi kesalahan.');
+                        }
+                    })
+                }
+            });
         }
     </script>
 @endsection

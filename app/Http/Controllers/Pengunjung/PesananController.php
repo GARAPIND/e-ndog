@@ -40,7 +40,7 @@ class PesananController extends Controller
         $transaksi = Transaksi::With('pelanggan.user')->find($id);
         $kode_transaksi = "";
 
-        if (!$transaksi->snap_token || $this->isSnapTokenExpired($transaksi->updated_at)) {
+        if (!$transaksi->snap_token || $this->isSnapTokenExpired($transaksi->created_at)) {
             $kode_transaksi = 'ORDER-' . rand();
             $params = [
                 'transaction_details' => [
@@ -68,9 +68,9 @@ class PesananController extends Controller
             'order_id' => $kode_transaksi
         ]);
     }
-    private function isSnapTokenExpired($updatedAt)
+    private function isSnapTokenExpired($created_at)
     {
-        return now()->diffInMinutes($updatedAt) > 1440;
+        return now()->diffInMinutes($created_at) > 1440;
     }
 
     public function detail($id)
@@ -92,5 +92,15 @@ class PesananController extends Controller
         $transaksi->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Pesanan berhasil dihapus']);
+    }
+
+    public function selesai_pesanan(Request $request)
+    {
+        $id = $request->id;
+        $transaksi = Transaksi::find($id);
+        $transaksi->status_pengiriman = 'Selesai';
+        $transaksi->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Pesanan berhasil diselesaikan']);
     }
 }

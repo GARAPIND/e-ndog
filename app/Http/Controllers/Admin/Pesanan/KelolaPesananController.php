@@ -62,14 +62,14 @@ class KelolaPesananController extends Controller
             'status' => 'required|in:Dikemas,Dikirim,Selesai',
             'catatan_penjual' => 'nullable|string'
         ];
+        $transaksi = Transaksi::with('detail')->findOrFail($id);
 
-        if ($request->status === 'Dikirim') {
+        if ($request->status === 'Dikirim' && $transaksi->is_cod == 1) {
             $validationRules['kurir_id'] = 'required|exists:kurir,id';
         }
 
         $request->validate($validationRules);
 
-        $transaksi = Transaksi::with('detail')->findOrFail($id);
         $transaksi->status_pengiriman = $request->status;
 
         if ($request->has('catatan_penjual')) {
@@ -94,6 +94,9 @@ class KelolaPesananController extends Controller
             $totalOngkir = round($ongkirJarak + $ongkirBerat);
             $transaksi->ongkir = $totalOngkir;
         }
+
+        $transaksi->save();
+
         if ($transaksi->status_pengiriman == 'Dikirim') {
             $sendWaHelper = new SendWaHelper();
             $sendWaHelper->sendOrderShippingNotification($transaksi->id, $transaksi->kurir_id);
@@ -101,8 +104,6 @@ class KelolaPesananController extends Controller
             $sendWaHelper = new SendWaHelper();
             $sendWaHelper->sendOrderCompletedNotification($transaksi->id);
         }
-
-        $transaksi->save();
 
         return response()->json([
             'success' => true,

@@ -179,6 +179,7 @@ Route::middleware(['pelanggan'])->group(function () {
         Route::get('/get_data_pesanan', [PesananController::class, 'get_data_pesanan'])->name('get_data_pesanan');
         Route::get('/bayar_ulang', [PesananController::class, 'bayar_ulang'])->name('bayar_ulang');
         Route::get('/hapus_pesanan', [PesananController::class, 'hapus_pesanan'])->name('hapus_pesanan');
+        Route::get('/selesai_pesanan', [PesananController::class, 'selesai_pesanan'])->name('selesai_pesanan');
         Route::get('/detail/${id}', [PesananController::class, 'detail'])->name('detail');
     });
 
