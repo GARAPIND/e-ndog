@@ -138,6 +138,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/{id}/update-status', [KelolaPesananController::class, 'updateStatus'])->name('update-status');
         Route::get('/{id}/get-data', [KelolaPesananController::class, 'getTransaksiData'])->name('pesanan.get-data');
         Route::get('/kurir/recommendations', [KelolaPesananController::class, 'getKurirRecommendations'])->name('kurir.recommendations');
+        Route::post('/validasi_pembatalan', [KelolaPesananController::class, 'validasi_pembatalan'])->name('validasi_pembatalan');
     });
 });
 
@@ -178,7 +179,7 @@ Route::middleware(['pelanggan'])->group(function () {
     Route::group(['prefix' => 'pesanan', 'as' => 'pesanan.'], function () {
         Route::get('/get_data_pesanan', [PesananController::class, 'get_data_pesanan'])->name('get_data_pesanan');
         Route::get('/bayar_ulang', [PesananController::class, 'bayar_ulang'])->name('bayar_ulang');
-        Route::get('/hapus_pesanan', [PesananController::class, 'hapus_pesanan'])->name('hapus_pesanan');
+        Route::get('/batal_pesanan', [PesananController::class, 'batal_pesanan'])->name('batal_pesanan');
         Route::get('/selesai_pesanan', [PesananController::class, 'selesai_pesanan'])->name('selesai_pesanan');
         Route::get('/detail/${id}', [PesananController::class, 'detail'])->name('detail');
     });

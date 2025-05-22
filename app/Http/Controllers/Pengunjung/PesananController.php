@@ -28,9 +28,19 @@ class PesananController extends Controller
     public function get_data_pesanan(Request $request)
     {
         $pelanggan = Customer::where('user_id', Auth::user()->id)->first();
-        $data = Transaksi::with('alamat', 'pelanggan', 'detail.produk')
-            ->where('pelanggan_id', $pelanggan->id)
-            ->where('status_pengiriman', $request->status_pengiriman)->get();
+        if ($request->status_pengiriman == "cancel") {
+            $data = Transaksi::with('alamat', 'pelanggan', 'detail.produk')
+                ->where('pelanggan_id', $pelanggan->id)
+                ->whereIn('cancel', [0, 1])->get();
+        } else {
+            $data = Transaksi::with('alamat', 'pelanggan', 'detail.produk')
+                ->where('pelanggan_id', $pelanggan->id)
+                ->where(function ($query) {
+                    $query->whereNull('cancel')->orWhere('cancel', 2);
+                })
+                ->where('status_pengiriman', $request->status_pengiriman)
+                ->get();
+        }
         return response()->json($data);
     }
 
@@ -80,16 +90,14 @@ class PesananController extends Controller
         return view('pengunjung.belanja.detail_pesanan', compact('data', 'profile'));
     }
 
-    public function hapus_pesanan(Request $request)
+    public function batal_pesanan(Request $request)
     {
         $id = $request->id;
+        $alasan = $request->alasan;
         $transaksi = Transaksi::find($id);
-
-        if (!$transaksi) {
-            return response()->json(['status' => 'error', 'message' => 'Pesanan tidak ditemukan'], 404);
-        }
-
-        $transaksi->delete();
+        $transaksi->cancel = 0;
+        $transaksi->catatan_cancel = $alasan;
+        $transaksi->save();
 
         return response()->json(['status' => 'success', 'message' => 'Pesanan berhasil dihapus']);
     }

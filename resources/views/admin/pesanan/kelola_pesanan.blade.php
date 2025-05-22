@@ -88,12 +88,49 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Validasi Pembatalan -->
+    <div class="modal fade" id="modalValidasiPembatalan" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form id="form-validasi-pembatalan" method="POST">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Validasi Pembatalan</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin memproses pembatalan pesanan ini?</p>
+                        <input type="hidden" name="id_pesanan" id="id_pesanan">
+                        <div class="form-group">
+                            <label for="alasan_pelanggan">Alasan Pembatalan Pelanggan</label>
+                            <textarea name="alasan_pelanggan" id="alasan_pelanggan" class="form-control" rows="3" readonly></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="catatan">Catatan</label>
+                            <textarea name="catatan" id="catatan" class="form-control" rows="3"
+                                placeholder="Masukkan catatan jika diperlukan..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+                        <button type="submit" name="aksi" value="tolak" class="btn btn-secondary">Tolak</button>
+                        <button type="submit" name="aksi" value="setujui" class="btn btn-success">Setujui</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
 
 @section('script')
     <script>
+        let table = '';
         $(document).ready(function() {
-            var table = $('#pesanan-table').DataTable({
+            table = $('#pesanan-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -171,6 +208,18 @@
                                     <i class="fas fa-sync-alt"></i> Status
                                 </button>
                             `;
+                            if (row.cancel == 0) {
+                                buttons += `
+                                    <button type="button" class="btn btn-sm btn-danger cancel-pesanan" 
+                                        data-id="${data}" 
+                                        data-alasan="${row.catatan_cancel}"
+                                        data-toggle="modal" 
+                                        data-target="#modalValidasiPembatalan">
+                                        <i class="fas fa-times"></i> Validasi Pembatalan
+                                    </button>
+                                `;
+                            }
+
                             return buttons;
                         }
                     },
@@ -219,6 +268,14 @@
                 } else if (status === 'Selesai') {
                     $('.catatan-penjual').show();
                 }
+            });
+
+            $(document).on('click', '.cancel-pesanan', function() {
+                var id = $(this).data('id');
+                var alasan = $(this).data('alasan');
+                $('#id_pesanan').val(id);
+                $('#alasan_pelanggan').val(alasan);
+                $('#catatan').val('');
             });
 
             $(document).on('click', '.change-status', function() {
@@ -290,6 +347,35 @@
             $('#statusModal .btn-close, #statusModal .btn-secondary').click(function() {
                 $('#statusModal').modal('hide');
             });
+        });
+
+        $('#form-validasi-pembatalan').on('submit', function(e) {
+            e.preventDefault();
+
+            var id = $('#id_pesanan').val();
+            var aksi = $(document.activeElement).val(); // 'setujui' atau 'tolak'
+            var catatan = $('#catatan').val();
+
+            $.ajax({
+                url: "{{ route('admin.pesanan.validasi_pembatalan') }}",
+                method: 'POST',
+                data: {
+                    id: id,
+                    aksi: aksi,
+                    catatan: catatan,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: (response) => {
+                    $('#modalValidasiPembatalan').modal('hide');
+                    table.ajax.reload();
+                    showAlert('success', 'Status pengiriman berhasil diperbarui.');
+                },
+                error: (xhr) => {
+                    showAlert('error', 'Gagal memperbarui status pengiriman. Silakan coba lagi.');
+                }
+            })
+
+
         });
     </script>
 @endsection

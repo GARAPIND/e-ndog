@@ -183,6 +183,48 @@
                                                 {{ ucfirst($data->status_pengiriman) }}
                                             </span>
                                         </div>
+                                        @if ($data->cancel !== null)
+                                            @if ($data->cancel == 0)
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-hourglass-half mr-2"></i>Status:</span>
+                                                    <span class="highlight-text">Proses Pembatalan <small>(Menunggu validasi
+                                                            dari admin)</small></span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-comment-dots mr-2"></i>Alasan:</span>
+                                                    <span class="highlight-text">{{ $data->catatan_cancel }}</span>
+                                                </div>
+                                            @elseif ($data->cancel == 2)
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-hourglass-half mr-2"></i>Status:</span>
+                                                    <span class="highlight-text">Pembatalan ditolak</small></span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-comment-dots mr-2"></i>Alasan Pembatalan:</span>
+                                                    <span class="highlight-text">{{ $data->catatan_cancel }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-comment-dots mr-2"></i>Alasan Ditolak:</span>
+                                                    <span
+                                                        class="highlight-text">{{ $data->catatan_cancel_penjual ?? '-' }}</span>
+                                                </div>
+                                            @elseif ($data->cancel == 1)
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-hourglass-half mr-2"></i>Status:</span>
+                                                    <span class="highlight-text">Pembatalan disetujui</small></span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-comment-dots mr-2"></i>Alasan Pembatalan:</span>
+                                                    <span class="highlight-text">{{ $data->catatan_cancel }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span><i class="fas fa-comment-dots mr-2"></i>Alasan Ditolak:</span>
+                                                    <span
+                                                        class="highlight-text">{{ $data->catatan_cancel_penjual ?? '-' }}</span>
+                                                </div>
+                                            @endif
+                                        @endif
+
                                         @if ($data->status_pengiriman == 'Dikirim' && $data->is_cod == 1)
                                             <div class="d-flex justify-content-between mb-3">
                                                 <span><i class="fas fa-box mr-2"></i>Kurir E-Ndog:</span>
@@ -194,6 +236,7 @@
                                                 <span class="highlight-text">{{ $data->ekspedisi }}</span>
                                             </div>
                                         @endif
+
                                         @if ($data->foto)
                                             <div class="d-flex justify-content-between mb-3">
                                                 <span><i class="fas fa-box mr-2"></i>Catatan Kurir:</span>

@@ -6,6 +6,7 @@ use App\Helpers\SendWaHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Transaksi;
 use App\Models\Kurir;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -19,7 +20,9 @@ class KelolaPesananController extends Controller
 
     public function getData(Request $request)
     {
-        $query = Transaksi::with(['pelanggan.user']);
+        $query = Transaksi::with(['pelanggan.user'])->where(function ($query) {
+            $query->whereNull('cancel')->orWhereIn('cancel', [0, 2]);
+        });
         if ($request->status) {
             $query->where('status_pengiriman', $request->status);
         }
@@ -133,6 +136,29 @@ class KelolaPesananController extends Controller
         return response()->json([
             'success' => true,
             'data' => $kurir
+        ]);
+    }
+
+    public function validasi_pembatalan(Request $request)
+    {
+        $transaksi = Transaksi::findOrFail($request->id);
+
+        if ($request->aksi === 'tolak') {
+            $transaksi->cancel = 2;
+        } elseif ($request->aksi === 'setujui') {
+            $transaksi->cancel = 1;
+            foreach ($transaksi->detail as $item) {
+                $produk = Produk::findOrFail($item->produk_id);
+                $produk->tambahStok($item->jumlah, 'Pembatalan Pesanan #' . $transaksi->id);
+            }
+        }
+
+        $transaksi->catatan_cancel_penjual = $request->catatan;
+        $transaksi->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berhasil Validasi',
         ]);
     }
 }
