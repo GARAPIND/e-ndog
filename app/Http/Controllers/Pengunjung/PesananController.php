@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Pengunjung;
 
+use App\Helpers\SendWaHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\ProfileToko;
@@ -108,6 +109,9 @@ class PesananController extends Controller
         $transaksi = Transaksi::find($id);
         $transaksi->status_pengiriman = 'Selesai';
         $transaksi->save();
+
+        $sendWaHelper = new SendWaHelper();
+        $sendWaHelper->sendOrderCompletedNotification($transaksi->id);
 
         return response()->json(['status' => 'success', 'message' => 'Pesanan berhasil diselesaikan']);
     }
