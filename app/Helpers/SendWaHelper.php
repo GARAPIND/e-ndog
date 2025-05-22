@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\ProfileToko;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Transaksi;
@@ -241,6 +242,90 @@ class SendWaHelper
             $message .= "Semoga hari Anda menyenangkan! 😊\n\n";
             $message .= "Salam,\n";
             $message .= "Tim {$storeName}";
+
+            return $this->sendWa($transaksi->pelanggan->telp, $message);
+        } catch (\Throwable $th) {
+            Log::error('SendOrderCompletedNotification Error: ' . $th->getMessage());
+            return null;
+        }
+    }
+
+    public function sendCancelTransactionNotification($transaksiId)
+    {
+        try {
+            $transaksi = Transaksi::with(['pelanggan.user', 'alamat', 'detail.produk'])
+                ->findOrFail($transaksiId);
+
+            $customerName = $transaksi->pelanggan->user->name;
+            $notesCancel = $transaksi->catatan_cancel;
+            $orderCode = $transaksi->kode_transaksi;
+            $profile_toko = ProfileToko::first();
+
+            $message = "*PEMBATALAN PESANAN* ❌\n\n";
+            $message .= "Telah terjadi pembatalan pesanan oleh pelanggan atas nama *{$customerName}*.\n\n";
+            $message .= "Dengan alasan pembatalan yaitu {$notesCancel}.\n\n";
+            $message .= "Kode pesanan: *{$orderCode}*\n\n";
+            $message .= "Mohon untuk menindaklanjuti pembatalan ini sesuai dengan prosedur yang berlaku.\n\n";
+            $message .= "Terima kasih atas perhatian dan kerjasamanya.\n\n";
+            $message .= "Salam,\n";
+            $message .= "Sistem {$profile_toko->nama_toko}";
+
+            return $this->sendWa($profile_toko->whatsapp, $message);
+        } catch (\Throwable $th) {
+            Log::error('SendOrderCompletedNotification Error: ' . $th->getMessage());
+            return null;
+        }
+    }
+
+    public function sendAcceptCancelNotification($transaksiId)
+    {
+        try {
+            $transaksi = Transaksi::with(['pelanggan.user', 'alamat', 'detail.produk'])
+                ->findOrFail($transaksiId);
+
+            $customerName = $transaksi->pelanggan->user->name;
+            $notesCancel = $transaksi->catatan_cancel_penjual ?? '-';
+            $orderCode = $transaksi->kode_transaksi;
+            $profile_toko = ProfileToko::first();
+
+            $message = "*PEMBATALAN PESANAN DISETUJUI* ✅\n\n";
+            $message .= "Halo *{$customerName}*,\n\n";
+            $message .= "Permintaan pembatalan pesanan Anda telah *disetujui* oleh tim kami.\n\n";
+            $message .= "Catatan penjual: {$notesCancel}.\n\n";
+            $message .= "Kode pesanan: *{$orderCode}*\n\n";
+            $message .= "Kami mohon maaf atas ketidaknyamanan yang terjadi. Jika Anda memiliki pertanyaan lebih lanjut atau membutuhkan bantuan lainnya, jangan ragu untuk menghubungi kami.\n\n";
+            $message .= "Terima kasih atas pengertiannya.\n\n";
+            $message .= "Salam hangat,\n";
+            $message .= "Tim {$profile_toko->nama_toko}";
+
+            return $this->sendWa($transaksi->pelanggan->telp, $message);
+        } catch (\Throwable $th) {
+            Log::error('SendOrderCompletedNotification Error: ' . $th->getMessage());
+            return null;
+        }
+    }
+
+    public function sendDeclineCancelNotification($transaksiId)
+    {
+        try {
+            $transaksi = Transaksi::with(['pelanggan.user', 'alamat', 'detail.produk'])
+                ->findOrFail($transaksiId);
+
+            $customerName = $transaksi->pelanggan->user->name;
+            $notesCancel = $transaksi->catatan_cancel_penjual ?? '-';
+            $orderCode = $transaksi->kode_transaksi;
+            $profile_toko = ProfileToko::first();
+
+            $message = "*PEMBATALAN PESANAN DITOLAK* ❌\n\n";
+            $message .= "Halo *{$customerName}*,\n\n";
+            $message .= "Mohon maaf, permintaan pembatalan pesanan Anda dengan kode *{$orderCode}* tidak dapat kami setujui.\n\n";
+            $message .= "Alasan ditolak: {$notesCancel}.\n\n";
+            $message .= "Pesanan Anda saat ini masih dalam proses dan tidak dapat dibatalkan sesuai dengan kebijakan yang berlaku.\n\n";
+            $message .= "Jika Anda memiliki pertanyaan lebih lanjut, silakan hubungi layanan pelanggan kami untuk informasi lebih lanjut.\n\n";
+            $message .= "Terima kasih atas pengertian dan kepercayaannya.\n\n";
+            $message .= "Salam hangat,\n";
+            $message .= "Tim {$profile_toko->nama_toko}";
+
 
             return $this->sendWa($transaksi->pelanggan->telp, $message);
         } catch (\Throwable $th) {

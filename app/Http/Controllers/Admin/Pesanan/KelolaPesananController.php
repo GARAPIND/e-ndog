@@ -145,16 +145,21 @@ class KelolaPesananController extends Controller
 
         if ($request->aksi === 'tolak') {
             $transaksi->cancel = 2;
+            $transaksi->catatan_cancel_penjual = $request->catatan;
+            $transaksi->save();
+            $sendWaHelper = new SendWaHelper();
+            $sendWaHelper->sendDeclineCancelNotification($transaksi->id);
         } elseif ($request->aksi === 'setujui') {
             $transaksi->cancel = 1;
+            $transaksi->catatan_cancel_penjual = $request->catatan;
+            $transaksi->save();
+            $sendWaHelper = new SendWaHelper();
+            $sendWaHelper->sendAcceptCancelNotification($transaksi->id);
             foreach ($transaksi->detail as $item) {
                 $produk = Produk::findOrFail($item->produk_id);
                 $produk->tambahStok($item->jumlah, 'Pembatalan Pesanan #' . $transaksi->id);
             }
         }
-
-        $transaksi->catatan_cancel_penjual = $request->catatan;
-        $transaksi->save();
 
         return response()->json([
             'success' => true,

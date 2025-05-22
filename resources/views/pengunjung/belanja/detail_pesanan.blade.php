@@ -218,7 +218,7 @@
                                                     <span class="highlight-text">{{ $data->catatan_cancel }}</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between mb-3">
-                                                    <span><i class="fas fa-comment-dots mr-2"></i>Alasan Ditolak:</span>
+                                                    <span><i class="fas fa-comment-dots mr-2"></i>Catatan Penjual:</span>
                                                     <span
                                                         class="highlight-text">{{ $data->catatan_cancel_penjual ?? '-' }}</span>
                                                 </div>

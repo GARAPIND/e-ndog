@@ -100,6 +100,9 @@ class PesananController extends Controller
         $transaksi->catatan_cancel = $alasan;
         $transaksi->save();
 
+        $sendWaHelper = new SendWaHelper();
+        $sendWaHelper->sendCancelTransactionNotification($transaksi->id);
+
         return response()->json(['status' => 'success', 'message' => 'Pesanan berhasil dihapus']);
     }
 
