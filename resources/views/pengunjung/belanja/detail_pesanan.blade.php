@@ -293,22 +293,25 @@
                                                 <div class="row text-center">
                                                     <div class="col-4">
                                                         <div class="d-flex flex-column">
-                                                            <small class="text-muted mb-1">Harga</small>
-                                                            @if ($item->produk->harga_diskon && $item->produk->harga_diskon < $item->produk->harga)
-                                                                <span class="highlight-text text-danger">
-                                                                    Rp
-                                                                    {{ number_format($item->produk->harga_diskon, 0, ',', '.') }}
-                                                                </span>
-                                                                <small>
-                                                                    <del class="text-muted">Rp
-                                                                        {{ number_format($item->produk->harga, 0, ',', '.') }}</del>
-                                                                </small>
-                                                            @else
-                                                                <span class="highlight-text">
-                                                                    Rp
-                                                                    {{ number_format($item->produk->harga, 0, ',', '.') }}
-                                                                </span>
-                                                            @endif
+                                                            @php
+                                                                $hargaLabel = [
+                                                                    'ecer' => 'Harga (Ecer)',
+                                                                    'grosir' => 'Harga (Grosir)',
+                                                                    'pengampu' => 'Harga (Pengampu)',
+                                                                ];
+                                                                $hargaValue = [
+                                                                    'ecer' => $item->produk->harga,
+                                                                    'grosir' => $item->produk->harga_grosir,
+                                                                    'pengampu' => $item->produk->harga_pengampu,
+                                                                ];
+                                                                $status = $item->status_harga;
+                                                            @endphp
+                                                            <small
+                                                                class="text-muted mb-1">{{ $hargaLabel[$status] ?? '-' }}</small>
+                                                            <span class="highlight-text">
+                                                                Rp
+                                                                {{ number_format($hargaValue[$status] ?? 0, 0, ',', '.') }}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                     <div class="col-4">
