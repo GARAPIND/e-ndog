@@ -30,7 +30,8 @@ class ProdukController extends Controller
                 'produk.nama',
                 'produk.kode',
                 'produk.harga',
-                'produk.harga_diskon',
+                'produk.harga_grosir',
+                'produk.harga_pengampu',
                 'produk.stok',
                 'produk.berat',
                 'produk.satuan',
@@ -51,12 +52,13 @@ class ProdukController extends Controller
             //     return $row->kategori ? $row->kategori->nama : 'Tidak Terkategori';
             // })
             ->addColumn('harga_format', function ($row) {
-                $harga = 'Rp ' . number_format($row->harga, 0, ',', '.');
-                if ($row->harga_diskon) {
-                    $harga = '<span class="text-decoration-line-through text-muted">' . $harga . '</span><br>';
-                    $harga .= 'Rp ' . number_format($row->harga_diskon, 0, ',', '.');
-                }
-                return $harga;
+                $harga_ecer = 'Rp ' . number_format($row->harga, 0, ',', '.');
+                $harga_grosir = 'Rp ' . number_format($row->harga_grosir, 0, ',', '.');
+                $harga_pengampu = 'Rp ' . number_format($row->harga_pengampu, 0, ',', '.');
+                return
+                    '<div><strong>Ecer:</strong> ' . $harga_ecer . '</div>' .
+                    '<div><strong>Grosir:</strong> ' . $harga_grosir . '</div>' .
+                    '<div><strong>Pengampu:</strong> ' . $harga_pengampu . '</div>';
             })
             ->addColumn('status', function ($row) {
                 $badge = $row->aktif ? 'badge-success' : 'badge-danger';
@@ -93,11 +95,11 @@ class ProdukController extends Controller
             'kode' => 'required|string|max:50|unique:produk',
             'deskripsi' => 'nullable|string',
             'harga' => 'required|numeric|min:0',
-            'harga_diskon' => 'nullable|numeric|min:0',
+            'harga_grosir' => 'nullable|numeric|min:0',
+            'harga_pengampu' => 'nullable|numeric|min:0',
             'stok' => 'required|integer|min:0',
             'berat' => 'required|numeric|min:0',
             'satuan' => 'required|string|max:20',
-            // 'kategori_id' => 'nullable|exists:kategori_produk,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -138,11 +140,11 @@ class ProdukController extends Controller
             'kode' => 'required|string|max:50|unique:produk,kode,' . $id,
             'deskripsi' => 'nullable|string',
             'harga' => 'required|numeric|min:0',
-            'harga_diskon' => 'nullable|numeric|min:0',
+            'harga_grosir' => 'nullable|numeric|min:0',
+            'harga_pengampu' => 'nullable|numeric|min:0',
             'stok' => 'required|integer|min:0',
             'berat' => 'required|numeric|min:0',
             'satuan' => 'required|string|max:20',
-            // 'kategori_id' => 'nullable|exists:kategori_produk,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 

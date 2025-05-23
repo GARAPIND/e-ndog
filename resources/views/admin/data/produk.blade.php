@@ -64,42 +64,37 @@
                                     <input type="text" class="form-control" id="kode" name="kode" required>
                                     <div class="invalid-feedback" id="kode-error"></div>
                                 </div>
-                                {{-- <div class="form-group">
-                                    <label for="kategori_id">Kategori</label>
-                                    <select class="form-control" id="kategori_id" name="kategori_id">
-                                        <option value="">Pilih Kategori</option>
-                                        @foreach ($kategoriList as $kategori)
-                                            <option value="{{ $kategori->id }}">{{ $kategori->nama }}</option>
-                                        @endforeach
-                                    </select>
-                                    <div class="invalid-feedback" id="kategori_id-error"></div>
-                                </div> --}}
                                 <div class="form-group">
                                     <label for="foto">Foto Produk</label>
                                     <input type="file" class="form-control-file" id="foto" name="foto">
                                     <small class="form-text text-muted">Format: JPG, JPEG, PNG. Maks: 2MB</small>
                                     <div class="invalid-feedback" id="foto-error"></div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="harga">Harga (Rp)</label>
-                                    <input type="number" class="form-control" id="harga" name="harga" min="0"
-                                        required>
-                                    <div class="invalid-feedback" id="harga-error"></div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="harga_diskon">Harga Diskon (Rp)</label>
-                                    <input type="number" class="form-control" id="harga_diskon" name="harga_diskon"
-                                        min="0">
-                                    <small class="form-text text-muted">Kosongkan jika tidak ada diskon</small>
-                                    <div class="invalid-feedback" id="harga_diskon-error"></div>
-                                </div>
                                 <div class="form-group">
                                     <label for="stok">Stok</label>
                                     <input type="number" class="form-control" id="stok" name="stok" min="0"
                                         required>
                                     <div class="invalid-feedback" id="stok-error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="harga">Harga Ecer/Harian(Rp)</label>
+                                    <input type="number" class="form-control" id="harga" name="harga" min="0"
+                                        required>
+                                    <div class="invalid-feedback" id="harga-error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="harga_grosir">Harga Grosir (Rp)</label>
+                                    <input type="number" class="form-control" id="harga_grosir" name="harga_grosir"
+                                        min="0">
+                                    <div class="invalid-feedback" id="harga_grosir-error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="harga_pengampu">Harga Pengampu (Rp)</label>
+                                    <input type="number" class="form-control" id="harga_pengampu" name="harga_pengampu"
+                                        min="0">
+                                    <div class="invalid-feedback" id="harga_pengampu-error"></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -114,8 +109,7 @@
                                         <div class="form-group">
                                             <label for="satuan">Satuan</label>
                                             <input type="text" class="form-control" id="satuan" name="satuan"
-                                                required>
-                                            <small class="form-text text-muted">Contoh: gram, kg, pcs</small>
+                                                value="gram" readonly>
                                             <div class="invalid-feedback" id="satuan-error"></div>
                                         </div>
                                     </div>
@@ -169,16 +163,6 @@
                                     <input type="text" class="form-control" id="edit_kode" name="kode" required>
                                     <div class="invalid-feedback" id="edit-kode-error"></div>
                                 </div>
-                                {{-- <div class="form-group">
-                                    <label for="edit_kategori_id">Kategori</label>
-                                    <select class="form-control" id="edit_kategori_id" name="kategori_id">
-                                        <option value="">Pilih Kategori</option>
-                                        @foreach ($kategoriList as $kategori)
-                                            <option value="{{ $kategori->id }}">{{ $kategori->nama }}</option>
-                                        @endforeach
-                                    </select>
-                                    <div class="invalid-feedback" id="edit-kategori_id-error"></div>
-                                </div> --}}
                                 <div class="form-group">
                                     <label for="edit_foto">Foto Produk</label>
                                     <div class="mb-2" id="current_foto_container">
@@ -190,6 +174,12 @@
                                         tidak ingin mengubah foto</small>
                                     <div class="invalid-feedback" id="edit-foto-error"></div>
                                 </div>
+                                <div class="form-group">
+                                    <label for="edit_stok">Stok</label>
+                                    <input type="number" class="form-control" id="edit_stok" name="stok"
+                                        min="0" required>
+                                    <div class="invalid-feedback" id="edit-stok-error"></div>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -199,17 +189,18 @@
                                     <div class="invalid-feedback" id="edit-harga-error"></div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="edit_harga_diskon">Harga Diskon (Rp)</label>
-                                    <input type="number" class="form-control" id="edit_harga_diskon"
-                                        name="harga_diskon" min="0">
+                                    <label for="edit_harga_grosir">Harga Grosir (Rp)</label>
+                                    <input type="number" class="form-control" id="edit_harga_grosir"
+                                        name="harga_grosir" min="0">
                                     <small class="form-text text-muted">Kosongkan jika tidak ada diskon</small>
-                                    <div class="invalid-feedback" id="edit-harga_diskon-error"></div>
+                                    <div class="invalid-feedback" id="edit-harga_grosir-error"></div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="edit_stok">Stok</label>
-                                    <input type="number" class="form-control" id="edit_stok" name="stok"
-                                        min="0" required>
-                                    <div class="invalid-feedback" id="edit-stok-error"></div>
+                                    <label for="edit_harga_pengampu">Harga Pengampu (Rp)</label>
+                                    <input type="number" class="form-control" id="edit_harga_pengampu"
+                                        name="harga_pengampu" min="0">
+                                    <small class="form-text text-muted">Kosongkan jika tidak ada diskon</small>
+                                    <div class="invalid-feedback" id="edit-harga_pengampu-error"></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -224,7 +215,7 @@
                                         <div class="form-group">
                                             <label for="edit_satuan">Satuan</label>
                                             <input type="text" class="form-control" id="edit_satuan" name="satuan"
-                                                required>
+                                                value="gram" readonly>
                                             <small class="form-text text-muted">Contoh: gram, kg, pcs</small>
                                             <div class="invalid-feedback" id="edit-satuan-error"></div>
                                         </div>
@@ -347,10 +338,6 @@
                         data: 'nama',
                         name: 'nama'
                     },
-                    // {
-                    //     data: 'kategori',
-                    //     name: 'kategori_id'
-                    // },
                     {
                         data: 'harga_format',
                         name: 'harga',

@@ -134,12 +134,27 @@
                         </div>
                         <div class="text-center py-4">
                             <a class="h6 text-decoration-none text-truncate" href="#">${produk.nama}</a>
-                            <div class="d-flex align-items-center justify-content-center mt-2">
-                                <h5>Rp${parseInt(produk.harga).toLocaleString('id-ID')}</h5>
-                                ${produk.harga_diskon ? `<h6 class="text-muted ml-2"><del>Rp${parseInt(produk.harga_diskon).toLocaleString('id-ID')}</del></h6>` : ''}
+                            <div class="mt-2">
+                                <div class="d-flex align-items-center justify-content-center mb-1">
+                                    <h6 class="mb-0 mr-2">Harga Ecer:</h6>
+                                    <h6 class="mb-0">Rp${parseInt(produk.harga).toLocaleString('id-ID')}</h6>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-center mb-1">
+                                    <h6 class="mb-0 mr-2">Harga Grosir:</h6>
+                                    <h6 class="mb-0">Rp${parseInt(produk.harga_grosir).toLocaleString('id-ID')}</h6>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <h6 class="mb-0 mr-2">Harga Pengampu:</h6>
+                                    <h6 class="mb-0">${produk.harga_pengampu}</h6>
+                                </div>
                             </div>
                             <div class="mt-2 ${produk.stok != 0 ? 'text-success' : 'text-danger'} font-weight-bold">
                                 ${produk.stok != 0 ? 'Stok tersedia (' + produk.stok + ')' : 'Stok habis'}
+                            </div>
+                            <div class="mt-3 text-muted small">
+                                <p class="mb-0">Harga Ecer: untuk pembelian di bawah 10 kg</p>
+                                <p class="mb-0">Harga Grosir: untuk pembelian 10–30 kg</p>
+                                <p class="mb-0">Harga Pengampu: untuk pembelian di atas 30 kg</p>
                             </div>
                         </div>
                     </div>

@@ -16,7 +16,8 @@ class Produk extends Model
         'kode',
         'deskripsi',
         'harga',
-        'harga_diskon',
+        'harga_grosir',
+        'harga_pengampu',
         'stok',
         'stok_minimum',
         'notifikasi_stok',
@@ -37,6 +38,10 @@ class Produk extends Model
         return encrypt($this->id);
     }
 
+    public function detailTransaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'produk_id');
+    }
 
     public function getHargaAktifAttribute()
     {

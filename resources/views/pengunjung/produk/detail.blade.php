@@ -52,14 +52,24 @@
             <div class="col-lg-7 h-auto mb-30">
                 <div class="h-100 bg-light p-30" style="max-height: 600px; overflow-y: auto;">
                     <h3>{{ $data['nama'] }}</h3>
-                    @if (isset($data['harga_diskon']) && $data['harga_diskon'] > 0)
-                        <h3 class="font-weight-semi-bold mb-4">
-                            <del class="text-muted mr-2">Rp. {{ number_format($data['harga']) }}</del>
-                            Rp. {{ number_format($data['harga_diskon']) }}
-                        </h3>
-                    @else
-                        <h3 class="font-weight-semi-bold mb-4">Rp. {{ number_format($data['harga']) }}</h3>
-                    @endif
+                    <div class="mb-3">
+                        <span class="badge badge-primary mr-2" style="font-size: 1rem; padding: 0.7em 1.2em;">
+                            Ecer: Rp. {{ number_format($data['harga']) }}
+                        </span>
+                        <span class="badge badge-warning mr-2" style="font-size: 1rem; padding: 0.7em 1.2em;">
+                            Grosir: Rp. {{ number_format($data['harga_grosir']) }}
+                        </span>
+                        <span class="badge badge-success" style="font-size: 1rem; padding: 0.7em 1.2em;">
+                            Pengampu: Rp. {{ number_format($data['harga_pengampu']) }}
+                        </span>
+                    </div>
+                    <small class="text-muted d-block mb-3" style="line-height: 1.6;">
+                        <strong>Keterangan:</strong><br>
+                        - Harga <strong>ecer</strong> untuk pembelian di bawah <strong>10 kg</strong><br>
+                        - Harga <strong>grosir</strong> untuk pembelian antara <strong>10–30 kg</strong><br>
+                        - Harga <strong>pengampu</strong> untuk pembelian lebih dari <strong>30 kg</strong>
+                    </small>
+
                     @php
                         $deskripsi = $data['deskripsi'];
                         $maxLength = 800;
@@ -67,7 +77,7 @@
                         $shortDesc = $isLong ? substr($deskripsi, 0, $maxLength) . '...' : $deskripsi;
                     @endphp
 
-                    <p class="mb-5" id="deskripsi-short" style="{{ $isLong ? '' : 'display:none;' }}">
+                    <p class="mb-5" id="deskripsi-short">
                         {{ $shortDesc }}
                         @if ($isLong)
                             <a href="javascript:void(0);" onclick="toggleDeskripsi()">Lihat Selengkapnya</a>
@@ -118,15 +128,22 @@
                             </div>
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="">{{ $item['nama'] }}</a>
-                                <div class="d-flex align-items-center justify-content-center mt-2">
-                                    @if (isset($item['harga_diskon']) && $item['harga_diskon'] > 0)
-                                        <h6 class="font-weight-semi-bold mb-4">
-                                            <del class="text-muted mr-2">Rp. {{ number_format($item['harga']) }}</del>
-                                            Rp. {{ number_format($item['harga_diskon']) }}
-                                        </h6>
-                                    @else
-                                        <h6 class="font-weight-semi-bold mb-4">Rp. {{ number_format($item['harga']) }}</h6>
-                                    @endif
+                                <div class="d-flex flex-column align-items-center justify-content-center mt-2">
+                                    <h6 class="font-weight-semi-bold mb-1 text-muted">
+                                        Ecer: Rp. {{ number_format($item['harga']) }}
+                                    </h6>
+                                    <h6 class="font-weight-semi-bold mb-1 text-muted">
+                                        Grosir: Rp. {{ number_format($item['harga_grosir']) }}
+                                    </h6>
+                                    <h6 class="font-weight-semi-bold mb-1 text-muted">
+                                        Pengampu: Rp. {{ number_format($item['harga_pengampu']) }}
+                                    </h6>
+                                    <small class="text-muted text-center mt-2" style="line-height: 1.5;">
+                                        <strong>Keterangan:</strong><br>
+                                        - Harga <strong>ecer</strong> untuk pembelian di bawah <strong>10 kg</strong><br>
+                                        - Harga <strong>grosir</strong> untuk pembelian antara <strong>10–30 kg</strong><br>
+                                        - Harga <strong>pengampu</strong> untuk pembelian lebih dari <strong>30 kg</strong>
+                                    </small>
                                 </div>
                                 <div
                                     class="mt-2 {{ $item['stok'] != 0 ? 'text-success' : 'text-danger' }} font-weight-bold">

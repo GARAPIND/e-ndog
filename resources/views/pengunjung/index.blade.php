@@ -64,7 +64,6 @@
             </div>
         @endif
     </div>
-    </div>
 
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
@@ -95,38 +94,6 @@
         </div>
     </div>
 
-    @if (isset($produk_diskon))
-        <div class="container-fluid pt-5">
-            <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Produk
-                    Diskon</span></h2>
-            <div class="row px-xl-5 pb-3">
-                @foreach ($produk_diskon as $item)
-                    <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-                        <a class="text-decoration-none" href="">
-                            <div class="cat-item d-flex align-items-center mb-4">
-                                <div class="overflow-hidden" style="width: 100px; height: 100px;">
-                                    <img class="img-fluid" src="{{ asset('storage/foto-produk/' . $item['foto']) }}"
-                                        alt="">
-                                </div>
-                                <div class="flex-fill pl-3 d-flex flex-column justify-content-between h-100">
-                                    <div>
-                                        <h6 class="mb-1 text-truncate">{{ $item['nama'] }}</h6>
-                                        <h6 class="font-weight-semi-bold mb-2">
-                                            <del class="text-muted mr-2">Rp {{ number_format($item['harga']) }}</del>
-                                            <span class="text-danger">Rp {{ number_format($item['harga_diskon']) }}</span>
-                                        </h6>
-                                    </div>
-                                    <small class="text-body">Stok : {{ $item['stok'] }}</small>
-                                </div>
-
-                            </div>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
     @if (isset($produk))
         <div class="container-fluid pt-5 pb-3">
             <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Beberapa
@@ -146,16 +113,25 @@
                             </div>
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="">{{ $item['nama'] }}</a>
-                                <div class="d-flex align-items-center justify-content-center mt-2">
-                                    @if (isset($item['harga_diskon']) && $item['harga_diskon'] > 0)
-                                        <h6 class="font-weight-semi-bold mb-4">
-                                            <del class="text-muted mr-2">Rp. {{ number_format($item['harga']) }}</del>
-                                            Rp. {{ number_format($item['harga_diskon']) }}
-                                        </h6>
-                                    @else
-                                        <h6 class="font-weight-semi-bold mb-4">Rp. {{ number_format($item['harga']) }}
-                                        </h6>
-                                    @endif
+                                <div class="d-flex flex-column align-items-center justify-content-center mt-2">
+                                    <div>
+                                        <span class="font-weight-bold">Harga Ecer:</span>
+                                        <span>Rp. {{ number_format($item['harga']) }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-weight-bold">Harga Grosir:</span>
+                                        <span>Rp. {{ number_format($item['harga_grosir']) }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-weight-bold">Harga Pengampu:</span>
+                                        <span>Rp. {{ number_format($item['harga_pengampu']) }}</span>
+                                    </div>
+                                    <small class="text-muted text-center mt-2" style="line-height: 1.5;">
+                                        <strong>Keterangan:</strong><br>
+                                        - Harga <strong>ecer</strong> untuk pembelian di bawah <strong>10 kg</strong><br>
+                                        - Harga <strong>grosir</strong> untuk pembelian antara <strong>10–30 kg</strong><br>
+                                        - Harga <strong>pengampu</strong> untuk pembelian lebih dari <strong>30 kg</strong>
+                                    </small>
                                 </div>
                                 <div
                                     class="mt-2 {{ $item['stok'] != 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
