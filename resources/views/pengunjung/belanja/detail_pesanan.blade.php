@@ -380,11 +380,18 @@
                             </a>
 
                             <div>
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $profile->whatsapp) }}?text=Halo%20saya%20ingin%20menanyakan%20pesanan%20{{ $data->kode_transaksi }}"
+                                @php
+                                    $wa = preg_replace('/[^0-9]/', '', $profile->whatsapp);
+                                    if (substr($wa, 0, 1) === '0') {
+                                        $wa = '+62' . substr($wa, 1);
+                                    } elseif (substr($wa, 0, 2) === '62') {
+                                        $wa = '+' . $wa;
+                                    }
+                                @endphp
+                                <a href="https://wa.me/{{ ltrim($wa, '+') }}?text=Halo%20saya%20ingin%20menanyakan%20pesanan%20{{ $data->kode_transaksi }}"
                                     target="_blank" class="btn btn-info action-btn mr-2">
                                     <i class="fas fa-comments mr-1"></i>Hubungi Penjual
                                 </a>
-
                             </div>
                         </div>
                     </div>
