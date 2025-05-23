@@ -27,9 +27,13 @@ class ProdukController extends Controller
                     $priceRange = explode('-', $filter);
 
                     if (count($priceRange) === 2) {
-                        $query->orWhereBetween('harga', [trim($priceRange[0]), trim($priceRange[1])]);
+                        $query->orWhereBetween('harga', [trim($priceRange[0]), trim($priceRange[1])])
+                            ->orWhereBetween('harga_grosir', [trim($priceRange[0]), trim($priceRange[1])])
+                            ->orWhereBetween('harga_pengampu', [trim($priceRange[0]), trim($priceRange[1])]);
                     } else {
-                        $query->orWhere('harga', '>', trim($priceRange[0]));
+                        $query->orWhere('harga', '>', trim($priceRange[0]))
+                            ->orWhere('harga_grosir', '>', trim($priceRange[0]))
+                            ->orWhere('harga_pengampu', '>', trim($priceRange[0]));
                     }
                 }
             });

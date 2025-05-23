@@ -145,7 +145,7 @@
                                 </div>
                                 <div class="d-flex align-items-center justify-content-center">
                                     <h6 class="mb-0 mr-2">Harga Pengampu:</h6>
-                                    <h6 class="mb-0">${produk.harga_pengampu}</h6>
+                                    <h6 class="mb-0">${parseInt(produk.harga_pengampu).toLocaleString('id-ID')}</h6>
                                 </div>
                             </div>
                             <div class="mt-2 ${produk.stok != 0 ? 'text-success' : 'text-danger'} font-weight-bold">
@@ -190,12 +190,18 @@
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <a class="h5 text-decoration-none text-dark" href="/produk/detail/${produk.id}">${produk.nama}</a>
-                                        <div class="d-flex align-items-center mt-2">
-                                            <h5 class="text-dark mb-0">Rp${parseInt(produk.harga).toLocaleString('id-ID')}</h5>
-                                            ${produk.harga_diskon ? `<h6 class="text-muted ml-3 mb-0"><del>Rp${parseInt(produk.harga_diskon).toLocaleString('id-ID')}</del></h6>` : ''}
+                                        <div class="d-flex flex-column">
+                                            <h6 class="text-dark mb-1">Harga Ecer: Rp${parseInt(produk.harga).toLocaleString('id-ID')}</h6>
+                                            <h6 class="text-dark mb-1">Harga Grosir: Rp${parseInt(produk.harga_grosir).toLocaleString('id-ID')}</h6>
+                                            <h6 class="text-dark mb-1">Harga Pengampu: Rp${parseInt(produk.harga_pengampu).toLocaleString('id-ID')}</h6>
                                         </div>
-                                        <div class="mt-2 ${produk.stok != 0 ? 'text-success' : 'text-danger'} font-weight-bold">
+                                        <div class="${produk.stok != 0 ? 'text-success' : 'text-danger'} font-weight-bold">
                                             ${produk.stok != 0 ? 'Stok tersedia (' + produk.stok + ')' : 'Stok habis'}
+                                        </div>
+                                        <div class="mt-2 text-muted" style="font-size: 0.9rem;">
+                                            <div><strong>Ecer:</strong> pembelian di bawah 10 kg</div>
+                                            <div><strong>Grosir:</strong> pembelian 10-30 kg</div>
+                                            <div><strong>Pengampu:</strong> pembelian di atas 30 kg</div>
                                         </div>
                                     </div>
                                     <div class="product-action mt-2 mt-md-0">
