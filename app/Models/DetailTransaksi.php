@@ -13,6 +13,7 @@ class DetailTransaksi extends Model
         'transaksi_id',
         'produk_id',
         'jumlah',
+        'status_harga',
         'berat',
         'sub_total',
     ];

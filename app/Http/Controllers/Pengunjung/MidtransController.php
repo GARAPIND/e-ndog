@@ -87,6 +87,7 @@ class MidtransController extends Controller
                     DetailTransaksi::create([
                         'transaksi_id' => $transaksi->id,
                         'produk_id' => $barang['barang_id'],
+                        'status_harga' => $barang['status_harga'],
                         'jumlah' => $barang['jumlah'],
                         'berat' => $barang['berat'],
                         'sub_total' => $barang['sub_total']
@@ -164,6 +165,7 @@ class MidtransController extends Controller
                     DetailTransaksi::create([
                         'transaksi_id' => $transaksi->id,
                         'produk_id' => $barang['barang_id'],
+                        'status_harga' => $barang['status_harga'],
                         'jumlah' => $barang['jumlah'],
                         'berat' => $barang['berat'],
                         'sub_total' => $barang['sub_total']

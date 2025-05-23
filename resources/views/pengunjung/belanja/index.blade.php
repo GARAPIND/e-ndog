@@ -79,7 +79,8 @@
                                                 <option value="{{ $item->id }}" data-id-produk="{{ $item->id }}"
                                                     data-kode="{{ $item->kode }}" data-nama="{{ $item->nama }}"
                                                     data-stok="{{ intval($item->stok) }}" data-harga="{{ $item->harga }}"
-                                                    data-harga-diskon="{{ $item->harga_diskon }}"
+                                                    data-harga-grosir="{{ $item->harga_grosir }}"
+                                                    data-harga-pengampu="{{ $item->harga_pengampu }}"
                                                     data-berat="{{ intval($item->berat) }}"
                                                     data-satuan="{{ $item->satuan }}">
                                                     {{ $item->kode }} || {{ $item->nama }}
@@ -96,12 +97,20 @@
                                         <input class="form-control" type="text" id="berat" value="-" disabled>
                                     </div>
                                     <div class="form-group">
-                                        <label>Harga</label>
+                                        <label>Harga Ecer <small class="text-muted">(Berlaku untuk pembelian dibawah
+                                                10kg)</small></label>
                                         <input class="form-control" type="text" id="harga" value="-" disabled>
                                     </div>
                                     <div class="form-group">
-                                        <label>Harga Diskon</label>
-                                        <input class="form-control" type="text" id="harga_diskon" value="-"
+                                        <label>Harga Grosir <small class="text-muted">(Berlaku untuk pembelian
+                                                10-30kg)</small></label>
+                                        <input class="form-control" type="text" id="harga_grosir" value="-"
+                                            disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Harga Pengampu <small class="text-muted">(Berlaku untuk pembelian diatas
+                                                30kg)</small></label>
+                                        <input class="form-control" type="text" id="harga_pengampu" value="-"
                                             disabled>
                                     </div>
                                     <button class="btn btn-primary" onclick="tambah_barang()">
@@ -121,7 +130,7 @@
                                                         <th>Harga</th>
                                                         <th>Jumlah</th>
                                                         <th>Total</th>
-                                                        <th>Berat</th>
+                                                        <th>Berat (gram)</th>
                                                         <th>Aksi</th>
                                                     </tr>
                                                 </thead>
@@ -432,9 +441,22 @@
         let nama = "";
         let stok = "";
         let harga = "";
-        let hargaDiskon = "";
+        let hargaGrosir = "";
+        let hargaPengampu = "";
         let berat = "";
         let satuan = "";
+
+        function getHargaByBerat(beratTotal, harga, hargaGrosir, hargaPengampu) {
+            if (beratTotal < 10000) return parseInt(harga);
+            else if (beratTotal <= 30000) return parseInt(hargaGrosir);
+            else return parseInt(hargaPengampu);
+        }
+
+        function getStatusByBerat(beratTotal) {
+            if (beratTotal < 10000) return 'ecer';
+            else if (beratTotal <= 30000) return 'grosir';
+            else return 'pengampu';
+        }
 
         function change_produk(this_) {
             const selectedOption = this_.options[this_.selectedIndex];
@@ -443,139 +465,168 @@
             kode = selectedOption.getAttribute('data-kode');
             nama = selectedOption.getAttribute('data-nama');
             stok = selectedOption.getAttribute('data-stok');
-            harga = selectedOption.getAttribute('data-harga-diskon') || selectedOption.getAttribute('data-harga');
-            hargaDiskon = selectedOption.getAttribute('data-harga-diskon');
+            harga = selectedOption.getAttribute('data-harga');
+            hargaGrosir = selectedOption.getAttribute('data-harga-grosir');
+            hargaPengampu = selectedOption.getAttribute('data-harga-pengampu');
             berat = parseInt(selectedOption.getAttribute('data-berat'));
             satuan = selectedOption.getAttribute('data-satuan');
 
             $('#stok').val(stok);
             $('#berat').val(`${berat} ${satuan}`);
             $('#harga').val(rupiahFormat(selectedOption.getAttribute('data-harga')));
-            $('#harga_diskon').val(rupiahFormat(hargaDiskon));
+            $('#harga_grosir').val(rupiahFormat(hargaGrosir));
+            $('#harga_pengampu').val(rupiahFormat(hargaPengampu));
         }
 
         function tambah_barang() {
-            if (kode == "") {
+            const select = document.getElementById('produk_id');
+            const selectedOption = select.options[select.selectedIndex];
+
+            if (!selectedOption.value) {
                 Notiflix.Notify.failure("Pilih produk terlebih dahulu!");
                 return;
             }
 
-            const idBarang = idProduk;
-            const stokBarang = parseInt(stok);
-            const barangId = idProduk;
-            const barangNama = nama;
-            const hargaJual = harga;
-            const beratBarang = berat
-
+            const idBarang = selectedOption.getAttribute('data-id-produk');
+            const kodeBarang = selectedOption.getAttribute('data-kode');
+            const namaBarang = selectedOption.getAttribute('data-nama');
+            const stok = parseInt(selectedOption.getAttribute('data-stok'));
+            const harga = parseInt(selectedOption.getAttribute('data-harga'));
+            const hargaGrosir = parseInt(selectedOption.getAttribute('data-harga-grosir'));
+            const hargaPengampu = parseInt(selectedOption.getAttribute('data-harga-pengampu'));
+            const berat = parseInt(selectedOption.getAttribute('data-berat'));
 
             const jumlah = 1;
-
-            if (jumlah > stokBarang) {
-                Notiflix.Notify.failure("Jumlah barang melebihi stok yang tersedia!");
-                return;
-            }
-
+            const totalBerat = jumlah * berat;
+            const hargaJual = getHargaByBerat(totalBerat, harga, hargaGrosir, hargaPengampu);
+            const statusHarga = getStatusByBerat(totalBerat);
             const total = hargaJual * jumlah;
+
             const table = document.getElementById('table-transaksi').getElementsByTagName('tbody')[0];
+
             let rowExists = false;
 
             for (let i = 0; i < table.rows.length; i++) {
                 const row = table.rows[i];
-                const currentBarangId = row.cells[0].textContent;
+                if (row.getAttribute('data-id') === idBarang) {
+                    let qty = parseInt(row.cells[3].textContent);
+                    let beratLama = parseInt(row.cells[5].textContent);
+                    let beratBaru = beratLama + berat;
+                    let qtyBaru = qty + 1;
 
-                if (currentBarangId == barangId) {
-                    const currentQuantity = parseInt(row.cells[3].textContent);
-                    const newQuantity = currentQuantity + jumlah;
-
-                    const currentWeight = parseInt(row.cells[5].textContent);
-                    const newWeight = currentWeight + beratBarang;
-
-                    if (newQuantity > stokBarang) {
-                        Notiflix.Notify.failure("Jumlah barang melebihi stok yang tersedia!");
+                    if (qtyBaru > stok) {
+                        Notiflix.Notify.failure("Jumlah melebihi stok!");
                         return;
                     }
 
-                    row.cells[3].textContent = newQuantity;
-                    row.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
-                    row.cells[5].textContent = newWeight;
+                    const hargaJualBaru = getHargaByBerat(beratBaru, harga, hargaGrosir, hargaPengampu);
+
+                    row.cells[3].textContent = qtyBaru;
+                    row.cells[4].textContent = rupiahFormat(hargaJualBaru * qtyBaru);
+                    row.cells[5].textContent = beratBaru;
+
+                    row.setAttribute('data-harga', harga);
+                    row.setAttribute('data-harga-grosir', hargaGrosir);
+                    row.setAttribute('data-harga-pengampu', hargaPengampu);
+                    row.setAttribute('data-berat', berat);
+
                     rowExists = true;
                     break;
                 }
             }
 
             if (!rowExists) {
-                const newRow = table.insertRow(table.rows.length);
+                const newRow = table.insertRow();
+                newRow.setAttribute('data-id', idBarang);
+                newRow.setAttribute('data-harga', harga);
+                newRow.setAttribute('data-harga-grosir', hargaGrosir);
+                newRow.setAttribute('data-harga-pengampu', hargaPengampu);
+                newRow.setAttribute('data-berat', berat);
+
                 newRow.innerHTML = `
-                <td data-barang-id="${idBarang}">${barangId}</td>
-                <td data-stok="${stokBarang}">${barangNama}</td>
-                <td class="text-right">${rupiahFormat(hargaJual)}</td>
-                <td>${jumlah}</td>
-                <td class="text-right">${rupiahFormat(total)}</td>
-                <td class="text-right">${beratBarang}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm subtract-item"><i class="fas fa-minus-circle"></i></button>
-                    <button class="btn btn-success btn-sm add-item"><i class="fas fa-plus-circle"></i></button>
-                    <button class="btn btn-danger btn-sm remove-item"><i class="fas fa-trash"></i> Hapus</button>
-                </td>
-            `;
+            <td data-barang-id="${idBarang}">${kodeBarang}</td>
+            <td>${namaBarang}</td>
+            <td class="text-right" data-status="${statusHarga}">${rupiahFormat(hargaJual)}</td>
+            <td>${jumlah}</td>
+            <td class="text-right">${rupiahFormat(total)}</td>
+            <td class="text-right">${totalBerat}</td>
+            <td>
+                <button class="btn btn-warning btn-sm subtract-item"><i class="fas fa-minus-circle"></i></button>
+                <button class="btn btn-success btn-sm add-item"><i class="fas fa-plus-circle"></i></button>
+                <button class="btn btn-danger btn-sm remove-item"><i class="fas fa-trash"></i> Hapus</button>
+            </td>
+        `;
 
-                // proses untuk menambah jumlah barang di dalam tabel
                 newRow.querySelector('.add-item').addEventListener('click', function() {
-                    const currentQuantity = parseInt(newRow.cells[3].textContent);
-                    const stokTersedia = parseInt(newRow.cells[1].getAttribute('data-stok'));
+                    let qty = parseInt(newRow.cells[3].textContent);
+                    let beratSatuan = parseInt(newRow.getAttribute('data-berat'));
+                    let beratTotal = parseInt(newRow.cells[5].textContent);
+                    let stok = parseInt(selectedOption.getAttribute('data-stok'));
 
-                    const currentWeight = parseInt(newRow.cells[5].textContent);
-                    const newWeight = currentWeight + beratBarang;
-
-                    if (currentQuantity + 1 > stokTersedia) {
-                        Notiflix.Notify.failure("Jumlah barang melebihi stok yang tersedia!");
+                    if (qty + 1 > stok) {
+                        Notiflix.Notify.failure("Jumlah melebihi stok!");
                         return;
                     }
 
-                    const newQuantity = currentQuantity + 1;
-                    newRow.cells[3].textContent = newQuantity;
-                    newRow.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
-                    newRow.cells[5].textContent = newWeight;
+                    qty += 1;
+                    beratTotal += beratSatuan;
+
+                    const harga = parseInt(newRow.getAttribute('data-harga'));
+                    const hargaGrosir = parseInt(newRow.getAttribute('data-harga-grosir'));
+                    const hargaPengampu = parseInt(newRow.getAttribute('data-harga-pengampu'));
+                    const hargaJual = getHargaByBerat(beratTotal, harga, hargaGrosir, hargaPengampu);
+                    const statusHarga = getStatusByBerat(beratTotal);
+
+                    newRow.cells[2].textContent = rupiahFormat(hargaJual);
+                    newRow.cells[2].setAttribute('data-status', statusHarga);
+                    newRow.cells[3].textContent = qty;
+                    newRow.cells[4].textContent = rupiahFormat(hargaJual * qty);
+                    newRow.cells[5].textContent = beratTotal;
+
                     updateFooter();
                 });
 
-                // proses untuk mengurangi jumlah barang di dalam tabel
                 newRow.querySelector('.subtract-item').addEventListener('click', function() {
-                    const currentQuantity = parseInt(newRow.cells[3].textContent);
-                    const currentWeight = parseInt(newRow.cells[5].textContent);
-                    const newWeight = currentWeight - beratBarang;
-                    if (currentQuantity > 1) {
-                        const newQuantity = currentQuantity - 1;
-                        newRow.cells[3].textContent = newQuantity;
-                        newRow.cells[4].textContent = rupiahFormat(hargaJual * newQuantity);
-                        newRow.cells[5].textContent = newWeight;
+                    let qty = parseInt(newRow.cells[3].textContent);
+                    let beratSatuan = parseInt(newRow.getAttribute('data-berat'));
+                    let beratTotal = parseInt(newRow.cells[5].textContent);
+
+                    if (qty > 1) {
+                        qty -= 1;
+                        beratTotal -= beratSatuan;
+
+                        const harga = parseInt(newRow.getAttribute('data-harga'));
+                        const hargaGrosir = parseInt(newRow.getAttribute('data-harga-grosir'));
+                        const hargaPengampu = parseInt(newRow.getAttribute('data-harga-pengampu'));
+                        const hargaJual = getHargaByBerat(beratTotal, harga, hargaGrosir, hargaPengampu);
+                        const statusHarga = getStatusByBerat(beratTotal);
+
+                        newRow.cells[2].textContent = rupiahFormat(hargaJual);
+                        newRow.cells[2].setAttribute('data-status', statusHarga);
+                        newRow.cells[3].textContent = qty;
+                        newRow.cells[4].textContent = rupiahFormat(hargaJual * qty);
+                        newRow.cells[5].textContent = beratTotal;
                     } else {
                         newRow.remove();
                     }
+
                     updateFooter();
                 });
 
-                // proses untuk menghapus barang dalam tabel
                 newRow.querySelector('.remove-item').addEventListener('click', function() {
                     newRow.remove();
                     updateFooter();
                 });
             }
+
             updateFooter();
+
             $('#produk_id').val('').change();
             $('#stok').val('');
             $('#berat').val('');
             $('#harga').val('');
-            $('#harga_diskon').val('');
-
-            idProduk = "";
-            kode = "";
-            nama = "";
-            stok = "";
-            harga = "";
-            hargaDiskon = "";
-            berat = "";
-            satuan = "";
+            $('#harga_grosir').val('');
+            $('#harga_pengampu').val('');
         }
 
         function updateFooter() {
@@ -669,6 +720,7 @@
                 const row = table.rows[i];
                 var barang = {
                     barang_id: row.cells[0].getAttribute('data-barang-id'),
+                    status_harga: row.cells[2].getAttribute('data-status'),
                     jumlah: row.cells[3].textContent,
                     sub_total: parseInt(row.cells[4].textContent.replace(/\D/g, ''), 10),
                     berat: parseInt(row.cells[5].textContent)
