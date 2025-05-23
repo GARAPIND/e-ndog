@@ -94,7 +94,7 @@
                     </div>
 
                     <div class="card-body">
-                        <div class="row mt-4">
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="card bg-light border-0 p-3 h-100">
                                     <h5 class="mb-3 d-flex align-items-center">
