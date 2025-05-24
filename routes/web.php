@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Data\CustomerController;
 use App\Http\Controllers\Admin\Data\DashboardController;
+use App\Http\Controllers\Admin\Data\HistoryController;
 use App\Http\Controllers\Admin\Data\KategoriProdukController;
 use App\Http\Controllers\Admin\Data\KurirController;
 use App\Http\Controllers\Admin\Data\ProdukController;
@@ -120,6 +121,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::post('/tambah_data', [CarouselController::class, 'tambah_data'])->name('tambah_data');
             Route::post('/edit_data', [CarouselController::class, 'edit_data'])->name('edit_data');
             Route::post('/hapus_data', [CarouselController::class, 'hapus_data'])->name('hapus_data');
+        });
+
+        Route::group(['prefix' => 'history', 'as' => 'history.'], function () {
+            Route::get('/', [HistoryController::class, 'index'])->name('index');
+            Route::get('/get_data', [HistoryController::class, 'get_data'])->name('get_data');
+            Route::get('/detail/{id}', [HistoryController::class, 'detail'])->name('detail');
         });
 
         Route::group(['prefix' => 'promosi', 'as' => 'promosi.'], function () {

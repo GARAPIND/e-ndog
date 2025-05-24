@@ -48,7 +48,7 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false">
+                        <a class="sidebar-link" href="{{ route('history.index') }}" aria-expanded="false">
                             <i data-feather="clock" class="feather-icon"></i>
                             <span class="hide-menu">History Pesanan</span>
                         </a>
