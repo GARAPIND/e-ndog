@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\RajaOngkirController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Kurir\DashboardKurirController;
+use App\Http\Controllers\Kurir\KelolaProfilKurirController;
 use App\Http\Controllers\Kurir\PesananKurirController;
 use App\Http\Controllers\Pengunjung\BelanjaController;
 use App\Http\Controllers\Pengunjung\DashboardController as PengunjungDashboardController;
@@ -169,6 +170,8 @@ Route::middleware(['auth', 'kurir'])->group(function () {
         Route::get('/{id}', [PesananKurirController::class, 'getPesanan'])->name('detail');
         Route::post('/{id}/update-status', [PesananKurirController::class, 'updateStatus'])->name('update-status');
     });
+    Route::get('/kurir/profil', [KelolaProfilKurirController::class, 'index'])->name('kurir.profil.index');
+    Route::post('/kurir/profil/update', [KelolaProfilKurirController::class, 'update'])->name('kurir.profil.update');
 });
 
 // dashboard pengunjung

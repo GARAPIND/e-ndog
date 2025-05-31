@@ -18,6 +18,8 @@ class Kurir extends Model
         'jenis_kendaraan',
         'photo',
         'status',
+        'latitude',
+        'longitude',
     ];
 
     /**

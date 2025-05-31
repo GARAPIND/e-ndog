@@ -144,10 +144,10 @@
                     <li class="list-divider"></li>
                     <li class="nav-small-cap"><span class="hide-menu">Profile</span></li>
 
-                    {{-- <li class="sidebar-item"> <a class="sidebar-link sidebar-link"
-                            href="{{ route('admin.profile-toko.index') }}" aria-expanded="false"><i
-                                data-feather="edit-3" class="feather-icon"></i><span class="hide-menu">Kelola
-                                Toko</span></a></li> --}}
+                    <li class="sidebar-item"> <a class="sidebar-link sidebar-link"
+                            href="{{ route('kurir.profil.index') }}" aria-expanded="false"><i data-feather="edit-3"
+                                class="feather-icon"></i><span class="hide-menu">Kelola
+                                Kurir</span></a></li>
                     <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="{{ route('logout') }}"
                             aria-expanded="false"><i data-feather="log-out" class="feather-icon"></i><span
                                 class="hide-menu">Logout</span></a></li>
