@@ -95,7 +95,11 @@ class KelolaPesananController extends Controller
             }
 
             $totalOngkir = round($ongkirJarak + $ongkirBerat);
+            $transaksi->status_pembayaran = 'Menunggu Pembayaran';
+
             $transaksi->ongkir = $totalOngkir;
+        } else {
+            $transaksi->status_pembayaran = 'Sudah Dibayar';
         }
 
         $transaksi->save();

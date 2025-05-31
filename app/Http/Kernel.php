@@ -67,5 +67,7 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'kurir' => \App\Http\Middleware\KurirMiddleware::class,
         'pelanggan' => \App\Http\Middleware\PelangganMiddleware::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ];
 }

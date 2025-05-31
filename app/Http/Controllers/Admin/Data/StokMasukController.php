@@ -46,9 +46,10 @@ class StokMasukController extends Controller
 
     public function getStokMasukDetail($id)
     {
+        // dd($id);
         $history = StokHistory::with(['produk', 'user'])->findOrFail($id);
-
-        if ($history->tipe != 'tambah') {
+        // dd($history);
+        if ($history->tipe != 'masuk') {
             return response()->json(['error' => 'Data tidak valid'], 400);
         }
 

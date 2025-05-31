@@ -54,7 +54,7 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="javascript:void(0)" aria-expanded="false">
+                        <a class="sidebar-link" href="{{ route('admin.laporan.index') }}" aria-expanded="false">
                             <i data-feather="file-text" class="feather-icon"></i>
                             <span class="hide-menu">Laporan</span>
                         </a>

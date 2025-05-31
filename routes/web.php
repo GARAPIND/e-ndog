@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Data\DashboardController;
 use App\Http\Controllers\Admin\Data\HistoryController;
 use App\Http\Controllers\Admin\Data\KategoriProdukController;
 use App\Http\Controllers\Admin\Data\KurirController;
+use App\Http\Controllers\Admin\Data\LaporanController;
 use App\Http\Controllers\Admin\Data\ProdukController;
 use App\Http\Controllers\Admin\Data\ProfileTokoController;
 use App\Http\Controllers\Admin\Data\StokController;
@@ -53,7 +54,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
     });
     Route::prefix('admin/data')->group(function () {
+        Route::prefix('laporan')->name('admin.laporan.')->group(function () {
+            Route::get('/', [LaporanController::class, 'index'])->name('index');
 
+            Route::get('stok/data', [LaporanController::class, 'get_stok_data'])->name('stok.data');
+            Route::get('stok/ringkasan', [LaporanController::class, 'get_stok_summary'])->name('stok.ringkasan');
+            Route::get('stok/unduh', [LaporanController::class, 'unduh_laporan_stok'])->name('stok.unduh');
+
+            Route::get('pemasukan/data', [LaporanController::class, 'get_pemasukan_data'])->name('pemasukan.data');
+            Route::get('pemasukan/ringkasan', [LaporanController::class, 'get_pemasukan_summary'])->name('pemasukan.ringkasan');
+            Route::get('pemasukan/unduh', [LaporanController::class, 'unduh_laporan_pemasukan'])->name('pemasukan.unduh');
+        });
         Route::prefix('kategori')->name('admin.kategori.')->group(function () {
             Route::get('/', [KategoriProdukController::class, 'index'])->name('index');
             Route::get('/data', [KategoriProdukController::class, 'getData'])->name('data');

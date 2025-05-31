@@ -47,8 +47,8 @@ class StokKeluarController extends Controller
     public function getStokKeluarDetail($id)
     {
         $history = StokHistory::with(['produk', 'user'])->findOrFail($id);
-
-        if ($history->tipe != 'kurang') {
+        // dd($history);
+        if ($history->tipe != 'keluar') {
             return response()->json(['error' => 'Data tidak valid'], 400);
         }
 
