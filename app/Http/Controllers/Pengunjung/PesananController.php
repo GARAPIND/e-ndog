@@ -111,6 +111,7 @@ class PesananController extends Controller
         $id = $request->id;
         $transaksi = Transaksi::find($id);
         $transaksi->status_pengiriman = 'Selesai';
+        $transaksi->status_pembayaran = 'Sudah Dibayar';
         $transaksi->save();
 
         $sendWaHelper = new SendWaHelper();
