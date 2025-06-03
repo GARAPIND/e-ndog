@@ -38,4 +38,9 @@ class Customer extends Model
     {
         return $this->hasMany(Address::class, 'pelanggan_id');
     }
+
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'pelanggan_id');
+    }
 }
