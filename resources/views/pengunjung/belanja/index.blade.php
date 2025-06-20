@@ -82,7 +82,7 @@
                                                     data-harga-grosir="{{ $item->harga_grosir }}"
                                                     data-harga-pengampu="{{ $item->harga_pengampu }}"
                                                     data-berat="{{ intval($item->berat) }}"
-                                                    data-satuan="{{ $item->satuan }}">
+                                                    data-foto="{{ $item->foto }}" data-satuan="{{ $item->satuan }}">
                                                     {{ $item->kode }} || {{ $item->nama }}
                                                 </option>
                                             @endforeach
@@ -93,8 +93,11 @@
                                         <input class="form-control" type="text" id="stok" value="-" disabled>
                                     </div>
                                     <div class="form-group">
-                                        <label>Berat (gram)</label>
-                                        <input class="form-control" type="text" id="berat" value="-" disabled>
+                                        <label>Foto Produk</label>
+                                        <div>
+                                            <img id="foto-produk" src="/assets/default.jpg" alt="Foto Produk"
+                                                class="img-fluid rounded" style="max-height: 200px;">
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label>Harga Ecer <small class="text-muted">(Berlaku untuk pembelian dibawah
@@ -120,6 +123,11 @@
                                 <div class="col-sm-8">
                                     <div class="card card-body shadow-lg">
                                         <h5>Daftar Pembelian</h5>
+                                        <p class="text-muted mb-2" style="font-size: 0.9rem;">
+                                            * Harga ecer sudah bersahabat<br>
+                                            * Beli grosir? lebih hemat lagi<br>
+                                            * Harga pengampu super terjangkau
+                                        </p>
                                         <div class="table_transaksi" style="width:100%; height: 350px; overflow-y: auto;">
                                             <table id="table-transaksi"
                                                 class="table table-bordered table-hover table-sm text-center">
@@ -463,6 +471,7 @@
 
             idProduk = selectedOption.getAttribute('data-id-produk');
             kode = selectedOption.getAttribute('data-kode');
+            foto = selectedOption.getAttribute('data-foto');
             nama = selectedOption.getAttribute('data-nama');
             stok = selectedOption.getAttribute('data-stok');
             harga = selectedOption.getAttribute('data-harga');
@@ -471,8 +480,8 @@
             berat = parseInt(selectedOption.getAttribute('data-berat'));
             satuan = selectedOption.getAttribute('data-satuan');
 
-            $('#stok').val(stok);
-            $('#berat').val(`${berat} ${satuan}`);
+            $('#stok').val(`${stok} ${satuan}`);
+            $('#foto-produk').attr('src', `storage/foto-produk/${foto}`);
             $('#harga').val(rupiahFormat(selectedOption.getAttribute('data-harga')));
             $('#harga_grosir').val(rupiahFormat(hargaGrosir));
             $('#harga_pengampu').val(rupiahFormat(hargaPengampu));
@@ -622,7 +631,7 @@
             updateFooter();
 
             $('#produk_id').val('').change();
-            $('#stok').val('');
+            $('#foto-produk').attr('src', `assets/default.jpg`);
             $('#berat').val('');
             $('#harga').val('');
             $('#harga_grosir').val('');
