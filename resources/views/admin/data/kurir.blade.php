@@ -22,7 +22,6 @@
                                 <th>Foto</th>
                                 <th>Nama</th>
                                 <th>No. Telepon</th>
-                                <th>Kendaraan</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -76,42 +75,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                    <div class="invalid-feedback" id="email-error"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
                                     <label for="telp">No. Telepon</label>
                                     <input type="text" class="form-control" id="telp" name="telp" required>
                                     <div class="invalid-feedback" id="telp-error"></div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="alamat">Alamat</label>
-                            <textarea class="form-control" id="alamat" name="alamat" rows="3" required></textarea>
-                            <div class="invalid-feedback" id="alamat-error"></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="plat_nomor">Plat Nomor</label>
-                                    <input type="text" class="form-control" id="plat_nomor" name="plat_nomor" required>
-                                    <div class="invalid-feedback" id="plat_nomor-error"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="jenis_kendaraan">Jenis Kendaraan</label>
-                                    <input type="text" class="form-control" id="jenis_kendaraan"
-                                        name="jenis_kendaraan" required>
-                                    <div class="invalid-feedback" id="jenis_kendaraan-error"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="password">Password</label>
@@ -119,7 +87,9 @@
                                     <div class="invalid-feedback" id="password-error"></div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="status">Status</label>
                                     <select class="form-control" id="status" name="status" required>
@@ -186,43 +156,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="edit_email">Email</label>
-                                    <input type="email" class="form-control" id="edit_email" name="email" required>
-                                    <div class="invalid-feedback" id="edit-email-error"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
                                     <label for="edit_telp">No. Telepon</label>
                                     <input type="text" class="form-control" id="edit_telp" name="telp" required>
                                     <div class="invalid-feedback" id="edit-telp-error"></div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit_alamat">Alamat</label>
-                            <textarea class="form-control" id="edit_alamat" name="alamat" rows="3" required></textarea>
-                            <div class="invalid-feedback" id="edit-alamat-error"></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="edit_plat_nomor">Plat Nomor</label>
-                                    <input type="text" class="form-control" id="edit_plat_nomor" name="plat_nomor"
-                                        required>
-                                    <div class="invalid-feedback" id="edit-plat_nomor-error"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="edit_jenis_kendaraan">Jenis Kendaraan</label>
-                                    <input type="text" class="form-control" id="edit_jenis_kendaraan"
-                                        name="jenis_kendaraan" required>
-                                    <div class="invalid-feedback" id="edit-jenis_kendaraan-error"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="edit_password">Password (Kosongkan jika tidak ingin mengubah)</label>
@@ -230,7 +168,9 @@
                                     <div class="invalid-feedback" id="edit-password-error"></div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="edit_status">Status</label>
                                     <select class="form-control" id="edit_status" name="status" required>
@@ -271,14 +211,8 @@
                         <div class="col-md-6">
                             <p><strong>Nama:</strong> <span id="view_name"></span></p>
                             <p><strong>Username:</strong> <span id="view_username"></span></p>
-                            <p><strong>Email:</strong> <span id="view_email"></span></p>
-                            <p><strong>Nomor Telepon:</strong> <span id="view_telp"></span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Alamat:</strong> <span id="view_alamat"></span></p>
-                            <p><strong>Plat Nomor:</strong> <span id="view_plat_nomor"></span></p>
-                            <p><strong>Jenis Kendaraan:</strong> <span id="view_jenis_kendaraan"></span></p>
                             <p><strong>Status:</strong> <span id="view_status" class="badge"></span></p>
+                            <p><strong>Nomor Telepon:</strong> <span id="view_telp"></span></p>
                         </div>
                     </div>
                 </div>
@@ -333,10 +267,6 @@
                     {
                         data: 'telp',
                         name: 'telp'
-                    },
-                    {
-                        data: 'jenis_kendaraan',
-                        name: 'jenis_kendaraan'
                     },
                     {
                         data: 'status_badge',
@@ -415,11 +345,7 @@
                     success: function(response) {
                         $('#edit_name').val(response.name);
                         $('#edit_username').val(response.username);
-                        $('#edit_email').val(response.email);
                         $('#edit_telp').val(response.telp);
-                        $('#edit_alamat').val(response.alamat);
-                        $('#edit_plat_nomor').val(response.plat_nomor);
-                        $('#edit_jenis_kendaraan').val(response.jenis_kendaraan);
                         $('#edit_status').val(response.status);
 
                         // Display current photo if exists
@@ -484,11 +410,7 @@
                     success: function(response) {
                         $('#view_name').text(response.name);
                         $('#view_username').text(response.username);
-                        $('#view_email').text(response.email);
                         $('#view_telp').text(response.telp);
-                        $('#view_alamat').text(response.alamat);
-                        $('#view_plat_nomor').text(response.plat_nomor);
-                        $('#view_jenis_kendaraan').text(response.jenis_kendaraan);
                         var statusClass = response.status === 'active' ? 'badge-success' :
                             'badge-danger';
                         $('#view_status').removeClass('badge-success badge-danger')

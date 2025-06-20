@@ -1,4 +1,7 @@
 <?php
+
+use App\Models\Produk;
+
 function rupiahFormat($angka)
 {
     $hasil_rupiah = "Rp " . number_format($angka, 0, ',', '.');
@@ -31,4 +34,22 @@ function tanggalIndoLengkap($tanggal)
     $tahun = date('Y', $tanggal);
 
     return $hari . ' ' . $bulanIndo . ' ' . $tahun;
+}
+
+function generateKodeProduk()
+{
+    $tanggal = date('Ymd');
+    $prefix = 'PRDK' . $tanggal;
+
+    $lastKode = Produk::where('kode', 'like', $prefix . '%')
+        ->orderByDesc('kode')
+        ->value('kode');
+
+    if ($lastKode) {
+        $lastNumber = (int) substr($lastKode, -3); // Ambil 3 digit terakhir
+        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+    } else {
+        $newNumber = '001';
+    }
+    return $prefix . $newNumber;
 }

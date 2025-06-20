@@ -38,9 +38,9 @@
                                     <tr>
                                         <th>Status Pembayaran</th>
                                         <td>:
-                                            @if ($transaksi->status_pembayaran == 'settlement')
+                                            @if ($transaksi->status_pembayaran == 'Sudah Dibayar')
                                                 <span class="badge badge-success">Lunas</span>
-                                            @elseif($transaksi->status_pembayaran == 'pending')
+                                            @elseif($transaksi->status_pembayaran == 'Menunggu Pembayaran')
                                                 <span class="badge badge-warning">Menunggu Pembayaran</span>
                                             @else
                                                 <span

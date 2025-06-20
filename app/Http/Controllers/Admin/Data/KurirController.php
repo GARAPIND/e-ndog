@@ -97,12 +97,12 @@ class KurirController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'nullable|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
             'telp' => 'required|string|max:20',
-            'alamat' => 'required|string',
-            'plat_nomor' => 'required|string|max:20',
-            'jenis_kendaraan' => 'required|string|max:50',
+            'alamat' => 'nullable|string',
+            'plat_nomor' => 'nullable|string|max:20',
+            'jenis_kendaraan' => 'nullable|string|max:50',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'status' => 'required|in:active,inactive',
         ]);
@@ -156,12 +156,12 @@ class KurirController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($id)],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($id)],
+            'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore($id)],
             'password' => 'nullable|string|min:6',
             'telp' => 'required|string|max:20',
-            'alamat' => 'required|string',
-            'plat_nomor' => 'required|string|max:20',
-            'jenis_kendaraan' => 'required|string|max:50',
+            'alamat' => 'nullable|string',
+            'plat_nomor' => 'nullable|string|max:20',
+            'jenis_kendaraan' => 'nullable|string|max:50',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'status' => 'required|in:active,inactive',
         ]);

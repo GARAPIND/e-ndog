@@ -61,7 +61,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="kode">Kode Produk</label>
-                                    <input type="text" class="form-control" id="kode" name="kode" required>
+                                    <input type="text" class="form-control" id="kode" name="kode"
+                                        value="{{ generateKodeProduk() }}" readonly required>
                                     <div class="invalid-feedback" id="kode-error"></div>
                                 </div>
                                 <div class="form-group">
@@ -109,7 +110,7 @@
                                         <div class="form-group">
                                             <label for="satuan">Satuan</label>
                                             <input type="text" class="form-control" id="satuan" name="satuan"
-                                                value="gram" readonly>
+                                                value="KG" readonly>
                                             <div class="invalid-feedback" id="satuan-error"></div>
                                         </div>
                                     </div>
@@ -160,7 +161,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="edit_kode">Kode Produk</label>
-                                    <input type="text" class="form-control" id="edit_kode" name="kode" required>
+                                    <input type="text" class="form-control" id="edit_kode" name="kode" required
+                                        readonly>
                                     <div class="invalid-feedback" id="edit-kode-error"></div>
                                 </div>
                                 <div class="form-group">
@@ -389,8 +391,9 @@
                     },
                     success: function(response) {
                         $('#addProdukModal').modal('hide');
-                        table.ajax.reload();
+                        // table.ajax.reload();
                         showAlert('success', response.success);
+                        location.reload();
                     },
                     error: function(xhr) {
                         if (xhr.status === 422) {
@@ -468,7 +471,8 @@
                         $('#edit_kode').val(response.kode);
                         // $('#edit_kategori_id').val(response.kategori_id);
                         $('#edit_harga').val(response.harga);
-                        $('#edit_harga_diskon').val(response.harga_diskon);
+                        $('#edit_harga_grosir').val(response.harga_grosir);
+                        $('#edit_harga_pengampu').val(response.harga_pengampu);
                         $('#edit_stok').val(response.stok);
                         $('#edit_berat').val(response.berat);
                         $('#edit_satuan').val(response.satuan);
