@@ -74,7 +74,9 @@
                                         <input type="hidden" id="id_produk">
                                         <label for="produk_id">Nama Produk</label>
                                         <select class="form-control" id="produk_id" onchange="change_produk(this)">
-                                            <option value="">Pilih produk</option>
+                                            <option value="" data-stok="-" data-satuan=""
+                                                data-foto="/assets/default.jpg">Pilih
+                                                produk</option>
                                             @foreach ($produk as $item)
                                                 <option value="{{ $item->id }}" data-id-produk="{{ $item->id }}"
                                                     data-kode="{{ $item->kode }}" data-nama="{{ $item->nama }}"
@@ -82,7 +84,8 @@
                                                     data-harga-grosir="{{ $item->harga_grosir }}"
                                                     data-harga-pengampu="{{ $item->harga_pengampu }}"
                                                     data-berat="{{ intval($item->berat) }}"
-                                                    data-foto="{{ $item->foto }}" data-satuan="{{ $item->satuan }}">
+                                                    data-foto="storage/foto-produk/{{ $item->foto }}"
+                                                    data-satuan="{{ $item->satuan }}">
                                                     {{ $item->kode }} || {{ $item->nama }}
                                                 </option>
                                             @endforeach
@@ -481,7 +484,7 @@
             satuan = selectedOption.getAttribute('data-satuan');
 
             $('#stok').val(`${stok} ${satuan}`);
-            $('#foto-produk').attr('src', `storage/foto-produk/${foto}`);
+            $('#foto-produk').attr('src', foto);
             $('#harga').val(rupiahFormat(selectedOption.getAttribute('data-harga')));
             $('#harga_grosir').val(rupiahFormat(hargaGrosir));
             $('#harga_pengampu').val(rupiahFormat(hargaPengampu));
@@ -632,6 +635,7 @@
 
             $('#produk_id').val('').change();
             $('#foto-produk').attr('src', `assets/default.jpg`);
+            $('#stok').val('');
             $('#berat').val('');
             $('#harga').val('');
             $('#harga_grosir').val('');
