@@ -155,7 +155,7 @@ class SendWaHelper
             $customerMessage .= "*Detail Pengiriman:*\n";
             $customerMessage .= "Nama Kurir: {$courierName}\n";
             $customerMessage .= "Kontak Kurir: {$courierPhone}\n";
-            $customerMessage .= "Alamat Pengiriman: {$customerAddress}\n\n";
+            $customerMessage .= "Sedang dikirimkan ke alamat anda\n\n";
 
             if ($transaksi->is_cod) {
                 $total = number_format($transaksi->sub_total + $transaksi->ongkir, 0, ',', '.');
@@ -180,7 +180,7 @@ class SendWaHelper
             $courierMessage .= "Kode Pesanan: *{$orderCode}*\n";
             $courierMessage .= "Nama Pelanggan: {$customerName}\n";
             $courierMessage .= "Kontak Pelanggan: {$customerPhone}\n";
-            $courierMessage .= "Alamat Pengiriman: {$customerAddress}\n\n";
+            $courierMessage .= "Sedang dikirimkan ke alamat anda\n\n";
             $courierMessage .= "*Daftar Produk:*\n{$orderItems}\n";
 
             if ($transaksi->is_cod) {
