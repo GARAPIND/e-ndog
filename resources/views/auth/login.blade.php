@@ -16,15 +16,16 @@
             style="background:url(assets/images/big/auth-bg.jpg) no-repeat center center;">
             <div class="auth-box row">
                 <div class="col-lg-7 col-md-5 modal-bg-img"
-                    style="background-image: url('{{ asset('assets/images/big/3.jpg') }}');">
+                    style="background-image: url('{{ asset('assets/images/logooo.png') }}');">
                 </div>
                 <div class="col-lg-5 col-md-7 bg-white">
                     <div class="p-3">
                         <div class="text-center">
                             <img src="assets/images/big/icon.png" alt="wrapkit">
                         </div>
-                        <h2 class="mt-3 text-center">Sign In</h2>
-                        <p class="text-center">Enter your username and password to access admin panel.</p>
+                        <h2 class="mt-3 text-center">Selamat Datang di Toko Telur Pak Sapto!</h2>
+                        <p class="text-center">Silakan masukkan username dan password Anda untuk mengakses akun Anda.
+                        </p>
                         <form class="mt-4" action="{{ route('login') }}" method="POST">
                             @csrf
                             <div class="row">
