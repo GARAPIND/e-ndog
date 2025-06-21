@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin\Data;
 
 use App\Http\Controllers\Controller;
-use App\Models\StokHistory;
+use App\Models\StokMasuk;
+use App\Models\StokKeluar;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,10 +25,19 @@ class LaporanController extends Controller
 
     public function get_stok_data(Request $request)
     {
-        $query = StokHistory::with(['produk', 'user'])
-            ->select('stok_history.*');
+        // Gabungkan query dari stok_masuk dan stok_keluar
+        $stokMasuk = StokMasuk::with(['produk', 'user'])
+            ->select('*', DB::raw("'masuk' as direction"));
 
-        $this->terapkan_filter_stok($query, $request);
+        $stokKeluar = StokKeluar::with(['produk', 'user'])
+            ->select('*', DB::raw("'keluar' as direction"));
+
+        // Apply filter ke kedua query
+        $this->terapkan_filter_stok($stokMasuk, $request);
+        $this->terapkan_filter_stok($stokKeluar, $request);
+
+        // Union kedua query
+        $query = $stokMasuk->union($stokKeluar);
 
         $dataTable = DataTables::of($query)
             ->addColumn('produk_nama', function ($stok) {
@@ -37,24 +47,46 @@ class LaporanController extends Controller
                 return $stok->user ? $stok->user->name : 'System';
             })
             ->addColumn('tanggal', function ($stok) {
-                return $stok->created_at->format('d/m/Y H:i');
+                return Carbon::parse($stok->created_at)->format('d/m/Y H:i');
             })
             ->addColumn('tipe_label', function ($stok) {
                 $label_tipe = [
                     'masuk' => '<span class="badge bg-success text-white">Masuk</span>',
                     'keluar' => '<span class="badge bg-danger text-white">Keluar</span>',
                     'adjustment_tambah' => '<span class="badge bg-info text-white">Penyesuaian +</span>',
-                    'adjustment_kurang' => '<span class="badge bg-warning text-white">Penyesuaian -</span>'
+                    'adjustment_kurang' => '<span class="badge bg-warning text-white">Penyesuaian -</span>',
+                    'return' => '<span class="badge bg-primary text-white">Return</span>',
+                    'produksi' => '<span class="badge bg-secondary text-white">Produksi</span>',
+                    'penjualan' => '<span class="badge bg-danger text-white">Penjualan</span>',
+                    'rusak' => '<span class="badge bg-warning text-white">Rusak</span>',
+                    'hilang' => '<span class="badge bg-dark text-white">Hilang</span>'
                 ];
                 return $label_tipe[$stok->tipe] ?? '<span class="badge bg-secondary">' . $stok->tipe . '</span>';
             })
             ->addColumn('jumlah_formatted', function ($stok) {
-                $kelas = $stok->jumlah > 0 ? 'text-success' : 'text-danger';
-                $tanda = $stok->jumlah > 0 ? '+' : '';
-                return '<span class="' . $kelas . '">' . $tanda . $stok->jumlah . '</span>';
+                // Hitung total berat (jumlah × berat produk)
+                $berat_produk = $stok->produk ? $stok->produk->berat : 1;
+                $total_berat = $stok->jumlah * $berat_produk;
+
+                if ($stok->direction === 'masuk') {
+                    return '<span class="text-success">+' . $total_berat . ' kg</span>';
+                } else {
+                    return '<span class="text-danger">-' . $total_berat . ' kg</span>';
+                }
+            })
+            ->addColumn('jumlah_unit', function ($stok) {
+                // Tampilkan jumlah unit asli
+                return $stok->jumlah . ' unit';
+            })
+            ->addColumn('berat_satuan', function ($stok) {
+                // Tampilkan berat per satuan
+                $berat_produk = $stok->produk ? $stok->produk->berat : 0;
+                return $berat_produk . ' kg/unit';
+            })
+            ->orderColumn('created_at', function ($query, $order) {
+                $query->orderBy('created_at', $order);
             })
             ->rawColumns(['tipe_label', 'jumlah_formatted']);
-
 
         if ($request->get('length') == -1) {
             $dataTable = $dataTable->skipPaging();
@@ -99,20 +131,34 @@ class LaporanController extends Controller
 
     public function get_stok_summary(Request $request)
     {
-        $query = StokHistory::select(
-            DB::raw('SUM(CASE WHEN jumlah > 0 THEN jumlah ELSE 0 END) as total_masuk'),
-            DB::raw('SUM(CASE WHEN jumlah < 0 THEN ABS(jumlah) ELSE 0 END) as total_keluar'),
-            DB::raw('COUNT(*) as total_transaksi')
-        );
+        // Query untuk stok masuk dengan kalkulasi berat
+        $queryMasuk = StokMasuk::with('produk')
+            ->select('stok_masuk.*');
+        $this->terapkan_filter_stok($queryMasuk, $request);
+        $dataMasuk = $queryMasuk->get();
 
-        $this->terapkan_filter_stok($query, $request);
+        $totalBeratMasuk = $dataMasuk->sum(function ($item) {
+            $berat_produk = $item->produk ? $item->produk->berat : 1;
+            return $item->jumlah * $berat_produk;
+        });
 
-        $hasil = $query->first();
+        // Query untuk stok keluar dengan kalkulasi berat
+        $queryKeluar = StokKeluar::with('produk')
+            ->select('stok_keluar.*');
+        $this->terapkan_filter_stok($queryKeluar, $request);
+        $dataKeluar = $queryKeluar->get();
+
+        $totalBeratKeluar = $dataKeluar->sum(function ($item) {
+            $berat_produk = $item->produk ? $item->produk->berat : 1;
+            return $item->jumlah * $berat_produk;
+        });
 
         return response()->json([
-            'total_masuk' => $hasil->total_masuk ?? 0,
-            'total_keluar' => $hasil->total_keluar ?? 0,
-            'total_transaksi' => $hasil->total_transaksi ?? 0,
+            'total_masuk' => $totalBeratMasuk . ' kg',
+            'total_keluar' => $totalBeratKeluar . ' kg',
+            'total_transaksi' => $dataMasuk->count() + $dataKeluar->count(),
+            'total_masuk_unit' => $dataMasuk->sum('jumlah'),
+            'total_keluar_unit' => $dataKeluar->sum('jumlah'),
         ]);
     }
 
@@ -139,12 +185,35 @@ class LaporanController extends Controller
     public function unduh_laporan_stok(Request $request)
     {
         $format = $request->get('format', 'excel');
-        $query = StokHistory::with(['produk', 'user']);
 
-        $this->terapkan_filter_stok($query, $request);
+        // Ambil data dari kedua tabel
+        $stokMasuk = StokMasuk::with(['produk', 'user']);
+        $stokKeluar = StokKeluar::with(['produk', 'user']);
 
-        $data_stok = $query->orderBy('created_at', 'desc')->get();
+        $this->terapkan_filter_stok($stokMasuk, $request);
+        $this->terapkan_filter_stok($stokKeluar, $request);
+
+        $dataMasuk = $stokMasuk->get()->map(function ($item) {
+            $item->direction = 'masuk';
+            $berat_produk = $item->produk ? $item->produk->berat : 1;
+            $total_berat = $item->jumlah * $berat_produk;
+            $item->jumlah_formatted = '+' . $total_berat . ' kg';
+            $item->total_berat = $total_berat;
+            return $item;
+        });
+
+        $dataKeluar = $stokKeluar->get()->map(function ($item) {
+            $item->direction = 'keluar';
+            $berat_produk = $item->produk ? $item->produk->berat : 1;
+            $total_berat = $item->jumlah * $berat_produk;
+            $item->jumlah_formatted = '-' . $total_berat . ' kg';
+            $item->total_berat = $total_berat;
+            return $item;
+        });
+
+        $data_stok = $dataMasuk->concat($dataKeluar)->sortByDesc('created_at');
         $tanggal_cetak = now()->format('d/m/Y H:i:s');
+
         if ($format === 'excel') {
             return Excel::download(new LaporanStokExport($data_stok), 'laporan_stok_' . date('Y-m-d') . '.xlsx');
         } else {
@@ -255,40 +324,94 @@ class LaporanController extends Controller
         $tahun = $request->get('tahun', date('Y'));
 
         if ($periode === 'bulan') {
-            $data = StokHistory::select(
-                DB::raw('MONTH(created_at) as bulan'),
-                DB::raw('SUM(CASE WHEN jumlah > 0 THEN jumlah ELSE 0 END) as total_masuk'),
-                DB::raw('SUM(CASE WHEN jumlah < 0 THEN ABS(jumlah) ELSE 0 END) as total_keluar')
-            )
+            // Data stok masuk dengan kalkulasi berat
+            $dataMasuk = StokMasuk::with('produk')
+                ->select('stok_masuk.*', DB::raw('MONTH(created_at) as bulan'))
                 ->whereYear('created_at', $tahun)
-                ->groupBy(DB::raw('MONTH(created_at)'))
-                ->orderBy('bulan')
-                ->get();
+                ->get()
+                ->groupBy('bulan')
+                ->map(function ($items, $bulan) {
+                    $total_berat = $items->sum(function ($item) {
+                        $berat_produk = $item->produk ? $item->produk->berat : 1;
+                        return $item->jumlah * $berat_produk;
+                    });
+                    return (object)[
+                        'bulan' => $bulan,
+                        'total_masuk' => $total_berat
+                    ];
+                });
+
+            // Data stok keluar dengan kalkulasi berat
+            $dataKeluar = StokKeluar::with('produk')
+                ->select('stok_keluar.*', DB::raw('MONTH(created_at) as bulan'))
+                ->whereYear('created_at', $tahun)
+                ->get()
+                ->groupBy('bulan')
+                ->map(function ($items, $bulan) {
+                    $total_berat = $items->sum(function ($item) {
+                        $berat_produk = $item->produk ? $item->produk->berat : 1;
+                        return $item->jumlah * $berat_produk;
+                    });
+                    return (object)[
+                        'bulan' => $bulan,
+                        'total_keluar' => $total_berat
+                    ];
+                });
 
             $chart_data = [];
             for ($i = 1; $i <= 12; $i++) {
-                $bulan_data = $data->where('bulan', $i)->first();
+                $masuk_data = $dataMasuk->get($i);
+                $keluar_data = $dataKeluar->get($i);
+
                 $chart_data[] = [
                     'label' => Carbon::create()->month($i)->translatedFormat('M'),
-                    'masuk' => $bulan_data ? $bulan_data->total_masuk : 0,
-                    'keluar' => $bulan_data ? $bulan_data->total_keluar : 0,
+                    'masuk' => $masuk_data ? $masuk_data->total_masuk : 0,
+                    'keluar' => $keluar_data ? $keluar_data->total_keluar : 0,
                 ];
             }
         } else {
-            $data = StokHistory::select(
-                DB::raw('YEAR(created_at) as tahun'),
-                DB::raw('SUM(CASE WHEN jumlah > 0 THEN jumlah ELSE 0 END) as total_masuk'),
-                DB::raw('SUM(CASE WHEN jumlah < 0 THEN ABS(jumlah) ELSE 0 END) as total_keluar')
-            )
-                ->groupBy(DB::raw('YEAR(created_at)'))
-                ->orderBy('tahun')
-                ->get();
+            // Data tahunan dengan kalkulasi berat
+            $dataMasuk = StokMasuk::with('produk')
+                ->select('stok_masuk.*', DB::raw('YEAR(created_at) as tahun'))
+                ->get()
+                ->groupBy('tahun')
+                ->map(function ($items, $tahun) {
+                    $total_berat = $items->sum(function ($item) {
+                        $berat_produk = $item->produk ? $item->produk->berat : 1;
+                        return $item->jumlah * $berat_produk;
+                    });
+                    return (object)[
+                        'tahun' => $tahun,
+                        'total_masuk' => $total_berat
+                    ];
+                });
 
-            $chart_data = $data->map(function ($item) {
+            $dataKeluar = StokKeluar::with('produk')
+                ->select('stok_keluar.*', DB::raw('YEAR(created_at) as tahun'))
+                ->get()
+                ->groupBy('tahun')
+                ->map(function ($items, $tahun) {
+                    $total_berat = $items->sum(function ($item) {
+                        $berat_produk = $item->produk ? $item->produk->berat : 1;
+                        return $item->jumlah * $berat_produk;
+                    });
+                    return (object)[
+                        'tahun' => $tahun,
+                        'total_keluar' => $total_berat
+                    ];
+                });
+
+            // Gabungkan data berdasarkan tahun
+            $tahunList = $dataMasuk->keys()->merge($dataKeluar->keys())->unique()->sort();
+
+            $chart_data = $tahunList->map(function ($tahun) use ($dataMasuk, $dataKeluar) {
+                $masuk = $dataMasuk->get($tahun);
+                $keluar = $dataKeluar->get($tahun);
+
                 return [
-                    'label' => $item->tahun,
-                    'masuk' => $item->total_masuk,
-                    'keluar' => $item->total_keluar,
+                    'label' => $tahun,
+                    'masuk' => $masuk ? $masuk->total_masuk : 0,
+                    'keluar' => $keluar ? $keluar->total_keluar : 0,
                 ];
             });
         }

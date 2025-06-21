@@ -530,7 +530,7 @@
                     },
                     {
                         data: 'jumlah_formatted',
-                        name: 'jumlah'
+                        name: 'jumlah_formatted'
                     },
                     {
                         data: 'keterangan',
@@ -779,7 +779,7 @@
                     row.tanggal,
                     row.produk_nama,
                     row.tipe,
-                    row.jumlah,
+                    row.jumlah+" kg",
                     row.keterangan,
                     row.user_nama
                 ]);

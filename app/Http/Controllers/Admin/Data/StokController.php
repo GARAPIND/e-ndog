@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin\Data;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
-use App\Models\StokHistory;
+use App\Models\StokKeluar;
+use App\Models\StokMasuk;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -60,7 +61,24 @@ class StokController extends Controller
     public function getStokHistory($id)
     {
         $produk = Produk::findOrFail($id);
-        $histories = StokHistory::where('produk_id', $id)->with('user')->orderBy('created_at', 'desc')->get();
+        $stokMasuk = StokMasuk::where('produk_id', $id)
+            ->with('user')
+            ->get()
+            ->map(function ($item) {
+                $item->direction = 'masuk';
+                return $item;
+            });
+
+        $stokKeluar = StokKeluar::where('produk_id', $id)
+            ->with('user')
+            ->get()
+            ->map(function ($item) {
+                $item->direction = 'keluar';
+                return $item;
+            });
+
+        // Gabungkan dan urutkan berdasarkan tanggal
+        $histories = $stokMasuk->concat($stokKeluar)->sortByDesc('created_at')->values();
 
         return response()->json([
             'produk' => $produk,
