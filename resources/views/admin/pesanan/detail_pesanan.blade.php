@@ -257,10 +257,10 @@
                             </h5>
                         </div>
                         <div class="card-body text-center">
-                            <img src="{{ asset('storage/bukti-pembayaran/' . $transaksi->foto) }}" alt="Bukti Pembayaran"
+                            <img src="{{ asset('storage/' . $transaksi->foto) }}" alt="Bukti Pembayaran"
                                 class="img-fluid img-thumbnail">
-                            <a href="{{ asset('storage/bukti-pembayaran/' . $transaksi->foto) }}"
-                                class="btn btn-sm btn-info mt-2" target="_blank">
+                            <a href="{{ asset('storage/' . $transaksi->foto) }}" class="btn btn-sm btn-info mt-2"
+                                target="_blank">
                                 <i class="fas fa-eye mr-1"></i> Lihat Ukuran Penuh
                             </a>
                         </div>

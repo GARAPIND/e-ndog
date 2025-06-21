@@ -141,7 +141,7 @@
                                                         <th>Harga</th>
                                                         <th>Jumlah</th>
                                                         <th>Total</th>
-                                                        <th>Berat (gram)</th>
+                                                        <th>Berat (KG)</th>
                                                         <th>Aksi</th>
                                                     </tr>
                                                 </thead>
@@ -167,13 +167,19 @@
                                     <input type="hidden" id="nama_ekspedisi">
                                     <input type="hidden" id="harga_ekspedisi">
                                     <input type="hidden" id="jarak">
-                                    <button class="btn btn-primary float-right" onclick="nextStep()">Selanjutnya</button>
+                                    <button class="btn btn-primary float-right" id="btnNext"
+                                        onclick="nextStep()">Selanjutnya</button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Step 2 -->
                         <div id="step-2" style="display: none;">
+
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Perhatian!</strong> COD hanya bisa dilakukan jika total berat pesanan lebih dari
+                                <strong>5kg</strong> dan alamat berada di wilayah <strong>Kota/Kab Kediri</strong>.
+                            </div>
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group">
@@ -278,7 +284,7 @@
             $('#step-1').hide();
             $('#step-2').show();
             ubah_metode_pembayaran();
-            get_data_ongkir();
+            // get_data_ongkir();
         }
 
         function prevStep() {
@@ -344,12 +350,19 @@
                     $('#alamat').val(`Loading alamat ...`);
                 },
                 success: (response) => {
-                    $('#alamat').val(response['alamat']);
-                    $('#alamat_id_aktif').val(response['alamat_id']);
-                    $('#city_id').val(response['city_id']);
-                    $('#latitude_pelanggan').val(response['latitude']);
-                    $('#longitude_pelanggan').val(response['longitude']);
-                    hitungJarak();
+                    if (response.status == 'error') {
+                        Notiflix.Notify.warning(
+                            "Belum ada alamat yang aktif. Silakan tambah alamat di profile.");
+                        $('#btnNext').prop('disabled', true);
+                    } else {
+                        $('#alamat').val(response['alamat']);
+                        $('#alamat_id_aktif').val(response['alamat_id']);
+                        $('#city_id').val(response['city_id']);
+                        $('#latitude_pelanggan').val(response['latitude']);
+                        $('#longitude_pelanggan').val(response['longitude']);
+                        $('#btnNext').prop('disabled', false);
+                        hitungJarak();
+                    }
                 },
                 error: ({
                     responseText
@@ -668,20 +681,23 @@
         function ubah_metode_pembayaran() {
             var metode = $('#metode_pembayaran').val();
             var jarak = parseFloat($('#jarak').val());
-            var berat = parseFloat($('#total-berat').text());
+            var city_id = $('#city_id').val();
+            var berat = parseFloat($('#total-berat').text()) * 1000;
+
             $('#sub_total').val($('#total-semua').text());
             if (metode == "1") {
                 $('#form_kurir_raja_ongkir').hide();
                 $('#form_harga_ongkir').show();
-                if (jarak > 0 && berat > 0) {
-                    if (jarak <= 10000 && berat >= 5000) {
+                if (city_id > 0 && berat > 0) {
+                    if ((city_id == 178 || city_id == 179) && berat >= 5000) {
                         const ongkir = hitungOngkir(jarak, berat);
                         $('#nama_ekspedisi').val('Lokal');
                         $('#harga_ekspedisi').val(ongkir);
                         $('#harga_ongkir').val(rupiahFormat(ongkir));
                     } else {
-                        Notiflix.Notify.failure('COD hanya berlaku untuk jarak <= 10km dan berat >= 5kg');
+                        Notiflix.Notify.failure('COD hanya berlaku untuk area kediri dan berat >= 5kg');
                         $('#metode_pembayaran').val(0).change();
+                        get_data_ongkir();
                     }
                 }
             } else {

@@ -25,6 +25,9 @@ class BelanjaController extends Controller
     {
         $pelanggan = Customer::where('user_id', Auth::user()->id)->first();
         $data = Address::where('pelanggan_id', $pelanggan->id)->where('is_primary', 1)->first();
+        if (!$data) {
+            return response()->json(['status' => 'error']);
+        }
         return response()->json([
             'alamat' => $data->alamat . " ($data->keterangan)",
             'alamat_id' => $data->id,
@@ -55,8 +58,8 @@ class BelanjaController extends Controller
     public function cek_ongkir(Request $request)
     {
         $city_id = $request->city_id;
-        $weight = $request->weight;
-        $city_id_toko = 256; // Kota Malang
+        $weight = $request->weight * 1000;
+        $city_id_toko = 178;
 
         $couriers = ['jne', 'pos', 'tiki'];
         $allCosts = [];
