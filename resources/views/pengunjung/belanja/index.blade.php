@@ -471,14 +471,14 @@
         let satuan = "";
 
         function getHargaByBerat(beratTotal, harga, hargaGrosir, hargaPengampu) {
-            if (beratTotal < 10000) return parseInt(harga);
-            else if (beratTotal <= 30000) return parseInt(hargaGrosir);
+            if (beratTotal < 10) return parseInt(harga);
+            else if (beratTotal <= 30) return parseInt(hargaGrosir);
             else return parseInt(hargaPengampu);
         }
 
         function getStatusByBerat(beratTotal) {
-            if (beratTotal < 10000) return 'ecer';
-            else if (beratTotal <= 30000) return 'grosir';
+            if (beratTotal < 10) return 'ecer';
+            else if (beratTotal <= 30) return 'grosir';
             else return 'pengampu';
         }
 
