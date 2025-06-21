@@ -285,8 +285,98 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title">Stok Masuk</h4>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-success btn-sm"
+                                                onclick="unduh_excel_stok_masuk()">
+                                                <i class="fas fa-file-excel"></i> Excel
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                onclick="unduh_excel_stok_masuk_pdf()">
+                                                <i class="fas fa-file-pdf"></i> PDF
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-3 d-none">
+                                            <div class="col-md-12">
+                                                <div class="card bg-success text-white">
+                                                    <div class="card-body text-center">
+                                                        <h5 class="card-title">Total Stok Masuk</h5>
+                                                        <h3 id="total_masuk_only">0 kg</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table id="tabel_stok_masuk"
+                                                class="table table-striped table-bordered table-sm">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>Tanggal</th>
+                                                        <th>Produk</th>
+                                                        <th>Jumlah</th>
+                                                        <th>Keterangan</th>
+                                                        <th>Admin</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="table-responsive">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title">Stok Keluar</h4>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-success btn-sm"
+                                                onclick="unduh_excel_stok_keluar()">
+                                                <i class="fas fa-file-excel"></i> Excel
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                onclick="unduh_excel_stok_keluar_pdf()">
+                                                <i class="fas fa-file-pdf"></i> PDF
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-3 d-none">
+                                            <div class="col-md-12">
+                                                <div class="card bg-danger text-white">
+                                                    <div class="card-body text-center">
+                                                        <h5 class="card-title">Total Stok Keluar</h5>
+                                                        <h3 id="total_keluar_only">0 kg</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table id="tabel_stok_keluar"
+                                                class="table table-striped table-bordered table-sm">
+                                                <thead class="table-dark">
+                                                    <tr>
+                                                        <th>Tanggal</th>
+                                                        <th>Produk</th>
+                                                        <th>Jumlah</th>
+                                                        <th>Keterangan</th>
+                                                        <th>Pembeli</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive d-none">
                             <table id="tabel_stok" class="table table-striped table-bordered table-sm">
                                 <thead class="table-dark">
                                     <tr>
@@ -304,6 +394,8 @@
                     </div>
                 </div>
             </div>
+
+
 
             <div class="col-md-12">
                 <div class="card">
@@ -482,6 +574,17 @@
             inisialisasi_tabel();
             atur_event_filter();
             muat_ringkasan_data();
+            inisialisasi_tabel_terpisah();
+            muat_ringkasan_stok_terpisah();
+
+            $('#filter_periode_stok').change(function() {
+                muat_ulang_data_stok_terpisah();
+            });
+
+            $('#tanggal_stok, #minggu_stok, #bulan_minggu_stok, #tahun_minggu_stok, #bulan_stok, #tahun_bulan_stok, #tahun_stok')
+                .change(function() {
+                    muat_ulang_data_stok_terpisah();
+                });
         });
 
         function atur_opsi_tahun() {
@@ -779,7 +882,7 @@
                     row.tanggal,
                     row.produk_nama,
                     row.tipe,
-                    row.jumlah+" kg",
+                    row.jumlah + " kg",
                     row.keterangan,
                     row.user_nama
                 ]);
@@ -821,6 +924,194 @@
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, 'Laporan Pemasukan');
             XLSX.writeFile(wb, 'laporan_pemasukan_' + new Date().toISOString().split('T')[0] + '.xlsx');
+        }
+
+        function inisialisasi_tabel_terpisah() {
+            window.tabel_stok_masuk = $('#tabel_stok_masuk').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                },
+                ajax: {
+                    url: "{{ route('admin.laporan.stok.masuk.data') }}",
+                    data: function(d) {
+                        return dapatkan_parameter_filter_stok(d);
+                    }
+                },
+                columns: [{
+                        data: 'tanggal',
+                        name: 'created_at'
+                    },
+                    {
+                        data: 'produk_nama',
+                        name: 'produk.nama'
+                    },
+                    {
+                        data: 'jumlah_formatted',
+                        name: 'jumlah_formatted'
+                    },
+                    {
+                        data: 'keterangan',
+                        name: 'keterangan'
+                    },
+                    {
+                        data: 'user_nama',
+                        name: 'user.name'
+                    }
+                ]
+            });
+
+            window.tabel_stok_keluar = $('#tabel_stok_keluar').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                },
+                ajax: {
+                    url: "{{ route('admin.laporan.stok.keluar.data') }}",
+                    data: function(d) {
+                        return dapatkan_parameter_filter_stok(d);
+                    }
+                },
+                columns: [{
+                        data: 'tanggal',
+                        name: 'created_at'
+                    },
+                    {
+                        data: 'produk_nama',
+                        name: 'produk.nama'
+                    },
+                    {
+                        data: 'jumlah_formatted',
+                        name: 'jumlah_formatted'
+                    },
+                    {
+                        data: 'keterangan',
+                        name: 'keterangan'
+                    },
+                    {
+                        data: 'user_nama',
+                        name: 'user.name'
+                    }
+                ]
+            });
+        }
+
+        function muat_ulang_data_stok_terpisah() {
+            if (window.tabel_stok_masuk) {
+                window.tabel_stok_masuk.ajax.reload();
+            }
+            if (window.tabel_stok_keluar) {
+                window.tabel_stok_keluar.ajax.reload();
+            }
+            muat_ringkasan_stok_terpisah();
+        }
+
+        function muat_ringkasan_stok_terpisah() {
+            const parameter = dapatkan_parameter_filter_stok({});
+
+            $.ajax({
+                url: "{{ route('admin.laporan.stok.ringkasan') }}",
+                method: 'GET',
+                data: parameter,
+                success: function(response) {
+                    $('#total_masuk_only').text(response.total_masuk || '0 kg');
+                    $('#total_keluar_only').text(response.total_keluar || '0 kg');
+                }
+            });
+        }
+
+        function unduh_excel_stok_masuk_pdf() {
+            format = 'masuk';
+            const parameter = dapatkan_parameter_filter_stok({});
+            parameter.format = format;
+            const url = "{{ route('admin.laporan.stok.unduh') }}" + '?' + $.param(parameter);
+            window.open(url, '_blank');
+        }
+
+        function unduh_excel_stok_keluar_pdf() {
+            format = 'keluar';
+            const parameter = dapatkan_parameter_filter_stok({});
+            parameter.format = format;
+            const url = "{{ route('admin.laporan.stok.unduh') }}" + '?' + $.param(parameter);
+            window.open(url, '_blank');
+        }
+
+        function unduh_excel_stok_masuk() {
+            const parameter = dapatkan_parameter_filter_stok({});
+            $.ajax({
+                url: "{{ route('admin.laporan.stok.masuk.data') }}",
+                method: 'GET',
+                data: {
+                    ...parameter,
+                    length: -1,
+                    start: 0
+                },
+                success: function(response) {
+                    export_to_excel_stok_masuk(response.data);
+                }
+            });
+        }
+
+        function unduh_excel_stok_keluar() {
+            const parameter = dapatkan_parameter_filter_stok({});
+            $.ajax({
+                url: "{{ route('admin.laporan.stok.keluar.data') }}",
+                method: 'GET',
+                data: {
+                    ...parameter,
+                    length: -1,
+                    start: 0
+                },
+                success: function(response) {
+                    export_to_excel_stok_keluar(response.data);
+                }
+            });
+        }
+
+        function export_to_excel_stok_masuk(data) {
+            const wb = XLSX.utils.book_new();
+            const ws_data = [
+                ['Tanggal', 'Produk', 'Jumlah', 'Keterangan', 'Admin']
+            ];
+
+            data.forEach(row => {
+                ws_data.push([
+                    row.tanggal,
+                    row.produk_nama,
+                    row.jumlah_formatted,
+                    row.keterangan,
+                    row.user_nama
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Stok Masuk');
+            XLSX.writeFile(wb, 'stok_masuk_' + new Date().toISOString().split('T')[0] + '.xlsx');
+        }
+
+        function export_to_excel_stok_keluar(data) {
+            const wb = XLSX.utils.book_new();
+            const ws_data = [
+                ['Tanggal', 'Produk', 'Jumlah', 'Keterangan', 'Pembeli']
+            ];
+
+            data.forEach(row => {
+                ws_data.push([
+                    row.tanggal,
+                    row.produk_nama,
+                    row.jumlah_formatted,
+                    row.keterangan,
+                    row.user_nama
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Stok Keluar');
+            XLSX.writeFile(wb, 'stok_keluar_' + new Date().toISOString().split('T')[0] + '.xlsx');
         }
     </script>
 @endsection

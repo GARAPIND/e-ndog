@@ -57,10 +57,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('admin/data')->group(function () {
         Route::prefix('laporan')->name('admin.laporan.')->group(function () {
             Route::get('/', [LaporanController::class, 'index'])->name('index');
-
+            Route::get('stok/masuk/data', [LaporanController::class, 'get_stok_masuk_data'])->name('stok.masuk.data');
+            Route::get('stok/keluar/data', [LaporanController::class, 'get_stok_keluar_data'])->name('stok.keluar.data');
             Route::get('stok/data', [LaporanController::class, 'get_stok_data'])->name('stok.data');
             Route::get('stok/ringkasan', [LaporanController::class, 'get_stok_summary'])->name('stok.ringkasan');
             Route::get('stok/unduh', [LaporanController::class, 'unduh_laporan_stok'])->name('stok.unduh');
+            // Route::get('stok/unduh/pdf', [LaporanController::class, 'unduh_laporan_stok_pdf'])->name('stok.unduh.pdf');
 
             Route::get('pemasukan/data', [LaporanController::class, 'get_pemasukan_data'])->name('pemasukan.data');
             Route::get('pemasukan/ringkasan', [LaporanController::class, 'get_pemasukan_summary'])->name('pemasukan.ringkasan');

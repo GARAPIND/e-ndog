@@ -35,7 +35,13 @@
 
 <body>
     <div class="header">
-        <h2>Laporan Stok Masuk & Keluar</h2>
+        @if ($format === 'masuk')
+            <h2>Laporan Stok Masuk</h2>
+        @elseif ($format === 'keluar')
+            <h2>Laporan Stok Keluar</h2>
+        @else
+            <h2>Laporan Stok Masuk & Keluar</h2>
+        @endif
         <p>Tanggal Cetak: {{ $tanggal_cetak }}</p>
     </div>
 
@@ -48,7 +54,13 @@
                 <th>Tipe</th>
                 <th>Jumlah</th>
                 <th>Keterangan</th>
-                <th>User</th>
+                @if ($format === 'masuk')
+                    <th>Admin</th>
+                @elseif ($format === 'keluar')
+                    <th>Pembeli</th>
+                @else
+                    <th>User</th>
+                @endif
             </tr>
         </thead>
         <tbody>

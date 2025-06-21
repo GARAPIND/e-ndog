@@ -22,7 +22,69 @@ class LaporanController extends Controller
     {
         return view('admin.laporan.index');
     }
+    public function get_stok_masuk_data(Request $request)
+    {
+        $query = StokMasuk::with(['produk', 'user']);
 
+        $this->terapkan_filter_stok($query, $request);
+
+        $dataTable = DataTables::of($query)
+            ->addColumn('produk_nama', function ($stok) {
+                return $stok->produk ? $stok->produk->nama : '-';
+            })
+            ->addColumn('user_nama', function ($stok) {
+                return $stok->user ? $stok->user->name : 'System';
+            })
+            ->addColumn('tanggal', function ($stok) {
+                return Carbon::parse($stok->created_at)->format('d/m/Y H:i');
+            })
+            ->addColumn('jumlah_formatted', function ($stok) {
+                $berat_produk = $stok->produk ? $stok->produk->berat : 1;
+                $total_berat = $stok->jumlah * $berat_produk;
+                return '+' . $total_berat . ' kg';
+            })
+            ->orderColumn('created_at', function ($query, $order) {
+                $query->orderBy('created_at', $order);
+            });
+
+        if ($request->get('length') == -1) {
+            $dataTable = $dataTable->skipPaging();
+        }
+
+        return $dataTable->make(true);
+    }
+
+    public function get_stok_keluar_data(Request $request)
+    {
+        $query = StokKeluar::with(['produk', 'user']);
+
+        $this->terapkan_filter_stok($query, $request);
+
+        $dataTable = DataTables::of($query)
+            ->addColumn('produk_nama', function ($stok) {
+                return $stok->produk ? $stok->produk->nama : '-';
+            })
+            ->addColumn('user_nama', function ($stok) {
+                return $stok->user ? $stok->user->name : 'System';
+            })
+            ->addColumn('tanggal', function ($stok) {
+                return Carbon::parse($stok->created_at)->format('d/m/Y H:i');
+            })
+            ->addColumn('jumlah_formatted', function ($stok) {
+                $berat_produk = $stok->produk ? $stok->produk->berat : 1;
+                $total_berat = $stok->jumlah * $berat_produk;
+                return '-' . $total_berat . ' kg';
+            })
+            ->orderColumn('created_at', function ($query, $order) {
+                $query->orderBy('created_at', $order);
+            });
+
+        if ($request->get('length') == -1) {
+            $dataTable = $dataTable->skipPaging();
+        }
+
+        return $dataTable->make(true);
+    }
     public function get_stok_data(Request $request)
     {
         // Gabungkan query dari stok_masuk dan stok_keluar
@@ -185,7 +247,9 @@ class LaporanController extends Controller
     public function unduh_laporan_stok(Request $request)
     {
         $format = $request->get('format', 'excel');
-
+        // dd($request->all());
+        $type = $request->get('type');
+        // dd($type);
         // Ambil data dari kedua tabel
         $stokMasuk = StokMasuk::with(['produk', 'user']);
         $stokKeluar = StokKeluar::with(['produk', 'user']);
@@ -210,14 +274,20 @@ class LaporanController extends Controller
             $item->total_berat = $total_berat;
             return $item;
         });
+        if ($format === 'masuk') {
+            $data_stok = $dataMasuk->sortByDesc('created_at');
+        } else if ($format === 'keluar') {
+            $data_stok = $dataKeluar->sortByDesc('created_at');
+        } else {
+            $data_stok = $dataMasuk->concat($dataKeluar)->sortByDesc('created_at');
+        }
 
-        $data_stok = $dataMasuk->concat($dataKeluar)->sortByDesc('created_at');
         $tanggal_cetak = now()->format('d/m/Y H:i:s');
 
         if ($format === 'excel') {
             return Excel::download(new LaporanStokExport($data_stok), 'laporan_stok_' . date('Y-m-d') . '.xlsx');
         } else {
-            $pdf = Pdf::loadView('admin.laporan.stok_pdf', compact('data_stok', 'tanggal_cetak'));
+            $pdf = Pdf::loadView('admin.laporan.stok_pdf', compact('data_stok', 'tanggal_cetak', 'format'));
             return $pdf->download('laporan_stok_' . date('Y-m-d') . '.pdf');
         }
     }
