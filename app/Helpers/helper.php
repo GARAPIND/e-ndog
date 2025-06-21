@@ -36,7 +36,7 @@ function tanggalIndoLengkap($tanggal)
     return $hari . ' ' . $bulanIndo . ' ' . $tahun;
 }
 
-function generateKodeProduk()
+function generateKodeProdukOld()
 {
     $tanggal = date('Ymd');
     $prefix = 'PRDK' . $tanggal;
@@ -52,4 +52,12 @@ function generateKodeProduk()
         $newNumber = '001';
     }
     return $prefix . $newNumber;
+}
+
+function generateKodeProduk()
+{
+    $jumlahProduk = Produk::count();
+    $kodeBaru = 'A' . ($jumlahProduk + 1);
+
+    return $kodeBaru;
 }
