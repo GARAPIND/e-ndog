@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin\Data;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
-use App\Models\StokHistory;
+use App\Models\StokMasuk;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -19,9 +19,8 @@ class StokMasukController extends Controller
 
     public function getStokMasukData(Request $request)
     {
-        $histories = StokHistory::with(['produk', 'user'])
-            ->where('tipe', 'masuk')
-            ->select('stok_history.*');
+        $histories = StokMasuk::with(['produk', 'user'])
+            ->select('stok_masuk.*');
 
         return DataTables::of($histories)
             ->addColumn('nama_produk', function ($row) {
@@ -47,7 +46,7 @@ class StokMasukController extends Controller
     public function getStokMasukDetail($id)
     {
         // dd($id);
-        $history = StokHistory::with(['produk', 'user'])->findOrFail($id);
+        $history = StokMasuk::with(['produk', 'user'])->findOrFail($id);
         // dd($history);
         if ($history->tipe != 'masuk') {
             return response()->json(['error' => 'Data tidak valid'], 400);

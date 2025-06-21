@@ -28,6 +28,11 @@ class Produk extends Model
         'kategori_id'
     ];
 
+    protected $casts = [
+        'aktif' => 'boolean',
+        'notifikasi_stok' => 'boolean',
+    ];
+
     public function kategori()
     {
         return $this->belongsTo(KategoriProduk::class, 'kategori_id');
@@ -55,53 +60,107 @@ class Produk extends Model
         }
         return asset('images/default-product.png');
     }
-    protected $casts = [
-        'aktif' => 'boolean',
-        'notifikasi_stok' => 'boolean',
-    ];
 
+    // Relasi ke stok masuk dan keluar
+    public function stokMasuk()
+    {
+        return $this->hasMany(StokMasuk::class);
+    }
+
+    public function stokKeluar()
+    {
+        return $this->hasMany(StokKeluar::class);
+    }
+
+    // Backward compatibility - gabungan stok masuk dan keluar
     public function stokHistories()
     {
-        return $this->hasMany(StokHistory::class);
+        $stokMasuk = $this->stokMasuk()->get()->map(function ($item) {
+            $item->direction = 'masuk';
+            return $item;
+        });
+
+        $stokKeluar = $this->stokKeluar()->get()->map(function ($item) {
+            $item->direction = 'keluar';
+            return $item;
+        });
+
+        return $stokMasuk->concat($stokKeluar)->sortBy('created_at');
     }
 
     // Metode untuk menambah stok
-    public function tambahStok($jumlah, $keterangan = null, $referensi_id = null, $referensi_tipe = null)
+    public function tambahStok($jumlah, $keterangan = null, $referensi_id = null, $referensi_tipe = null, $tipe = 'masuk')
     {
-        return $this->updateStok($jumlah, 'masuk', $keterangan, $referensi_id, $referensi_tipe);
+        return $this->updateStokMasuk($jumlah, $tipe, $keterangan, $referensi_id, $referensi_tipe);
     }
 
     // Metode untuk mengurangi stok
-    public function kurangiStok($jumlah, $keterangan = null, $referensi_id = null, $referensi_tipe = null)
+    public function kurangiStok($jumlah, $keterangan = null, $referensi_id = null, $referensi_tipe = null, $tipe = 'keluar')
     {
-        return $this->updateStok(-$jumlah, 'keluar', $keterangan, $referensi_id, $referensi_tipe);
+        return $this->updateStokKeluar($jumlah, $tipe, $keterangan, $referensi_id, $referensi_tipe);
     }
 
     // Metode untuk menyesuaikan stok
     public function sesuaikanStok($jumlah_baru, $keterangan = null)
     {
         $perubahan = $jumlah_baru - $this->stok;
-        $tipe = $perubahan >= 0 ? 'adjustment_tambah' : 'adjustment_kurang';
 
-        return $this->updateStok($perubahan, $tipe, $keterangan);
+        if ($perubahan > 0) {
+            // Tambah stok
+            return $this->updateStokMasuk($perubahan, 'adjustment_tambah', $keterangan);
+        } elseif ($perubahan < 0) {
+            // Kurangi stok
+            return $this->updateStokKeluar(abs($perubahan), 'adjustment_kurang', $keterangan);
+        }
+
+        return true; // Tidak ada perubahan
     }
 
-    // Metode umum untuk update stok
-    private function updateStok($jumlah, $tipe, $keterangan = null, $referensi_id = null, $referensi_tipe = null)
+    // Metode untuk update stok masuk
+    private function updateStokMasuk($jumlah, $tipe, $keterangan = null, $referensi_id = null, $referensi_tipe = null)
     {
         $stok_sebelum = $this->stok;
         $stok_setelah = $stok_sebelum + $jumlah;
 
+        $this->stok = $stok_setelah;
+        $saved = $this->save();
+
+        if ($saved) {
+            // Buat catatan di stok masuk
+            StokMasuk::create([
+                'produk_id' => $this->id,
+                'jumlah' => $jumlah,
+                'stok_sebelum' => $stok_sebelum,
+                'stok_setelah' => $stok_setelah,
+                'tipe' => $tipe,
+                'keterangan' => $keterangan,
+                'referensi_id' => $referensi_id,
+                'referensi_tipe' => $referensi_tipe,
+                'user_id' => auth()->id()
+            ]);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // Metode untuk update stok keluar
+    private function updateStokKeluar($jumlah, $tipe, $keterangan = null, $referensi_id = null, $referensi_tipe = null)
+    {
+        $stok_sebelum = $this->stok;
+        $stok_setelah = $stok_sebelum - $jumlah;
+
         if ($stok_setelah < 0) {
-            return false;
+            return false; // Stok tidak mencukupi
         }
 
         $this->stok = $stok_setelah;
         $saved = $this->save();
 
         if ($saved) {
-            // Buat catatan histori
-            StokHistory::create([
+            // Buat catatan di stok keluar
+            StokKeluar::create([
                 'produk_id' => $this->id,
                 'jumlah' => $jumlah,
                 'stok_sebelum' => $stok_sebelum,
@@ -123,5 +182,40 @@ class Produk extends Model
     public function stokMinimum()
     {
         return $this->stok <= $this->stok_minimum;
+    }
+
+    // Method untuk mendapatkan total stok masuk
+    public function getTotalStokMasuk($startDate = null, $endDate = null)
+    {
+        $query = $this->stokMasuk();
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        return $query->sum('jumlah');
+    }
+
+    // Method untuk mendapatkan total stok keluar
+    public function getTotalStokKeluar($startDate = null, $endDate = null)
+    {
+        $query = $this->stokKeluar();
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        return $query->sum('jumlah');
+    }
+
+    // Method untuk mendapatkan laporan stok
+    public function getLaporanStok($startDate = null, $endDate = null)
+    {
+        return [
+            'stok_awal' => $this->stok - $this->getTotalStokMasuk($startDate, $endDate) + $this->getTotalStokKeluar($startDate, $endDate),
+            'stok_masuk' => $this->getTotalStokMasuk($startDate, $endDate),
+            'stok_keluar' => $this->getTotalStokKeluar($startDate, $endDate),
+            'stok_akhir' => $this->stok,
+        ];
     }
 }

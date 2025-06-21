@@ -58,7 +58,7 @@
                     <td>{{ $stok->created_at->format('d/m/Y H:i') }}</td>
                     <td>{{ $stok->produk ? $stok->produk->nama : '-' }}</td>
                     <td>{{ ucfirst($stok->tipe) }}</td>
-                    <td>{{ $stok->jumlah }}</td>
+                    <td>{{ $stok->jumlah * $stok->produk->berat }} kg</td>
                     <td>{{ $stok->keterangan }}</td>
                     <td>{{ $stok->user ? $stok->user->name : 'System' }}</td>
                 </tr>
