@@ -41,7 +41,7 @@ class LaporanController extends Controller
             ->addColumn('jumlah_formatted', function ($stok) {
                 $berat_produk = $stok->produk ? $stok->produk->berat : 1;
                 $total_berat = $stok->jumlah * $berat_produk;
-                return '+' . $total_berat . ' kg';
+                return  $total_berat . ' kg';
             })
             ->orderColumn('created_at', function ($query, $order) {
                 $query->orderBy('created_at', $order);
@@ -73,7 +73,7 @@ class LaporanController extends Controller
             ->addColumn('jumlah_formatted', function ($stok) {
                 $berat_produk = $stok->produk ? $stok->produk->berat : 1;
                 $total_berat = $stok->jumlah * $berat_produk;
-                return '-' . $total_berat . ' kg';
+                return  $total_berat . ' kg';
             })
             ->orderColumn('created_at', function ($query, $order) {
                 $query->orderBy('created_at', $order);
@@ -261,7 +261,7 @@ class LaporanController extends Controller
             $item->direction = 'masuk';
             $berat_produk = $item->produk ? $item->produk->berat : 1;
             $total_berat = $item->jumlah * $berat_produk;
-            $item->jumlah_formatted = '+' . $total_berat . ' kg';
+            $item->jumlah_formatted = $total_berat . ' kg';
             $item->total_berat = $total_berat;
             return $item;
         });
@@ -270,7 +270,7 @@ class LaporanController extends Controller
             $item->direction = 'keluar';
             $berat_produk = $item->produk ? $item->produk->berat : 1;
             $total_berat = $item->jumlah * $berat_produk;
-            $item->jumlah_formatted = '-' . $total_berat . ' kg';
+            $item->jumlah_formatted = $total_berat . ' kg';
             $item->total_berat = $total_berat;
             return $item;
         });

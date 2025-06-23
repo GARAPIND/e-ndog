@@ -128,8 +128,7 @@
                                                 <br>
                                                 <small class="text-muted">Berat: {{ $detail->berat }} gram</small>
                                             </td>
-                                            <td class="text-center align-middle">{{ $detail->jumlah }}
-                                                {{ $detail->produk->satuan }}</td>
+                                            <td class="text-center align-middle">{{ $detail->jumlah }}</td>
                                             <td class="text-right align-middle">Rp
                                                 {{ number_format($detail->produk->harga_aktif, 0, ',', '.') }}</td>
                                             <td class="text-right align-middle font-weight-bold">Rp
@@ -253,7 +252,7 @@
                     <div class="card mb-4">
                         <div class="card-header bg-secondary text-white">
                             <h5 class="mb-0">
-                                <i class="fas fa-receipt mr-2"></i> Bukti Pembayaran
+                                <i class="fas fa-receipt mr-2"></i> Bukti Pengiriman
                             </h5>
                         </div>
                         <div class="card-body text-center">
