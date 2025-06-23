@@ -204,6 +204,7 @@ Route::middleware(['pelanggan'])->group(function () {
         Route::get('/bayar_ulang', [PesananController::class, 'bayar_ulang'])->name('bayar_ulang');
         Route::get('/batal_pesanan', [PesananController::class, 'batal_pesanan'])->name('batal_pesanan');
         Route::get('/selesai_pesanan', [PesananController::class, 'selesai_pesanan'])->name('selesai_pesanan');
+        Route::get('/nota/{transaksi_id}', [PesananController::class, 'nota'])->name('nota');
         Route::get('/detail/${id}', [PesananController::class, 'detail'])->name('detail');
     });
 

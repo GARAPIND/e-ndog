@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Redis;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Transaction;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PesananController extends Controller
 {
@@ -109,7 +110,8 @@ class PesananController extends Controller
     public function selesai_pesanan(Request $request)
     {
         $id = $request->id;
-        $transaksi = Transaksi::find($id);
+        $transaksi = Transaksi::with('detail.produk')->find($id);
+
         $transaksi->status_pengiriman = 'Selesai';
         $transaksi->status_pembayaran = 'Sudah Dibayar';
         $transaksi->save();
@@ -118,5 +120,13 @@ class PesananController extends Controller
         $sendWaHelper->sendOrderCompletedNotification($transaksi->id);
 
         return response()->json(['status' => 'success', 'message' => 'Pesanan berhasil diselesaikan']);
+    }
+
+    public function nota($transaksi_id)
+    {
+        $data = Transaksi::with('alamat', 'pelanggan.user', 'detail.produk', 'kurir.user')->find($transaksi_id);
+        $profile = ProfileToko::find(1);
+        $pdf = Pdf::loadView('pengunjung.belanja.nota', compact('data', 'profile'));
+        return $pdf->download('nota-' . $data->kode_transaksi . '.pdf');
     }
 }
