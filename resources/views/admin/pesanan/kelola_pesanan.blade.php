@@ -33,6 +33,7 @@
                                 <th>Total</th>
                                 <th>Status Pembayaran</th>
                                 <th>Status Pengiriman</th>
+                                <th>Nota</th>
                                 <th>COD</th>
                                 <th>Aksi</th>
                             </tr>
@@ -162,7 +163,6 @@
                         data: 'status_pembayaran',
                         name: 'status_pembayaran'
                     },
-
                     {
                         data: 'status_pengiriman',
                         name: 'status_pengiriman',
@@ -178,6 +178,20 @@
                                 badgeClass += 'bg-primary';
                             }
                             return '<span class="' + badgeClass + '">' + data + '</span>';
+                        }
+                    },
+                    {
+                        data: 'status_pengiriman',
+                        name: 'unduh_nota',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            if (data === 'Selesai') {
+                                return `<a href="/admin/pesanan/nota/${row.id}" class="btn btn-sm btn-success" target="_blank">
+                                    <i class="fas fa-file"></i> Unduh Nota
+                                </a>`;
+                            }
+                            return '-';
                         }
                     },
                     {

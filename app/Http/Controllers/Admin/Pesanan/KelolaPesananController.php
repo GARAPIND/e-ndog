@@ -41,7 +41,8 @@ class KelolaPesananController extends Controller
     {
         $transaksi = Transaksi::with(['pelanggan', 'alamat', 'detail.produk'])
             ->findOrFail($id);
-        return view('admin.pesanan.detail_pesanan', compact('transaksi'));
+        $transaksi_id = $id;
+        return view('admin.pesanan.detail_pesanan', compact('transaksi', 'transaksi_id'));
     }
 
     public function getTransaksiData($id)

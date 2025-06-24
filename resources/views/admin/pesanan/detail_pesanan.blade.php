@@ -65,6 +65,20 @@
                                         </td>
                                     </tr>
                                     <tr>
+                                        <th>Nota Pembayaran</th>
+                                        <td>:
+
+                                            @if ($transaksi->status_pengiriman == 'Selesai')
+                                                <a href="{{ route('admin.pesanan.nota', ['transaksi_id' => $transaksi_id]) }}"
+                                                    class="btn btn-sm btn-success">
+                                                    <i class="fas fa-file"></i> Unduh Nota
+                                                </a>
+                                            @else
+                                                <span class="badge badge-warning">Belum Tersedia</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th>Metode Pembayaran</th>
                                         <td>: {{ $transaksi->is_cod ? 'COD (Cash On Delivery)' : 'Transfer Bank' }}</td>
                                     </tr>
