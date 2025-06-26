@@ -276,7 +276,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 d-none">
                                 <div class="card bg-info text-white">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Total Transaksi</h5>
