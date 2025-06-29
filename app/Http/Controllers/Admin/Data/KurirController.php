@@ -30,9 +30,6 @@ class KurirController extends Controller
                 'users.username',
                 'users.email',
                 'kurir.telp',
-                'kurir.alamat',
-                'kurir.plat_nomor',
-                'kurir.jenis_kendaraan',
                 'kurir.photo',
                 'kurir.status',
                 'users.created_at'
@@ -77,9 +74,6 @@ class KurirController extends Controller
                 'users.username',
                 'users.email',
                 'kurir.telp',
-                'kurir.alamat',
-                'kurir.plat_nomor',
-                'kurir.jenis_kendaraan',
                 'kurir.photo',
                 'kurir.status'
             ])
