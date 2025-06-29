@@ -52,6 +52,11 @@ class User extends Authenticatable
         return $this->hasOne(Customer::class);
     }
 
+    public function kurir()
+    {
+        return $this->hasOne(Kurir::class);
+    }
+
     /**
      * Check if the user is an admin.
      */
@@ -60,4 +65,3 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 }
-

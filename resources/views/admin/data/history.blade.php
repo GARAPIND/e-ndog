@@ -13,7 +13,7 @@
                             <div>
                                 <h4 class="card-title">Tabel History Pemesanan</h4>
                                 <h6 class="card-subtitle">Di bawah ini adalah data pesanan yang statusnya <b
-                                        class="text-success">SELESAI</b></h6>
+                                        class="text-success">SELESAI</b> dan <b class="text-danger">DIBATALKAN</b> </h6>
                             </div>
                         </div>
                         <div class="table-responsive">
@@ -24,6 +24,7 @@
                                         <th>Tanggal Transaksi</th>
                                         <th>Nama Pelanggan</th>
                                         <th>Total Belanja</th>
+                                        <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -71,6 +72,11 @@
                         data: 'total_belanja',
                         className: 'text-center',
                         name: 'total_belanja',
+                    },
+                    {
+                        data: 'status',
+                        className: 'text-center',
+                        name: 'status',
                     },
                     {
                         data: 'aksi',

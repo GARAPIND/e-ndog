@@ -16,13 +16,27 @@ class HistoryController extends Controller
 
     public function get_data()
     {
-        $data = Transaksi::with('pelanggan.user')->where('status_pengiriman', 'Selesai')->get();
+        $data = Transaksi::with('pelanggan.user')->where('status_pengiriman', 'Selesai')->orWhere('cancel', 1)->get();
         return DataTables::of($data)
             ->addColumn("nama_pelanggan", function ($row) {
                 return $row->pelanggan->user->name;
             })
             ->addColumn("tanggal_transaksi", function ($row) {
                 return tanggalIndoLengkap($row->tanggal_transaksi);
+            })
+            ->addColumn("status", function ($row) {
+                if ($row->cancel == 1) {
+                    $catatan = '';
+                    if (!empty($row->catatan_cancel)) {
+                        $catatan .= '<br><small>Catatan: ' . e($row->catatan_cancel) . '</small>';
+                    }
+                    if (!empty($row->catatan_cancel_penjual)) {
+                        $catatan .= '<br><small>Catatan Penjual: ' . e($row->catatan_cancel_penjual) . '</small>';
+                    }
+                    return '<span class="badge badge-danger">Dibatalkan</span>' . $catatan;
+                } elseif ($row->status_pengiriman == 'Selesai') {
+                    return '<span class="badge badge-success">Selesai</span>';
+                }
             })
             ->addColumn("total_belanja", function ($row) {
                 $total = $row->sub_total + $row->ongkir;
@@ -37,7 +51,7 @@ class HistoryController extends Controller
 
                 return $button;
             })
-            ->rawColumns(['aksi', 'foto'])
+            ->rawColumns(['aksi', 'foto', 'status'])
             ->make(true);
     }
 }
