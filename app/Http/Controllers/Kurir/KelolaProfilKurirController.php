@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Kurir;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kurir;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +14,7 @@ class KelolaProfilKurirController extends Controller
 {
     public function index()
     {
-        $kurir = Kurir::where('user_id', Auth::user()->id)->first();
+        $kurir = Kurir::with('user')->where('user_id', Auth::user()->id)->first();
         if (!$kurir) {
             $kurir = Kurir::create([
                 'user_id' => Auth::user()->id,
@@ -28,10 +29,8 @@ class KelolaProfilKurirController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'nama' => 'required|string|max:20',
             'telp' => 'required|string|max:20',
-            'alamat' => 'required|string|max:255',
-            'plat_nomor' => 'required|string|max:20',
-            'jenis_kendaraan' => 'required|in:motor,mobil',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric'
@@ -44,6 +43,9 @@ class KelolaProfilKurirController extends Controller
         }
 
         try {
+            User::where('id', Auth::user()->id)->update([
+                'name' => $request->nama
+            ]);
             $kurir = Kurir::where('user_id', Auth::user()->id)->first();
             if (!$kurir) {
                 $kurir = new Kurir();
@@ -51,18 +53,15 @@ class KelolaProfilKurirController extends Controller
             }
 
             $kurir->telp = $request->telp;
-            $kurir->alamat = $request->alamat;
-            $kurir->plat_nomor = $request->plat_nomor;
-            $kurir->jenis_kendaraan = $request->jenis_kendaraan;
             $kurir->latitude = $request->latitude;
             $kurir->longitude = $request->longitude;
 
             if ($request->hasFile('photo')) {
                 if ($kurir->photo) {
-                    Storage::delete('public/' . $kurir->photo);
+                    Storage::delete('public/foto-kurir/' . $kurir->photo);
                 }
-                $photo_path = $request->file('photo')->store('kurir', 'public');
-                $kurir->photo = $photo_path;
+                $photo_path = $request->file('photo')->store('foto-kurir', 'public');
+                $kurir->photo = basename($photo_path);
             }
 
             $kurir->save();

@@ -42,54 +42,23 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="nama">Nama <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('nama') is-invalid @enderror"
+                                            id="nama" name="nama" value="{{ old('nama', $kurir->user->name) }}"
+                                            required>
+                                        @error('nama')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="telp">Nomor Telepon <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('telp') is-invalid @enderror"
                                             id="telp" name="telp" value="{{ old('telp', $kurir->telp) }}" required>
                                         @error('telp')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="alamat">Alamat <span class="text-danger">*</span></label>
-                                        <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3"
-                                            required>{{ old('alamat', $kurir->alamat) }}</textarea>
-                                        @error('alamat')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="plat_nomor">Plat Nomor Kendaraan <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('plat_nomor') is-invalid @enderror"
-                                            id="plat_nomor" name="plat_nomor"
-                                            value="{{ old('plat_nomor', $kurir->plat_nomor) }}" required>
-                                        @error('plat_nomor')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="jenis_kendaraan">Jenis Kendaraan <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-control @error('jenis_kendaraan') is-invalid @enderror"
-                                            id="jenis_kendaraan" name="jenis_kendaraan" required>
-                                            <option value="">Pilih Jenis Kendaraan</option>
-                                            <option value="motor"
-                                                {{ old('jenis_kendaraan', $kurir->jenis_kendaraan) == 'motor' ? 'selected' : '' }}>
-                                                Motor</option>
-                                            <option value="mobil"
-                                                {{ old('jenis_kendaraan', $kurir->jenis_kendaraan) == 'mobil' ? 'selected' : '' }}>
-                                                Mobil</option>
-                                        </select>
-                                        @error('jenis_kendaraan')
                                             <div class="invalid-feedback">
                                                 {{ $message }}
                                             </div>
@@ -115,8 +84,8 @@
                                         @enderror
                                         @if ($kurir->photo)
                                             <div class="mt-2">
-                                                <img src="{{ asset('storage/' . $kurir->photo) }}" alt="Foto Profil"
-                                                    class="img-thumbnail" style="max-height: 100px;">
+                                                <img src="{{ asset('storage/foto-kurir/' . $kurir->photo) }}"
+                                                    alt="Foto Profil" class="img-thumbnail" style="max-height: 100px;">
                                             </div>
                                         @endif
                                         <small class="form-text text-muted">
