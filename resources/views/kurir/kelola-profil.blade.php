@@ -106,7 +106,7 @@
                                 </div>
                             </div>
 
-                            <div class="card mb-4">
+                            <div class="card mb-4 d-none">
                                 <div class="card-header">
                                     <h5 class="mb-0">Lokasi Kurir</h5>
                                 </div>

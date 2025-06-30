@@ -27,6 +27,8 @@ class RedirectIfAuthenticated
                     return redirect()->route('dashboard.pengunjung');
                 } elseif ($user->role === 'admin') {
                     return redirect()->route('dashboard');
+                } elseif ($user->role === 'kurir') {
+                    return redirect()->route('dashboard.kurir');
                 }
 
                 return redirect(RouteServiceProvider::HOME);

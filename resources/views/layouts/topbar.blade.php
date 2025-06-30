@@ -182,10 +182,12 @@
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right user-dd animated flipInY">
-                        <a class="dropdown-item" href="{{ route('admin.profile-toko.index') }}">
-                            <i data-feather="shopping-bag" class="svg-icon mr-2 ml-1"></i>
-                            Profil {{ $shopName }}
-                        </a>
+                        @if (Auth::user()->role == 'admin')
+                            <a class="dropdown-item" href="{{ route('admin.profile-toko.index') }}">
+                                <i data-feather="shopping-bag" class="svg-icon mr-2 ml-1"></i>
+                                Profil {{ $shopName }}
+                            </a>
+                        @endif
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('logout') }}">
                             <i data-feather="log-out" class="svg-icon mr-2 ml-1"></i>

@@ -32,8 +32,6 @@ class KelolaProfilKurirController extends Controller
             'nama' => 'required|string|max:20',
             'telp' => 'required|string|max:20',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
@@ -53,8 +51,6 @@ class KelolaProfilKurirController extends Controller
             }
 
             $kurir->telp = $request->telp;
-            $kurir->latitude = $request->latitude;
-            $kurir->longitude = $request->longitude;
 
             if ($request->hasFile('photo')) {
                 if ($kurir->photo) {
