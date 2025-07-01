@@ -79,7 +79,7 @@ class BelanjaController extends Controller
                 CURLOPT_POSTFIELDS => "origin=$city_id_toko&destination=$city_id&weight=$weight&courier=$courier",
                 CURLOPT_HTTPHEADER => array(
                     "content-type: application/x-www-form-urlencoded",
-                    "key: 2472843d6a402ff2319489c07cc5cf73"
+                    "key: bfc73a5ac233d6ea88fb80d6b59baeab"
                 ),
             ));
 

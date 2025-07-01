@@ -31,7 +31,7 @@ class RajaOngkirController extends Controller
 
             $data = Cache::remember('rajaongkir_provinces', 86400, function () {
                 $response = Http::withHeaders([
-                    'key' => '2472843d6a402ff2319489c07cc5cf73'
+                    'key' => 'bfc73a5ac233d6ea88fb80d6b59baeab'
                 ])->get($this->baseUrl . '/province');
                 // dd($response->body());
 
@@ -73,7 +73,7 @@ class RajaOngkirController extends Controller
         return Cache::remember($cacheKey, 86400, function () use ($provinceId) {
             try {
                 $response = Http::withHeaders([
-                    'key' => '2472843d6a402ff2319489c07cc5cf73'
+                    'key' => 'bfc73a5ac233d6ea88fb80d6b59baeab'
                 ])->get($this->baseUrl . '/city', [
                     'province' => $provinceId
                 ]);
@@ -111,7 +111,7 @@ class RajaOngkirController extends Controller
                 $proBaseUrl = str_replace('starter', 'pro', $this->baseUrl);
 
                 $response = Http::withHeaders([
-                    'key' => '2472843d6a402ff2319489c07cc5cf73'
+                    'key' => 'bfc73a5ac233d6ea88fb80d6b59baeab'
                 ])->get($proBaseUrl . '/subdistrict', [
                     'city' => $cityId
                 ]);
