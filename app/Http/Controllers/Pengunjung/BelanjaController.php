@@ -60,6 +60,7 @@ class BelanjaController extends Controller
         $city_id = $request->city_id;
         $weight = $request->weight * 1000;
         $city_id_toko = 178;
+        // tes update
 
         $couriers = ['jne', 'pos', 'tiki'];
         $allCosts = [];
