@@ -53,6 +53,7 @@
                                         <div class="input-group">
                                             <input type="hidden" id="alamat_id_aktif">
                                             <input type="hidden" id="city_id">
+                                            <input type="hidden" id="kota">
                                             <input class="form-control" type="text" id="alamat"
                                                 placeholder="Masukkan alamat" readonly>
                                             <div class="input-group-append">
@@ -354,6 +355,7 @@
                         $('#alamat').val(response['alamat']);
                         $('#alamat_id_aktif').val(response['alamat_id']);
                         $('#city_id').val(response['city_id']);
+                        $('#kota').val(response['kota']);
                         $('#latitude_pelanggan').val(response['latitude']);
                         $('#longitude_pelanggan').val(response['longitude']);
                         $('#btnNext').prop('disabled', false);
@@ -678,14 +680,17 @@
             var metode = $('#metode_pembayaran').val();
             var jarak = parseFloat($('#jarak').val());
             var city_id = $('#city_id').val();
+            var kota = $('#kota').val();
             var berat = parseFloat($('#total-berat').text()) * 1000;
+            console.log('Kota:', kota);
+            console.log('Berat:', berat);
 
             $('#sub_total').val($('#total-semua').text());
             if (metode == "1") {
                 $('#form_kurir_raja_ongkir').hide();
                 $('#form_harga_ongkir').show();
-                if (city_id > 0 && berat > 0) {
-                    if ((city_id == 178 || city_id == 179) && berat >= 5000) {
+                if (berat > 0) {
+                    if ((kota == 'KEDIRI') && berat >= 5000) {
                         const ongkir = hitungOngkir(jarak, berat);
                         $('#nama_ekspedisi').val('Lokal');
                         $('#harga_ekspedisi').val(ongkir);

@@ -31,6 +31,7 @@ class BelanjaController extends Controller
         return response()->json([
             'alamat' => $data->alamat . " ($data->keterangan)",
             'alamat_id' => $data->id,
+            'kota' => $data->kota,
             'city_id' => $data->city_id,
             'latitude' => $data->latitude,
             'longitude' => $data->longitude
@@ -57,7 +58,7 @@ class BelanjaController extends Controller
 
     public function cek_ongkir(Request $request)
     {
-        $origin = 31555; // ID kota asal (misal: ID toko)
+        $origin = 34119; // ID kota asal (misal: ID toko)
         $destination = $request->city_id;
         $weight = $request->weight * 1000; // dari kg ke gram
         $couriers = 'jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana:dse';
