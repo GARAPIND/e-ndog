@@ -88,10 +88,12 @@
                                 $icon = 'fas fa-check-circle';
                             }
                         @endphp
-                        <a href="{{ route('pesanan.nota', ['transaksi_id' => $data->id]) }}"
-                            class="btn btn-sm btn-success mr-2" target="_blank">
-                            <i class="fas fa-download"></i> Unduh Nota
-                        </a>
+                        @if ($data->status_pengiriman == 'Selesai')
+                            <a href="{{ route('pesanan.nota', ['transaksi_id' => $data->id]) }}"
+                                class="btn btn-sm btn-success mr-2" target="_blank">
+                                <i class="fas fa-download"></i> Unduh Nota
+                            </a>
+                        @endif
 
                         <span class="badge {{ $badgeClass }} text-white status-badge">
                             <i class="{{ $icon }} mr-1"></i> {{ ucfirst($data->status_pengiriman) }}

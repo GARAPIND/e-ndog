@@ -57,49 +57,52 @@ class BelanjaController extends Controller
 
     public function cek_ongkir(Request $request)
     {
-        $city_id = $request->city_id;
-        $weight = $request->weight * 1000;
-        $city_id_toko = 178;
-        // tes update
+        $origin = 31555; // ID kota asal (misal: ID toko)
+        $destination = $request->city_id;
+        $weight = $request->weight * 1000; // dari kg ke gram
+        $couriers = 'jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana:dse';
+        $price_type = 'lowest';
 
-        $couriers = ['jne', 'pos', 'tiki'];
-        $allCosts = [];
+        $curl = curl_init();
 
-        foreach ($couriers as $courier) {
-            $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => http_build_query([
+                'origin' => $origin,
+                'destination' => $destination,
+                'weight' => $weight,
+                'courier' => $couriers,
+                'price' => $price_type
+            ]),
+            CURLOPT_HTTPHEADER => array(
+                "Content-Type: application/x-www-form-urlencoded",
+                "key: bfc73a5ac233d6ea88fb80d6b59baeab"
+            ),
+        ));
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://api.rajaongkir.com/starter/cost",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => "origin=$city_id_toko&destination=$city_id&weight=$weight&courier=$courier",
-                CURLOPT_HTTPHEADER => array(
-                    "content-type: application/x-www-form-urlencoded",
-                    "key: bfc73a5ac233d6ea88fb80d6b59baeab"
-                ),
-            ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
 
-            $response = curl_exec($curl);
-            $err = curl_error($curl);
-            curl_close($curl);
-
-            if ($err) {
-                return response()->json(['error' => $err], 500);
-            }
-
-            $decoded = json_decode($response, true);
-
-            if (isset($decoded['rajaongkir']['results'][0])) {
-                $allCosts[$courier] = $decoded['rajaongkir']['results'][0]['costs'];
-            }
+        if ($err) {
+            return response()->json(['error' => $err], 500);
         }
 
-        return response()->json($allCosts);
+        $decoded = json_decode($response, true);
+
+        if (isset($decoded['data']) && is_array($decoded['data'])) {
+            return response()->json($decoded['data']); // hanya return list ongkir
+        } else {
+            return response()->json(['error' => 'Invalid response from API', 'raw' => $decoded], 500);
+        }
     }
+
 
     public function sukses($orderId)
     {

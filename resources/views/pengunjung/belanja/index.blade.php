@@ -313,27 +313,23 @@
                     const $select = $('#kurir_raja_ongkir');
                     $select.empty().append('<option value="">-- Pilih Ekspedisi --</option>');
 
-                    if (Object.keys(response).length === 0) {
+                    if (!Array.isArray(response) || response.length === 0) {
                         $select.append('<option value="">Tidak ada ekspedisi tersedia</option>');
                         return;
                     }
 
-                    Object.keys(response).forEach(kurir => {
-                        const layanan = response[kurir];
-                        layanan.forEach(service => {
-                            const namaLayanan = `${kurir.toUpperCase()} - ${service.service}`;
-                            const harga = service.cost[0].value;
-                            const etd = service.cost[0].etd;
+                    response.forEach(service => {
+                        const kurir = service.code.toUpperCase();
+                        const namaLayanan = `${kurir} - ${service.service}`;
+                        const harga = service.cost;
+                        const etd = service.etd;
 
-                            const label =
-                                `${namaLayanan} | Rp ${harga.toLocaleString()} | ${etd} hari`;
-                            const value =
-                                `${kurir}|${service.service}|${harga}|${etd}`;
+                        const label = `${namaLayanan} | Rp ${harga.toLocaleString()} | ${etd}`;
+                        const value = `${kurir}|${service.service}|${harga}|${etd}`;
 
-                            $select.append(
-                                `<option value="${value}" data-nama-kurir="${namaLayanan}" data-harga-kurir="${harga}">${label}</option>`
-                            );
-                        });
+                        $select.append(
+                            `<option value="${value}" data-nama-kurir="${namaLayanan}" data-harga-kurir="${harga}">${label}</option>`
+                        );
                     });
                 },
                 error: (xhr) => {
@@ -703,6 +699,7 @@
             } else {
                 $('#form_harga_ongkir').hide();
                 $('#form_kurir_raja_ongkir').show();
+                get_data_ongkir();
             }
         }
 
