@@ -20,21 +20,60 @@ class RajaOngkirController extends Controller
     }
 
     /**
+     * Search destinations by zip code
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchByZipCode(Request $request)
+    {
+        $zipCode = $request->input('zip_code');
+
+        if (!$zipCode) {
+            return response()->json(['error' => 'Kode pos harus diisi'], 400);
+        }
+
+        try {
+            $cacheKey = 'rajaongkir_zip_' . $zipCode;
+
+            $data = Cache::remember($cacheKey, 3600, function () use ($zipCode) {
+                $response = Http::withHeaders([
+                    'key' => 'bfc73a5ac233d6ea88fb80d6b59baeab'
+                ])->get('https://rajaongkir.komerce.id/api/v1/destination/domestic-destination', [
+                    'search' => $zipCode,
+                    'limit' => 10,
+                    'offset' => 0
+                ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    return $data['data'] ?? [];
+                }
+
+                return [];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Get all provinces from Raja Ongkir API
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function getProvinces()
     {
-        // dd('masuk ke getProvinces');
         try {
-
             $data = Cache::remember('rajaongkir_provinces', 86400, function () {
                 $response = Http::withHeaders([
                     'key' => 'bfc73a5ac233d6ea88fb80d6b59baeab'
                 ])->get($this->baseUrl . '/province');
-                // dd($response->body());
-
 
                 $data = $response->json();
 
@@ -46,7 +85,7 @@ class RajaOngkirController extends Controller
             });
 
             if ($data === null) {
-                return response()->json(['error' => 'Failed to fetch provincess'], 500);
+                return response()->json(['error' => 'Failed to fetch provinces'], 500);
             }
 
             return response()->json($data);
@@ -54,8 +93,6 @@ class RajaOngkirController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
 
     /**
      * Get cities by province ID from Raja Ongkir API

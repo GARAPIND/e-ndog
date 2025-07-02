@@ -93,17 +93,16 @@ class ProfileController extends Controller
 
     public function storeAddress(Request $request)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'alamat' => 'required|string',
             'keterangan' => 'required|string|max:255',
-            'province_id' => 'required',
-            'city_id' => 'required',
-            'district_id' => 'required',
             'provinsi' => 'required|string',
             'kota' => 'required|string',
             'kecamatan' => 'required|string',
-            'kode_pos' => 'nullable|string|max:10',
+            'kode_pos' => 'required|string|max:10',
+            'district_id' => 'required', // This comes from the search API
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -130,8 +129,8 @@ class ProfileController extends Controller
             'kota' => $request->kota,
             'kecamatan' => $request->kecamatan,
             'kode_pos' => $request->kode_pos,
-            'province_id' => $request->province_id,
-            'city_id' => $request->city_id,
+            'province_id' => $request->district_id ?? 0,
+            'city_id' => $request->district_id ?? 0,
             'district_id' => $request->district_id,
             'is_primary' => $isPrimary,
             'latitude' => $request->latitude,
@@ -167,6 +166,11 @@ class ProfileController extends Controller
         $validator = Validator::make($request->all(), [
             'alamat' => 'required|string',
             'keterangan' => 'required|string|max:255',
+            'provinsi' => 'required|string',
+            'kota' => 'required|string',
+            'kecamatan' => 'required|string',
+            'kode_pos' => 'required|string|max:10',
+            'district_id' => 'required',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
         ]);
@@ -185,6 +189,13 @@ class ProfileController extends Controller
         $address->update([
             'alamat' => $request->alamat,
             'keterangan' => $request->keterangan,
+            'provinsi' => $request->provinsi,
+            'kota' => $request->kota,
+            'kecamatan' => $request->kecamatan,
+            'kode_pos' => $request->kode_pos,
+            'province_id' => $request->district_id ?? $address->district_id,
+            'city_id' => $request->district_id ?? $address->district_id,
+            'district_id' => $request->district_id,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
         ]);

@@ -229,12 +229,12 @@ Route::middleware(['pelanggan'])->group(function () {
 });
 Route::prefix('api/rajaongkir')->group(function () {
     Route::get('/provinces', [RajaOngkirController::class, 'getProvinces'])->name('rajaongkir.provinces');
+    Route::get('/search-zip', [RajaOngkirController::class, 'searchByZipCode'])->name('rajaongkir.search-zip');
     Route::get('/cities', [RajaOngkirController::class, 'getCities'])->name('rajaongkir.cities');
     Route::get('/districts', [RajaOngkirController::class, 'getDistricts'])->name('rajaongkir.districts');
     Route::post('/cost', [RajaOngkirController::class, 'getCost'])->name('rajaongkir.cost');
     Route::get('/origin', [RajaOngkirController::class, 'getOriginCity'])->name('rajaongkir.origin');
 });
-// Raja Ongkir API Routes
 Route::middleware(['auth'])->group(function () {});
 
 Route::post('/midtrans-callback', [MidtransController::class, 'callback'])->name('callback');

@@ -7,6 +7,35 @@
             height: 300px;
             width: 100%;
         }
+
+        .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            position: absolute;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .search-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .position-relative {
+            position: relative;
+        }
     </style>
     <div class="container-fluid">
         <div class="row px-xl-5">
@@ -53,27 +82,39 @@
                                 @enderror
                             </div>
 
+                            <div class="form-group position-relative">
+                                <label for="kode_pos_search">Cari berdasarkan Kode Pos <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('kode_pos') is-invalid @enderror"
+                                    id="kode_pos_search" value="{{ old('kode_pos', $address->kode_pos) }}"
+                                    placeholder="Masukkan kode pos untuk mencari alamat">
+                                <div id="searchResults" class="search-results" style="display: none;"></div>
+                                @error('kode_pos')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="form-text text-muted">Ketik kode pos untuk mencari dan mengisi otomatis data
+                                    alamat</small>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="province_id">Provinsi <span class="text-danger">*</span></label>
-                                        <select class="form-control @error('province_id') is-invalid @enderror"
-                                            id="province_id" name="province_id">
-                                            <option value="">Pilih Provinsi</option>
-                                        </select>
-                                        @error('province_id')
+                                        <label for="province_display">Provinsi <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('provinsi') is-invalid @enderror"
+                                            id="province_display" readonly placeholder="Provinsi akan terisi otomatis"
+                                            value="{{ old('provinsi', $address->provinsi) }}">
+                                        @error('provinsi')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="city_id">Kota/Kabupaten <span class="text-danger">*</span></label>
-                                        <select class="form-control @error('city_id') is-invalid @enderror" id="city_id"
-                                            name="city_id">
-                                            <option value="">Pilih Kota/Kabupaten</option>
-                                        </select>
-                                        @error('city_id')
+                                        <label for="city_display">Kota/Kabupaten <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('kota') is-invalid @enderror"
+                                            id="city_display" readonly placeholder="Kota akan terisi otomatis"
+                                            value="{{ old('kota', $address->kota) }}">
+                                        @error('kota')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -83,11 +124,10 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="kecamatan">Kecamatan <span class="text-danger">*</span></label>
+                                        <label for="kecamatan_display">Kecamatan <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('kecamatan') is-invalid @enderror"
-                                            id="kecamatan" name="kecamatan"
-                                            value="{{ old('kecamatan', $address->kecamatan) }}"
-                                            placeholder="Masukkan nama kecamatan">
+                                            id="kecamatan_display" readonly placeholder="Kecamatan akan terisi otomatis"
+                                            value="{{ old('kecamatan', $address->kecamatan) }}">
                                         @error('kecamatan')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -95,20 +135,27 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="kode_pos">Kode Pos</label>
-                                        <input type="text" class="form-control @error('kode_pos') is-invalid @enderror"
-                                            id="kode_pos" name="kode_pos"
+                                        <label for="kode_pos_display">Kode Pos</label>
+                                        <input type="text" class="form-control" id="kode_pos_display" readonly
+                                            placeholder="Kode pos akan terisi otomatis"
                                             value="{{ old('kode_pos', $address->kode_pos) }}">
-                                        @error('kode_pos')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
                                     </div>
                                 </div>
                             </div>
 
-                            <input type="hidden" name="provinsi" id="provinsi" value="{{ $address->provinsi }}">
-                            <input type="hidden" name="kota" id="kota" value="{{ $address->kota }}">
-                            <input type="hidden" name="district_id" id="district_id" value="{{ $address->district_id }}">
+                            <input type="hidden" name="provinsi" id="provinsi"
+                                value="{{ old('provinsi', $address->provinsi) }}">
+                            <input type="hidden" name="kota" id="kota" value="{{ old('kota', $address->kota) }}">
+                            <input type="hidden" name="kecamatan" id="kecamatan"
+                                value="{{ old('kecamatan', $address->kecamatan) }}">
+                            <input type="hidden" name="kode_pos" id="kode_pos"
+                                value="{{ old('kode_pos', $address->kode_pos) }}">
+                            <input type="hidden" name="province_id" id="province_id"
+                                value="{{ old('province_id', $address->province_id) }}">
+                            <input type="hidden" name="city_id" id="city_id"
+                                value="{{ old('city_id', $address->city_id) }}">
+                            <input type="hidden" name="district_id" id="district_id"
+                                value="{{ old('district_id', $address->district_id) }}">
 
                             <div class="card mb-3 mt-3">
                                 <div class="card-header bg-light">
@@ -171,6 +218,7 @@
     <script>
         let map;
         let marker;
+        let searchTimeout;
 
         document.addEventListener('DOMContentLoaded', function() {
             const savedLat = document.getElementById('latitude').value;
@@ -203,33 +251,95 @@
                 getUserLocation();
             });
 
-            loadProvinces().then(() => {
-                const provinceId = '{{ $address->province_id }}';
-                if (provinceId) {
-                    const provinceSelect = document.getElementById('province_id');
-                    provinceSelect.value = provinceId;
-                    loadCities(provinceId).then(() => {
-                        const cityId = '{{ $address->city_id }}';
-                        if (cityId) {
-                            document.getElementById('city_id').value = cityId;
-                        }
-                    });
+            const zipCodeInput = document.getElementById('kode_pos_search');
+            const searchResults = document.getElementById('searchResults');
+
+            zipCodeInput.addEventListener('input', function() {
+                const zipCode = this.value.trim();
+
+                if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                }
+
+                if (zipCode.length >= 3) {
+                    searchTimeout = setTimeout(() => {
+                        searchByZipCode(zipCode);
+                    }, 500);
+                } else {
+                    searchResults.style.display = 'none';
+                    searchResults.innerHTML = '';
                 }
             });
 
-            document.getElementById('province_id').addEventListener('change', function() {
-                const provinceId = this.value;
-                const provinceName = this.options[this.selectedIndex].text;
-                document.getElementById('provinsi').value = provinceName;
-                loadCities(provinceId);
-            });
-
-            document.getElementById('city_id').addEventListener('change', function() {
-                const cityId = this.value;
-                const cityName = this.options[this.selectedIndex].text;
-                document.getElementById('kota').value = cityName;
+            document.addEventListener('click', function(e) {
+                if (!zipCodeInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
             });
         });
+
+        function searchByZipCode(zipCode) {
+            const searchResults = document.getElementById('searchResults');
+
+            searchResults.innerHTML = '<div class="search-item">Mencari...</div>';
+            searchResults.style.display = 'block';
+
+            fetch(`{{ route('rajaongkir.search-zip') }}?zip_code=${zipCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data.length > 0) {
+                        displaySearchResults(data.data);
+                    } else {
+                        searchResults.innerHTML = '<div class="search-item">Tidak ada hasil ditemukan</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching zip code:', error);
+                    searchResults.innerHTML = '<div class="search-item">Terjadi kesalahan saat mencari</div>';
+                });
+        }
+
+        function displaySearchResults(results) {
+            const searchResults = document.getElementById('searchResults');
+
+            searchResults.innerHTML = '';
+
+            results.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'search-item';
+                div.innerHTML = `
+                    <strong>${item.label}</strong><br>
+                    <small>Kecamatan: ${item.district_name}, Kelurahan: ${item.subdistrict_name}</small>
+                `;
+
+                div.addEventListener('click', function() {
+                    selectAddress(item);
+                });
+
+                searchResults.appendChild(div);
+            });
+
+            searchResults.style.display = 'block';
+        }
+
+        function selectAddress(item) {
+            document.getElementById('province_display').value = item.province_name;
+            document.getElementById('city_display').value = item.city_name;
+            document.getElementById('kecamatan_display').value = item.district_name;
+            document.getElementById('kode_pos_display').value = item.zip_code;
+            document.getElementById('kode_pos_search').value = item.zip_code;
+
+            document.getElementById('provinsi').value = item.province_name;
+            document.getElementById('kota').value = item.city_name;
+            document.getElementById('kecamatan').value = item.district_name;
+            document.getElementById('kode_pos').value = item.zip_code;
+
+            document.getElementById('district_id').value = item.id;
+            document.getElementById('province_id').value = '';
+            document.getElementById('city_id').value = '';
+
+            document.getElementById('searchResults').style.display = 'none';
+        }
 
         function getUserLocation() {
             if (navigator.geolocation) {
@@ -271,45 +381,6 @@
             const position = marker.getLatLng();
             document.getElementById('latitude').value = position.lat.toFixed(6);
             document.getElementById('longitude').value = position.lng.toFixed(6);
-        }
-
-        function loadProvinces() {
-            return fetch('{{ route('rajaongkir.provinces') }}')
-                .then(response => response.json())
-                .then(data => {
-                    const provinceSelect = document.getElementById('province_id');
-                    provinceSelect.innerHTML = '<option value="">Pilih Provinsi</option>';
-
-                    data.forEach(province => {
-                        const option = document.createElement('option');
-                        option.value = province.province_id;
-                        option.textContent = province.province;
-                        provinceSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error loading provinces:', error));
-        }
-
-        function loadCities(provinceId) {
-            if (!provinceId) {
-                document.getElementById('city_id').innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
-                return Promise.resolve();
-            }
-
-            return fetch(`{{ route('rajaongkir.cities') }}?province=${provinceId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const citySelect = document.getElementById('city_id');
-                    citySelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
-
-                    data.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city.city_id;
-                        option.textContent = city.type + ' ' + city.city_name;
-                        citySelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error loading cities:', error));
         }
     </script>
 @endsection

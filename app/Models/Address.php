@@ -23,6 +23,7 @@ class Address extends Model
         'longitude',
         'province_id',
         'city_id',
+        'district_id',
 
     ];
 
