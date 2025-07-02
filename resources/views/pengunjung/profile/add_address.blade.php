@@ -36,6 +36,15 @@
         .position-relative {
             position: relative;
         }
+
+        .search-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-input-group .form-control {
+            flex: 1;
+        }
     </style>
     <div class="container-fluid">
         <div class="row px-xl-5">
@@ -85,15 +94,20 @@
                             <div class="form-group position-relative">
                                 <label for="kode_pos_search">Cari berdasarkan Kode Pos <span
                                         class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('kode_pos') is-invalid @enderror"
-                                    id="kode_pos_search" value="{{ old('kode_pos') }}"
-                                    placeholder="Masukkan kode pos untuk mencari alamat">
+                                <div class="search-input-group">
+                                    <input type="text" class="form-control @error('kode_pos') is-invalid @enderror"
+                                        id="kode_pos_search" value="{{ old('kode_pos') }}"
+                                        placeholder="Masukkan kode pos untuk mencari alamat">
+                                    <button type="button" class="btn btn-info" id="searchZipCodeBtn">
+                                        <i class="fas fa-search"></i> Cari
+                                    </button>
+                                </div>
                                 <div id="searchResults" class="search-results" style="display: none;"></div>
                                 @error('kode_pos')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="form-text text-muted">Ketik kode pos untuk mencari dan mengisi otomatis data
-                                    alamat</small>
+                                <small class="form-text text-muted">Ketik kode pos lalu klik tombol "Cari" untuk mencari dan
+                                    mengisi otomatis data alamat</small>
                             </div>
 
                             <div class="row">
@@ -207,7 +221,6 @@
     <script>
         let map;
         let marker;
-        let searchTimeout;
 
         document.addEventListener('DOMContentLoaded', function() {
             const initialLat = -0.789275;
@@ -245,32 +258,36 @@
                 getUserLocation();
             });
 
-            // Zip code search functionality
+            // Zip code search button functionality
             const zipCodeInput = document.getElementById('kode_pos_search');
+            const searchButton = document.getElementById('searchZipCodeBtn');
             const searchResults = document.getElementById('searchResults');
 
-            zipCodeInput.addEventListener('input', function() {
-                const zipCode = this.value.trim();
-
-                // Clear previous timeout
-                if (searchTimeout) {
-                    clearTimeout(searchTimeout);
-                }
+            // Event listener untuk tombol pencarian
+            searchButton.addEventListener('click', function() {
+                const zipCode = zipCodeInput.value.trim();
 
                 if (zipCode.length >= 3) {
-                    // Debounce search for 500ms
-                    searchTimeout = setTimeout(() => {
-                        searchByZipCode(zipCode);
-                    }, 500);
+                    searchByZipCode(zipCode);
                 } else {
-                    searchResults.style.display = 'none';
-                    searchResults.innerHTML = '';
+                    alert('Masukkan minimal 3 digit kode pos untuk mencari');
+                    zipCodeInput.focus();
+                }
+            });
+
+            // Event listener untuk Enter key pada input kode pos
+            zipCodeInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchButton.click();
                 }
             });
 
             // Hide search results when clicking outside
             document.addEventListener('click', function(e) {
-                if (!zipCodeInput.contains(e.target) && !searchResults.contains(e.target)) {
+                if (!zipCodeInput.contains(e.target) &&
+                    !searchResults.contains(e.target) &&
+                    !searchButton.contains(e.target)) {
                     searchResults.style.display = 'none';
                 }
             });
@@ -278,8 +295,13 @@
 
         function searchByZipCode(zipCode) {
             const searchResults = document.getElementById('searchResults');
+            const searchButton = document.getElementById('searchZipCodeBtn');
 
-            // Show loading
+            // Disable button and show loading state
+            searchButton.disabled = true;
+            searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari...';
+
+            // Show loading in results
             searchResults.innerHTML = '<div class="search-item">Mencari...</div>';
             searchResults.style.display = 'block';
 
@@ -289,12 +311,19 @@
                     if (data.success && data.data.length > 0) {
                         displaySearchResults(data.data);
                     } else {
-                        searchResults.innerHTML = '<div class="search-item">Tidak ada hasil ditemukan</div>';
+                        searchResults.innerHTML =
+                            '<div class="search-item">Tidak ada hasil ditemukan untuk kode pos "' + zipCode + '"</div>';
                     }
                 })
                 .catch(error => {
                     console.error('Error searching zip code:', error);
-                    searchResults.innerHTML = '<div class="search-item">Terjadi kesalahan saat mencari</div>';
+                    searchResults.innerHTML =
+                        '<div class="search-item text-danger">Terjadi kesalahan saat mencari. Silakan coba lagi.</div>';
+                })
+                .finally(() => {
+                    // Re-enable button and restore original text
+                    searchButton.disabled = false;
+                    searchButton.innerHTML = '<i class="fas fa-search"></i> Cari';
                 });
         }
 
@@ -345,6 +374,26 @@
 
             // Hide search results
             document.getElementById('searchResults').style.display = 'none';
+
+            // Show success feedback
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show mt-2';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i> Data alamat berhasil diisi otomatis dari kode pos ${item.zip_code}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            `;
+
+            const formGroup = document.getElementById('kode_pos_search').closest('.form-group');
+            formGroup.appendChild(alertDiv);
+
+            // Auto remove alert after 3 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 3000);
         }
 
         function getUserLocation() {
