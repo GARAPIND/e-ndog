@@ -70,6 +70,7 @@ class KelolaPesananController extends Controller
 
         if ($request->status === 'Dikirim' && $transaksi->is_cod == 1) {
             $validationRules['kurir_id'] = 'required|exists:kurir,id';
+            $validationRules['estimasi_waktu'] = 'required|string';
         }
 
         $request->validate($validationRules);
@@ -82,6 +83,7 @@ class KelolaPesananController extends Controller
 
         if ($request->status === 'Dikirim' && $request->has('kurir_id')) {
             $transaksi->kurir_id = $request->kurir_id;
+            $transaksi->estimasi_waktu = $request->estimasi_waktu;
             $totalBerat = $transaksi->detail->sum('berat');
             $jarakMeter = $transaksi->jarak ?? 0;
             if ($jarakMeter < 1000) {

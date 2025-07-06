@@ -167,6 +167,7 @@
                                     <input type="hidden" id="longitude_pelanggan">
                                     <input type="hidden" id="nama_ekspedisi">
                                     <input type="hidden" id="harga_ekspedisi">
+                                    <input type="hidden" id="estimasi_waktu">
                                     <input type="hidden" id="jarak">
                                     <button class="btn btn-primary float-right" id="btnNext"
                                         onclick="nextStep()">Selanjutnya</button>
@@ -329,7 +330,7 @@
                         const value = `${kurir}|${service.service}|${harga}|${etd}`;
 
                         $select.append(
-                            `<option value="${value}" data-nama-kurir="${namaLayanan}" data-harga-kurir="${harga}">${label}</option>`
+                            `<option value="${value}" data-nama-kurir="${namaLayanan}" data-harga-kurir="${harga}" data-estimasi-waktu="${etd}">${label}</option>`
                         );
                     });
                 },
@@ -456,6 +457,7 @@
             const selectedOption = this_.options[this_.selectedIndex];
             $('#nama_ekspedisi').val(selectedOption.getAttribute('data-nama-kurir'));
             $('#harga_ekspedisi').val(selectedOption.getAttribute('data-harga-kurir'));
+            $('#estimasi_waktu').val(selectedOption.getAttribute('data-estimasi-waktu'));
         }
 
         let idProduk = "";
@@ -694,6 +696,7 @@
                         const ongkir = hitungOngkir(jarak, berat);
                         $('#nama_ekspedisi').val('Lokal');
                         $('#harga_ekspedisi').val(ongkir);
+                        $('#estimasi_waktu').val('');
                         $('#harga_ongkir').val(rupiahFormat(ongkir));
                     } else {
                         Notiflix.Notify.failure('COD hanya berlaku untuk area kediri dan berat >= 5kg');
@@ -764,6 +767,7 @@
             formData.append("jarak", $('#jarak').val());
             formData.append("is_cod", $('#metode_pembayaran').val());
             formData.append("ekspedisi", $('#nama_ekspedisi').val());
+            formData.append("estimasi_waktu", $('#estimasi_waktu').val());
             formData.append("sub_total", parseInt($('#total-semua').text().replace(/\D/g, ''), 10));
             formData.append("total_berat", parseInt($('#total-berat').text()));
             formData.append("ongkir", $('#harga_ekspedisi').val());

@@ -188,6 +188,10 @@
                 <td>Status Pembayaran:</td>
                 <td>{{ $data['status_pembayaran'] }}</td>
             </tr>
+            <tr>
+                <td>Estimasi Waktu:</td>
+                <td>{{ $data['estimasi_waktu'] }}</td>
+            </tr>
         </table>
     </div>
 

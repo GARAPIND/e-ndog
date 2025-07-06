@@ -19,6 +19,7 @@ class Transaksi extends Model
         'is_cod',
         'kurir_id',
         'ekspedisi',
+        'estimasi_waktu',
         'sub_total',
         'ongkir',
         'jarak',

@@ -75,6 +75,12 @@
                             <small class="text-muted">* Kurir yang direkomendasikan ditandai</small>
                         </div>
 
+                        <div class="mb-3 estimasi-selection" style="display:none;">
+                            <label for="estimasi_waktu" class="form-label">Estimasi Waktu Sampai</label>
+                            <input type="text" class="form-control" id="estimasi_waktu" name="estimasi_waktu"
+                                placeholder="Masukkan estimasi waktu sampai">
+                        </div>
+
                         <div class="mb-3 catatan-penjual" style="display:none;">
                             <label for="catatan_penjual" class="form-label">Catatan Penjual</label>
                             <textarea class="form-control" id="catatan_penjual" name="catatan_penjual" rows="3"
@@ -269,12 +275,13 @@
             $('#status').change(function() {
                 var status = $(this).val();
                 var cod = $('#is_cod').val();
-                $('.kurir-selection, .catatan-penjual').hide();
+                $('.kurir-selection, .catatan-penjual, .estimasi-selection').hide();
                 $('#kurir_id').prop('required', false);
 
                 if (status === 'Dikirim') {
                     if (cod == 1) {
                         $('.kurir-selection').show();
+                        $('.estimasi-selection').show();
                         $('#kurir_id').prop('required', true);
                         loadKurir();
                     }
@@ -332,8 +339,9 @@
                     catatan_penjual: $('#catatan_penjual').val()
                 };
 
-                if (status === 'Dikirim' && $('#kurir_id').val()) {
+                if (status === 'Dikirim' && $('#kurir_id').val() && $('#estimasi_waktu').val()) {
                     formData.kurir_id = $('#kurir_id').val();
+                    formData.estimasi_waktu = $('#estimasi_waktu').val();
                 }
 
                 $.ajax({

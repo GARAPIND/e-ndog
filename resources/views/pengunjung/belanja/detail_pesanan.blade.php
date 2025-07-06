@@ -190,6 +190,13 @@
                                                 {{ ucfirst($data->status_pengiriman) }}
                                             </span>
                                         </div>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span><i class="fas fa-truck mr-2"></i>Estimasi Waktu:</span>
+                                            <span class="badge bg-dark text-white status-badge">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                {{ $data->estimasi_waktu ?? '-' }}
+                                            </span>
+                                        </div>
                                         @if ($data->cancel !== null)
                                             @if ($data->cancel == 0)
                                                 <div class="d-flex justify-content-between mb-3">

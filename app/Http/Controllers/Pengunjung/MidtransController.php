@@ -39,6 +39,10 @@ class MidtransController extends Controller
         $total_berat = $request->total_berat;
         $is_cod = $request->is_cod;
         $ekspedisi = $request->ekspedisi;
+        $estimasi_waktu = $request->estimasi_waktu;
+        if (strpos($estimasi_waktu, 'day') !== false) {
+            $estimasi_waktu = str_replace('day', 'hari', $estimasi_waktu);
+        }
         $sub_total = $request->sub_total;
         $ongkir = $request->ongkir;
         $catatan_pelanggan = $request->catatan_pelanggan;
@@ -77,6 +81,7 @@ class MidtransController extends Controller
                     'jarak' => $jarak,
                     'is_cod' => $is_cod,
                     'ekspedisi' => $ekspedisi,
+                    'estimasi_waktu' => $estimasi_waktu,
                     'sub_total' => $sub_total,
                     'ongkir' => $ongkir,
                     'catatan_pelanggan' => $catatan_pelanggan,
@@ -154,6 +159,7 @@ class MidtransController extends Controller
                     'jarak' => $jarak,
                     'is_cod' => $is_cod,
                     'ekspedisi' => $ekspedisi,
+                    'estimasi_waktu' => $estimasi_waktu,
                     'sub_total' => $sub_total,
                     'ongkir' => $ongkir,
                     'catatan_pelanggan' => $catatan_pelanggan,

@@ -56,6 +56,10 @@
                                         <span><i class="fas fa-shipping-fast text-muted me-2"></i> Ekspedisi</span>
                                         <span>{{ $data->ekspedisi }}</span>
                                     </li>
+                                    <li class="list-group-item d-flex justify-content-between px-0">
+                                        <span><i class="fas fa-clock text-muted me-2"></i> Estimasi Waktu Sampai</span>
+                                        <span>{{ $data->estimasi_waktu ?? '-' }}</span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
