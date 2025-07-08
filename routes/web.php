@@ -161,6 +161,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/{id}/get-data', [KelolaPesananController::class, 'getTransaksiData'])->name('pesanan.get-data');
         Route::get('/kurir/recommendations', [KelolaPesananController::class, 'getKurirRecommendations'])->name('kurir.recommendations');
         Route::post('/validasi_pembatalan', [KelolaPesananController::class, 'validasi_pembatalan'])->name('validasi_pembatalan');
+        Route::get('/onsite/create', [KelolaPesananController::class, 'createOnsite'])->name('onsite.create');
+        Route::post('/onsite/store', [KelolaPesananController::class, 'storeOnsite'])->name('store-onsite');
+        Route::get('/produk/data', [KelolaPesananController::class, 'getProdukData'])->name('produk.data');
     });
 });
 

@@ -27,7 +27,11 @@ class Transaksi extends Model
         'catatan_penjual',
         'catatan_kurir',
         'foto',
-        'snap_token'
+        'snap_token',
+        'is_onsite',
+        'nama_pelanggan_onsite',
+        'no_telepon_onsite',
+        'alamat_onsite'
     ];
 
     public function produk()

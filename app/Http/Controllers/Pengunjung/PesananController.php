@@ -125,6 +125,11 @@ class PesananController extends Controller
     public function nota($transaksi_id)
     {
         $data = Transaksi::with('alamat', 'pelanggan.user', 'detail.produk', 'kurir.user')->find($transaksi_id);
+
+        if (!$data) {
+            abort(404, 'Transaksi tidak ditemukan');
+        }
+
         $profile = ProfileToko::find(1);
         $pdf = Pdf::loadView('pengunjung.belanja.nota', compact('data', 'profile'));
         return $pdf->download('nota-' . $data->kode_transaksi . '.pdf');

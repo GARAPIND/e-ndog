@@ -1,4 +1,3 @@
-{{-- @dd($data, $profile); --}}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -107,7 +106,6 @@
         </div>
     </div>
 
-
     <div class="section">
         <div class="title">DITERBITKAN ATAS NAMA</div>
         <div class="content">
@@ -118,15 +116,27 @@
     <div class="section">
         <div class="title">UNTUK</div>
         <div class="content">
-            Pembeli: <strong>{{ $data['pelanggan']['user']['name'] }}</strong><br>
-            Tanggal Pembelian: <strong>{{ tanggalIndoLengkap($data['tanggal_transaksi']) }}</strong><br>
-            No. Telepon: <strong>{{ $data['pelanggan']['user']['name'] }}
-                ({{ $data['pelanggan']['telp'] }})</strong><br>
-            Alamat Pengiriman: <br>
-            <strong>{{ $data['alamat']['alamat'] }}<br>
-                {{ $data['alamat']['kecamatan'] }}, {{ $data['alamat']['kota'] }},
-                {{ $data['alamat']['kode_pos'] }}<br>
-                {{ $data['alamat']['provinsi'] }}</strong>
+            @if ($data['is_onsite'])
+                {{-- Data untuk pelanggan onsite --}}
+                Pembeli: <strong>{{ $data['nama_pelanggan_onsite'] }}</strong><br>
+                Tanggal Pembelian: <strong>{{ tanggalIndoLengkap($data['tanggal_transaksi']) }}</strong><br>
+                No. Telepon: <strong>{{ $data['no_telepon_onsite'] }}</strong><br>
+                Alamat: <br>
+                <strong>{{ $data['alamat_onsite'] }}</strong><br>
+                <span
+                    style="background-color: #28a745; color: white; padding: 2px 5px; border-radius: 3px; font-size: 10px;">ONSITE</span>
+            @else
+                {{-- Data untuk pelanggan online --}}
+                Pembeli: <strong>{{ $data['pelanggan']['user']['name'] }}</strong><br>
+                Tanggal Pembelian: <strong>{{ tanggalIndoLengkap($data['tanggal_transaksi']) }}</strong><br>
+                No. Telepon: <strong>{{ $data['pelanggan']['user']['name'] }}
+                    ({{ $data['pelanggan']['telp'] }})</strong><br>
+                Alamat Pengiriman: <br>
+                <strong>{{ $data['alamat']['alamat'] }}<br>
+                    {{ $data['alamat']['kecamatan'] }}, {{ $data['alamat']['kota'] }},
+                    {{ $data['alamat']['kode_pos'] }}<br>
+                    {{ $data['alamat']['provinsi'] }}</strong>
+            @endif
         </div>
     </div>
 
@@ -160,10 +170,12 @@
             <td class="label">TOTAL HARGA ({{ count($data['detail']) }}):</td>
             <td class="text-right">Rp{{ number_format($data['sub_total'], 0, ',', '.') }}</td>
         </tr>
-        <tr>
-            <td class="label">Total Ongkos Kirim ({{ $data['detail']->sum('berat') }} kg):</td>
-            <td class="text-right">Rp{{ number_format($data['ongkir'], 0, ',', '.') }}</td>
-        </tr>
+        @if (!$data['is_onsite'])
+            <tr>
+                <td class="label">Total Ongkos Kirim ({{ $data['detail']->sum('berat') }} kg):</td>
+                <td class="text-right">Rp{{ number_format($data['ongkir'], 0, ',', '.') }}</td>
+            </tr>
+        @endif
         <tr>
             <td class="label"><strong>TOTAL BELANJA:</strong></td>
             <td class="text-right">
@@ -174,23 +186,42 @@
 
     <div class="footer">
         <table>
-            <tr>
-                <td>Kurir:</td>
-                <td>
-                    @if (is_null($data['kurir_id']))
-                        {{ $data['ekspedisi'] }}
-                    @else
-                        {{ $data['kurir']['user']['name'] }} (Kurir Toko)
-                    @endif
-                </td>
-            </tr>
+            @if (!$data['is_onsite'])
+                <tr>
+                    <td>Kurir:</td>
+                    <td>
+                        @if (is_null($data['kurir_id']))
+                            {{ $data['ekspedisi'] }}
+                        @else
+                            {{ $data['kurir']['user']['name'] }} (Kurir Toko)
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td>Estimasi Waktu:</td>
+                    <td>{{ $data['estimasi_waktu'] }}</td>
+                </tr>
+            @endif
             <tr>
                 <td>Status Pembayaran:</td>
                 <td>{{ $data['status_pembayaran'] }}</td>
             </tr>
             <tr>
-                <td>Estimasi Waktu:</td>
-                <td>{{ $data['estimasi_waktu'] }}</td>
+                <td>Jenis Transaksi:</td>
+                <td>
+                    @if ($data['is_onsite'])
+                        <span
+                            style="background-color: #28a745; color: white; padding: 2px 5px; border-radius: 3px; font-size: 10px;">ONSITE</span>
+                    @else
+                        @if ($data['is_cod'])
+                            <span
+                                style="background-color: #ffc107; color: black; padding: 2px 5px; border-radius: 3px; font-size: 10px;">COD</span>
+                        @else
+                            <span
+                                style="background-color: #17a2b8; color: white; padding: 2px 5px; border-radius: 3px; font-size: 10px;">TRANSFER</span>
+                        @endif
+                    @endif
+                </td>
             </tr>
         </table>
     </div>

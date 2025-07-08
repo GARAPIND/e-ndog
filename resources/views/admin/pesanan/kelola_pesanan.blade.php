@@ -13,6 +13,9 @@
                         <h4 class="card-title">Tabel Pesanan</h4>
                         <h6 class="card-subtitle">Tabel untuk mengelola data Pesanan</h6>
                     </div>
+                    <a href="{{ route('admin.pesanan.onsite.create') }}" class="btn btn-success mr-3">
+                        <i class="fas fa-plus mr-2"></i>Pesanan Onsite
+                    </a>
                     <div>
                         <select id="filter-status" class="form-control select2">
                             <option value="">Semua Status</option>
