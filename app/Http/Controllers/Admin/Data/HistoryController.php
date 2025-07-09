@@ -18,8 +18,11 @@ class HistoryController extends Controller
     {
         $data = Transaksi::with('pelanggan.user')->where('status_pengiriman', 'Selesai')->orWhere('cancel', 1)->get();
         return DataTables::of($data)
-            ->addColumn("nama_pelanggan", function ($row) {
-                return $row->pelanggan->user->name;
+            ->addColumn('nama_pelanggan', function ($transaksi) {
+                if ($transaksi->is_onsite) {
+                    return $transaksi->nama_pelanggan_onsite . ' <span class="badge badge-info">ONSITE</span>';
+                }
+                return $transaksi->pelanggan ? $transaksi->pelanggan->user->name : '-';
             })
             ->addColumn("tanggal_transaksi", function ($row) {
                 return tanggalIndoLengkap($row->tanggal_transaksi);
@@ -51,7 +54,7 @@ class HistoryController extends Controller
 
                 return $button;
             })
-            ->rawColumns(['aksi', 'foto', 'status'])
+            ->rawColumns(['aksi', 'foto', 'status', 'nama_pelanggan'])
             ->make(true);
     }
 }

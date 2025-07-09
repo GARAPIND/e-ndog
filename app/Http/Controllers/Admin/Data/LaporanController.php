@@ -215,12 +215,48 @@ class LaporanController extends Controller
             return $item->jumlah * $berat_produk;
         });
 
+        // Detail per produk untuk stok masuk
+        $detailMasuk = $dataMasuk->groupBy('produk_id')->map(function ($items) {
+            $firstItem = $items->first();
+            $namaProduk = $firstItem->produk ? $firstItem->produk->nama : 'Produk Tidak Diketahui';
+            $beratProduk = $firstItem->produk ? $firstItem->produk->berat : 1;
+
+            $totalBerat = $items->sum(function ($item) use ($beratProduk) {
+                return $item->jumlah * $beratProduk;
+            });
+
+            return [
+                'nama_produk' => $namaProduk,
+                'total' => $totalBerat,
+                'total_unit' => $items->sum('jumlah')
+            ];
+        })->sortByDesc('total')->values();
+
+        // Detail per produk untuk stok keluar
+        $detailKeluar = $dataKeluar->groupBy('produk_id')->map(function ($items) {
+            $firstItem = $items->first();
+            $namaProduk = $firstItem->produk ? $firstItem->produk->nama : 'Produk Tidak Diketahui';
+            $beratProduk = $firstItem->produk ? $firstItem->produk->berat : 1;
+
+            $totalBerat = $items->sum(function ($item) use ($beratProduk) {
+                return $item->jumlah * $beratProduk;
+            });
+
+            return [
+                'nama_produk' => $namaProduk,
+                'total' => $totalBerat,
+                'total_unit' => $items->sum('jumlah')
+            ];
+        })->sortByDesc('total')->values();
+
         return response()->json([
             'total_masuk' => $totalBeratMasuk . ' kg',
             'total_keluar' => $totalBeratKeluar . ' kg',
             'total_transaksi' => $dataMasuk->count() + $dataKeluar->count(),
             'total_masuk_unit' => $dataMasuk->sum('jumlah'),
             'total_keluar_unit' => $dataKeluar->sum('jumlah'),
+            'detail_masuk' => $detailMasuk,
+            'detail_keluar' => $detailKeluar
         ]);
     }
 

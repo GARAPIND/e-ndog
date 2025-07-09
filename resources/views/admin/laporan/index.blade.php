@@ -260,22 +260,36 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="card bg-success text-white">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Stok Masuk</h5>
-                                        <h3 id="total_stok_masuk">0</h3>
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div class="text-center me-3">
+                                            <h5 class="card-title">Stok Masuk</h5>
+                                            <h3 id="total_stok_masuk">0</h3>
+                                        </div>
+                                        <div id="detail_stok_masuk"
+                                            style="font-size: 0.8em; line-height: 1.2; text-align: left;">
+                                            <!-- Detail per produk akan muncul di sini -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+
+                            <div class="col-md-6">
                                 <div class="card bg-danger text-white">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Stok Keluar</h5>
-                                        <h3 id="total_stok_keluar">0</h3>
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div class="text-center me-3">
+                                            <h5 class="card-title">Stok Keluar</h5>
+                                            <h3 id="total_stok_keluar">0</h3>
+                                        </div>
+                                        <div id="detail_stok_keluar"
+                                            style="font-size: 0.8em; line-height: 1.2; text-align: left;">
+                                            <!-- Detail per produk akan muncul di sini -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-md-4 d-none">
                                 <div class="card bg-info text-white">
                                     <div class="card-body text-center">
@@ -783,14 +797,32 @@
                 method: 'GET',
                 data: parameter,
                 success: function(response) {
+                    // Update total
                     $('#total_stok_masuk').text(response.total_masuk || 0);
                     $('#total_stok_keluar').text(response.total_keluar || 0);
                     $('#total_transaksi_stok').text(response.total_transaksi || 0);
+
+                    // Update detail per produk
+                    tampilkan_detail_produk('#detail_stok_masuk', response.detail_masuk || []);
+                    tampilkan_detail_produk('#detail_stok_keluar', response.detail_keluar || []);
                 },
                 error: function() {
                     console.log('Gagal memuat ringkasan stok');
                 }
             });
+        }
+
+        function tampilkan_detail_produk(selector, detailData) {
+            let html = '';
+
+            if (detailData.length > 0) {
+                html = '<hr class="my-2" style="border-color: rgba(255,255,255,0.3);">';
+                detailData.forEach(function(item) {
+                    html += `<div class="text-white-80">${item.nama_produk}: ${item.total} kg</div>`;
+                });
+            }
+
+            $(selector).html(html);
         }
 
         function muat_ringkasan_pemasukan() {
