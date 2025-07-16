@@ -265,6 +265,10 @@
                                                     </a>
                                                 </span>
                                             </div>
+                                            <div class="d-flex justify-content-between mb-3">
+                                                <span><i class="fas fa-box mr-2"></i>Tanggal Sampai:</span>
+                                                <span>{{ $data->tanggal_sampai ? tanggalIndoLengkap($data->tanggal_sampai) : '-' }}</span>
+                                            </div>
                                         @endif
                                         {{-- <div class="d-flex justify-content-between mb-2">
                                             <span><i class="fas fa-barcode mr-2"></i>No. Resi:</span>

@@ -119,6 +119,13 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="tanggal_sampai" class="form-label">Tanggal Sampai</label>
+                            <input type="date" class="form-control" id="tanggal_sampai" name="tanggal_sampai"
+                                value="{{ date('Y-m-d') }}">
+
+                        </div>
+
+                        <div class="mb-3">
                             <label for="catatan_kurir" class="form-label">Catatan Pengiriman</label>
                             <textarea class="form-control" id="catatan_kurir" name="catatan_kurir" rows="3"
                                 placeholder="Masukkan catatan pengiriman (opsional)..."></textarea>
