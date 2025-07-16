@@ -3,8 +3,9 @@
 @section('title', 'Tambah Pesanan Onsite')
 @section('page-title', 'Tambah Pesanan Onsite')
 @section('page-subtitle', 'Pesanan/tambah_onsite')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 @section('content')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -17,26 +18,81 @@
                     <div class="card-body">
                         <form id="onsiteForm">
                             @csrf
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="nama_pelanggan">Nama Pelanggan</label>
-                                        <input type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan"
-                                            required>
+
+                            <!-- Pilihan Tipe Pelanggan -->
+                            <div class="form-group">
+                                <label>Tipe Pelanggan</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_pelanggan" id="pelanggan_baru"
+                                        value="baru" checked>
+                                    <label class="form-check-label" for="pelanggan_baru">
+                                        Pelanggan Baru
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_pelanggan"
+                                        id="pelanggan_existing" value="existing">
+                                    <label class="form-check-label" for="pelanggan_existing">
+                                        Pelanggan Sudah Terdaftar
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Form untuk Pelanggan Existing -->
+                            <div id="existing-customer-section" style="display: none;">
+                                <div class="form-group">
+                                    <label for="user_id">Pilih Pelanggan</label>
+                                    <select class="form-control select2" id="user_id" name="user_id">
+                                        <option value="">-- Pilih Pelanggan --</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}" data-name="{{ $user->name }}"
+                                                data-phone="{{ $user->phone }}" data-email="{{ $user->email }}">
+                                                {{ $user->name }} - {{ $user->email }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Form untuk Pelanggan Baru -->
+                            <div id="new-customer-section">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="nama_pelanggan">Nama Pelanggan</label>
+                                            <input type="text" class="form-control" id="nama_pelanggan"
+                                                name="nama_pelanggan">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="no_telepon">No. Telepon</label>
+                                            <input type="text" class="form-control" id="no_telepon" name="no_telepon">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="no_telepon">No. Telepon</label>
-                                        <input type="text" class="form-control" id="no_telepon" name="no_telepon"
-                                            required>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="alamat">Alamat</label>
+                                            <textarea class="form-control" id="alamat" name="alamat" rows="3"></textarea>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="alamat">Alamat</label>
-                                <textarea class="form-control" id="alamat" name="alamat" rows="3" required></textarea>
+                            <!-- Info Pelanggan yang Dipilih -->
+                            <div id="customer-info" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6>Informasi Pelanggan:</h6>
+                                    <div id="customer-details"></div>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -124,6 +180,48 @@
                 theme: 'bootstrap4',
                 width: '100%'
             });
+
+            // Handle tipe pelanggan change
+            $('input[name="tipe_pelanggan"]').change(function() {
+                if ($(this).val() === 'baru') {
+                    $('#new-customer-section').show();
+                    $('#existing-customer-section').hide();
+                    $('#customer-info').hide();
+                    clearForm();
+                } else {
+                    $('#new-customer-section').hide();
+                    $('#existing-customer-section').show();
+                    $('#customer-info').hide();
+                    clearForm();
+                }
+            });
+
+            // Handle user selection
+            $('#user_id').change(function() {
+                const selectedOption = $(this).find('option:selected');
+                if (selectedOption.val()) {
+                    const name = selectedOption.data('name');
+                    const phone = selectedOption.data('phone');
+                    const email = selectedOption.data('email');
+
+                    $('#customer-details').html(`
+                <strong>Nama:</strong> ${name}<br>
+                <strong>Telepon:</strong> ${phone}<br>
+                <strong>Email:</strong> ${email}
+            `);
+                    $('#customer-info').show();
+                } else {
+                    $('#customer-info').hide();
+                }
+            });
+
+            function clearForm() {
+                $('#nama_pelanggan').val('');
+                $('#no_telepon').val('');
+                $('#email').val('');
+                $('#alamat').val('');
+                $('#user_id').val('').trigger('change');
+            }
 
             // Tambah produk ke tabel
             $('#tambah-produk').click(function() {
@@ -232,10 +330,29 @@
                     return;
                 }
 
+                const tipePelanggan = $('input[name="tipe_pelanggan"]:checked').val();
+
+                // Validasi form berdasarkan tipe pelanggan
+                if (tipePelanggan === 'baru') {
+                    if (!$('#nama_pelanggan').val() || !$('#no_telepon').val() || !$('#email').val() || !$(
+                            '#alamat').val()) {
+                        showAlert('error', 'Semua field untuk pelanggan baru wajib diisi');
+                        return;
+                    }
+                } else {
+                    if (!$('#user_id').val()) {
+                        showAlert('error', 'Pilih pelanggan yang sudah terdaftar');
+                        return;
+                    }
+                }
+
                 const formData = {
                     _token: $('meta[name="csrf-token"]').attr('content'),
+                    tipe_pelanggan: tipePelanggan,
+                    user_id: $('#user_id').val(),
                     nama_pelanggan: $('#nama_pelanggan').val(),
                     no_telepon: $('#no_telepon').val(),
+                    email: $('#email').val(),
                     alamat: $('#alamat').val(),
                     catatan_penjual: $('#catatan_penjual').val(),
                     produk: produkData.map(item => ({
@@ -250,11 +367,16 @@
                     data: formData,
                     success: function(response) {
                         if (response.success) {
-                            showAlert('success', response.message);
+                            let message = response.message;
+                            if (response.is_new_user) {
+                                message +=
+                                    '. Akun baru telah dibuat dengan password default: password123';
+                            }
+                            showAlert('success', message);
                             setTimeout(() => {
                                 window.location.href =
                                     "{{ route('admin.pesanan.index') }}";
-                            }, 1500);
+                            }, 2000);
                         } else {
                             showAlert('error', response.message);
                         }
@@ -270,6 +392,17 @@
                     }
                 });
             });
+
+            // Function to show alerts (you need to implement this based on your alert system)
+            function showAlert(type, message) {
+                // Implementation depends on your alert system
+                // Example using simple alert:
+                if (type === 'success') {
+                    alert('Success: ' + message);
+                } else {
+                    alert('Error: ' + message);
+                }
+            }
         });
     </script>
 @endsection

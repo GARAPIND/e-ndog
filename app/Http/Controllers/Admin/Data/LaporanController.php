@@ -136,6 +136,20 @@ class LaporanController extends Controller
                     return '<span class="text-danger">-' . $total_berat . ' kg</span>';
                 }
             })
+            ->addColumn('stok_sebelum_formatted', function ($stok) {
+                // Hitung berat untuk stok sebelum
+                $berat_produk = $stok->produk ? $stok->produk->berat : 1;
+                $stok_sebelum_kg = $stok->stok_sebelum * $berat_produk;
+
+                return '<span class="text-info">' . $stok_sebelum_kg . ' kg</span>';
+            })
+            ->addColumn('stok_setelah_formatted', function ($stok) {
+                // Hitung berat untuk stok setelah
+                $berat_produk = $stok->produk ? $stok->produk->berat : 1;
+                $stok_setelah_kg = $stok->stok_setelah * $berat_produk;
+
+                return '<span class="text-primary">' . $stok_setelah_kg . ' kg</span>';
+            })
             ->addColumn('jumlah_unit', function ($stok) {
                 // Tampilkan jumlah unit asli
                 return $stok->jumlah . ' unit';
@@ -148,7 +162,7 @@ class LaporanController extends Controller
             ->orderColumn('created_at', function ($query, $order) {
                 $query->orderBy('created_at', $order);
             })
-            ->rawColumns(['tipe_label', 'jumlah_formatted']);
+            ->rawColumns(['tipe_label', 'jumlah_formatted', 'stok_sebelum_formatted', 'stok_setelah_formatted']);
 
         if ($request->get('length') == -1) {
             $dataTable = $dataTable->skipPaging();

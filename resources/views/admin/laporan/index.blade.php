@@ -289,17 +289,8 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="col-md-4 d-none">
-                                <div class="card bg-info text-white">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Total Transaksi</h5>
-                                        <h3 id="total_transaksi_stok">0</h3>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-                        <div class="row">
+                        <div class="row d-none">
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -390,21 +381,22 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="table-responsive d-none">
+                        <div class="table-responsive">
                             <table id="tabel_stok" class="table table-striped table-bordered table-sm">
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Tanggal</th>
                                         <th>Produk</th>
+                                        <th>Stok Sebelum</th>
                                         <th>Tipe</th>
                                         <th>Jumlah</th>
-                                        <th>Keterangan</th>
-                                        <th>User</th>
+                                        <th>Stok Setelah</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
                             </table>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -642,6 +634,10 @@
                         name: 'produk.nama'
                     },
                     {
+                        data: 'stok_sebelum_formatted',
+                        name: 'stok_sebelum'
+                    },
+                    {
                         data: 'tipe_label',
                         name: 'tipe'
                     },
@@ -649,13 +645,10 @@
                         data: 'jumlah_formatted',
                         name: 'jumlah_formatted'
                     },
+
                     {
-                        data: 'keterangan',
-                        name: 'keterangan'
-                    },
-                    {
-                        data: 'user_nama',
-                        name: 'user.name'
+                        data: 'stok_setelah_formatted',
+                        name: 'stok_setelah'
                     }
                 ]
             });
@@ -696,6 +689,7 @@
                 ]
             });
         }
+
 
         function atur_event_filter() {
             $('#filter_periode_stok').change(function() {

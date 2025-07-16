@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Admin\Pesanan;
 
 use App\Helpers\SendWaHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Address;
+use App\Models\Customer;
 use App\Models\DetailTransaksi;
 use App\Models\Transaksi;
 use App\Models\Kurir;
 use App\Models\Produk;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 
 class KelolaPesananController extends Controller
@@ -187,30 +191,94 @@ class KelolaPesananController extends Controller
     }
 
 
-    // onsite
     public function createOnsite()
     {
         $produk = Produk::where('stok', '>', 0)->get();
-        return view('admin.pesanan.create_onsite', compact('produk'));
+        $users = User::where('role', 'customer')->orderBy('name')->get();
+        return view('admin.pesanan.create_onsite', compact('produk', 'users'));
     }
 
     public function storeOnsite(Request $request)
     {
-        $request->validate([
-            'nama_pelanggan' => 'required|string',
-            'no_telepon' => 'required|string',
-            'alamat' => 'required|string',
-            'produk' => 'required|array',
-            'produk.*.id' => 'required|exists:produk,id',
-            'produk.*.jumlah' => 'required|integer|min:1',
-            'catatan_penjual' => 'nullable|string'
-        ]);
+        if ($request->tipe_pelanggan === 'baru') {
+            $request->validate([
+                'tipe_pelanggan' => 'required|in:baru,existing',
+                'nama_pelanggan' => 'required_if:tipe_pelanggan,baru|string',
+                'no_telepon' => 'required_if:tipe_pelanggan,baru|string',
+                'alamat' => 'required_if:tipe_pelanggan,baru|string',
+                'email' => 'required_if:tipe_pelanggan,baru|email|unique:users,email',
+                'produk' => 'required|array',
+                'produk.*.id' => 'required|exists:produk,id',
+                'produk.*.jumlah' => 'required|integer|min:1',
+                'catatan_penjual' => 'nullable|string'
+            ]);
+        } else {
+            $request->validate([
+                'tipe_pelanggan' => 'required|in:baru,existing',
+                'user_id' => 'required_if:tipe_pelanggan,existing|exists:users,id',
+                'produk' => 'required|array',
+                'produk.*.id' => 'required|exists:produk,id',
+                'produk.*.jumlah' => 'required|integer|min:1',
+                'catatan_penjual' => 'nullable|string'
+            ]);
+        }
 
         DB::beginTransaction();
         try {
             $kode_transaksi = 'ONSITE-' . date('Ymd') . '-' . rand(1000, 9999);
             $sub_total = 0;
             $total_berat = 0;
+            $pelanggan_id = null;
+            $alamat_id = null;
+            $nama_pelanggan_onsite = null;
+            $no_telepon_onsite = null;
+            $alamat_onsite = null;
+
+            // Handle pelanggan
+            if ($request->tipe_pelanggan === 'baru') {
+                // Buat user baru
+                $user = User::create([
+                    'name' => $request->nama_pelanggan,
+                    'email' => $request->email,
+                    'phone' => $request->no_telepon,
+                    'username' => $request->nama_pelanggan . '123',
+                    'password' => Hash::make('password123'),
+                    'role' => 'customer',
+                    'is_active' => 1,
+                    'email_verified_at' => now()
+                ]);
+
+                // Buat record pelanggan
+                $pelanggan = Customer::create([
+                    'user_id' => $user->id,
+                    // tambahkan field lain yang diperlukan untuk tabel pelanggan
+                ]);
+                $pelanggan_id = $pelanggan->id;
+
+                // Buat alamat
+                $alamat = Address::create([
+                    'pelanggan_id' => $pelanggan_id,
+                    'alamat' => $request->alamat
+                ]);
+                $alamat_id = $alamat->id;
+
+                // Set data onsite untuk pelanggan baru
+                $nama_pelanggan_onsite = $request->nama_pelanggan;
+                $no_telepon_onsite = $request->no_telepon;
+                $alamat_onsite = $request->alamat;
+            } else {
+                // Pelanggan existing
+                $user = User::findOrFail($request->user_id);
+                $pelanggan_id = Customer::where('user_id', $request->user_id)->value('id');
+                $alamat_id = Address::where('pelanggan_id', $pelanggan_id)
+                    ->orderby('id', 'asc')
+                    ->value('id');
+
+                // Set data onsite untuk pelanggan existing
+                $nama_pelanggan_onsite = $user->name;
+                $no_telepon_onsite = $user->phone;
+                $alamat_onsite = Address::find($alamat_id)->alamat ?? null;
+            }
 
             // Hitung subtotal dan berat
             foreach ($request->produk as $item) {
@@ -223,22 +291,22 @@ class KelolaPesananController extends Controller
             $transaksi = Transaksi::create([
                 'kode_transaksi' => $kode_transaksi,
                 'tanggal_transaksi' => now(),
-                'pelanggan_id' => null, // Null untuk onsite
-                'alamat_id' => null,
+                'pelanggan_id' => (int)($pelanggan_id),
+                'alamat_id' => $alamat_id ?? null,
                 'status_pembayaran' => 'Sudah Dibayar',
                 'status_pengiriman' => 'Selesai',
                 'jarak' => 0,
                 'is_cod' => 0,
-                'is_onsite' => 1, // Flag untuk onsite
+                'is_onsite' => 1,
                 'ekspedisi' => null,
                 'estimasi_waktu' => null,
                 'sub_total' => $sub_total,
                 'ongkir' => 0,
-                'catatan_pelanggan' => $request->alamat,
+                'catatan_pelanggan' => $request->tipe_pelanggan === 'baru' ? $request->alamat : null,
                 'catatan_penjual' => $request->catatan_penjual,
-                'nama_pelanggan_onsite' => $request->nama_pelanggan,
-                'no_telepon_onsite' => $request->no_telepon,
-                'alamat_onsite' => $request->alamat
+                'nama_pelanggan_onsite' => $nama_pelanggan_onsite,
+                'no_telepon_onsite' => $no_telepon_onsite,
+                'alamat_onsite' => $alamat_onsite
             ]);
 
             // Buat detail transaksi
@@ -253,8 +321,6 @@ class KelolaPesananController extends Controller
                     'berat' => $produk->berat * $item['jumlah'],
                     'sub_total' => $produk->harga_aktif * $item['jumlah']
                 ]);
-
-                // Kurangi stok
                 $produk->kurangiStok($item['jumlah'], 'Pembelian Onsite #' . $transaksi->id);
             }
 
@@ -263,11 +329,11 @@ class KelolaPesananController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Pesanan onsite berhasil dibuat',
-                'transaksi_id' => $transaksi->id
+                'transaksi_id' => $transaksi->id,
+                'is_new_user' => $request->tipe_pelanggan === 'baru'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal membuat pesanan: ' . $e->getMessage()
