@@ -201,6 +201,10 @@
                     <td>Estimasi Waktu:</td>
                     <td>{{ $data['estimasi_waktu'] }}</td>
                 </tr>
+                <tr>
+                    <td>Tanggal Sampai:</td>
+                    <td>{{ $data['tanggal_sampai'] ? tanggalIndoLengkap($data['tanggal_sampai']) : '-' }}</td>
+                </tr>
             @endif
             <tr>
                 <td>Status Pembayaran:</td>

@@ -87,6 +87,7 @@ class PesananKurirController extends Controller
             'status' => 'required|in:Dikemas,Dikirim,Selesai',
             'foto_bukti' => 'required_if:status,Dikirim|image|max:2048',
             'catatan_kurir' => 'nullable|string|max:255',
+            'tanggal_sampai' => 'required|date',
         ], [
             'foto_bukti.required_if' => 'Foto bukti pengiriman wajib diupload saat mengubah status menjadi Dikirim',
             'foto_bukti.image' => 'File harus berupa gambar',
@@ -108,6 +109,7 @@ class PesananKurirController extends Controller
             ->firstOrFail();
 
         $transaksi->status_pengiriman = $request->status;
+        $transaksi->tanggal_sampai = $request->tanggal_sampai;
         if ($request->catatan_kurir) {
             $transaksi->catatan_kurir = $request->catatan_kurir;
         }

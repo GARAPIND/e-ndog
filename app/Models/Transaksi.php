@@ -16,6 +16,7 @@ class Transaksi extends Model
         'alamat_id',
         'status_pembayaran',
         'status_pengiriman',
+        'tanggal_sampai',
         'is_cod',
         'kurir_id',
         'ekspedisi',
