@@ -131,9 +131,9 @@ class LaporanController extends Controller
                 $total_berat = $stok->jumlah * $berat_produk;
 
                 if ($stok->direction === 'masuk') {
-                    return '<span class="text-success">+' . $total_berat . ' kg</span>';
+                    return '<span class="text-success">' . $total_berat . ' kg</span>';
                 } else {
-                    return '<span class="text-danger">-' . $total_berat . ' kg</span>';
+                    return '<span class="text-danger">' . $total_berat . ' kg</span>';
                 }
             })
             ->addColumn('stok_sebelum_formatted', function ($stok) {
