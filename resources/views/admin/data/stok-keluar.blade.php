@@ -202,7 +202,7 @@
                 const char = String.fromCharCode(e.which);
                 if (!/[0-9]/.test(char)) {
                     e.preventDefault();
-                    alert("Inputan harus berupa angka 0-9");
+                    alert("Inputan harus berupa angka...");
                 }
             });
 
