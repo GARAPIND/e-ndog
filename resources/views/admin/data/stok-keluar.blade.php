@@ -198,6 +198,14 @@
                 ]
             });
 
+            document.getElementById("jumlah").addEventListener("keypress", function(e) {
+                const char = String.fromCharCode(e.which);
+                if (!/[0-9]/.test(char)) {
+                    e.preventDefault();
+                    alert("Inputan harus berupa angka 0-9");
+                }
+            });
+
             // Load produk for select2
             $('#kurangi-stok-btn').click(function() {
                 loadProduk();
